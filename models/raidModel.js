@@ -7,6 +7,6 @@ const raidSchema = new schema({
     timestamp: { type: Number, required: true },
 });
 
-const raidModel = mongoose.model("Raid", raidSchema);
+const RaidModel = mongoose.model("Raid", raidSchema);
 
-export default raidModel;
+export default RaidModel;
