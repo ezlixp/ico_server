@@ -17,9 +17,9 @@ function validateJwtToken(request, response, next) {
 
     jwt.verify(token, secretKey, err => {
         if (err) return response.status(401).json({error: "Invalid token provided"});
-    });
 
-    next(); // Goes to next step (function execution)
+        next(); // Goes to next step (function execution)
+    });
 }
 
 export default validateJwtToken;
