@@ -1,7 +1,8 @@
 ﻿import RaidModel from "../models/raidModel.js";
+import validateJwtToken from "../security/jwtTokenValidator.js";
 
 function mapRaidEndpoints(app) {
-    app.get("/getRaids", async (request, response) => {
+    app.get("/getRaids", validateJwtToken, async (request, response) => {
         try {
             const raids = await RaidModel.find({});
             response.status(200);
@@ -15,19 +16,19 @@ function mapRaidEndpoints(app) {
         }
     });
 
-    app.post("/addRaid", async (request, response) => {
+    app.post("/addRaid", validateJwtToken, async (request, response) => {
         const newRaid = new RaidModel(request.body);
 
         try {
             // Gets newest raid registered
             let lastRaid = null;
-            await RaidModel.findOne({}, null, { sort: { timestamp: -1 } }).then((res) => {
+            await RaidModel.findOne({}, null, {sort: {timestamp: -1}}).then((res) => {
                 lastRaid = res;
             });
 
             if (lastRaid == null) {
                 await newRaid.save().then(() => {
-                    response.send({ err: "" });
+                    response.send({err: ""});
                 });
             } else {
                 const isSameUsers = (users1, users2) => {
@@ -43,16 +44,16 @@ function mapRaidEndpoints(app) {
                 // likely to be the same raid.
                 const timeDiff = Math.abs(newRaid.timestamp - lastRaid.timestamp);
                 if (timeDiff < 10000 && isSameUsers(lastRaid.users, newRaid.users)) {
-                    response.send({ err: "duplicate raid" });
+                    response.send({err: "duplicate raid"});
                     return;
                 }
 
                 await newRaid.save().then(() => {
-                    response.send({ err: "" });
+                    response.send({err: ""});
                 });
             }
         } catch (error) {
-            response.send({ err: "something went wrong" });
+            response.send({err: "something went wrong"});
 
             console.error("postRaidError:", error);
         }
