@@ -8,7 +8,7 @@ const options = {expiresIn: "24h"};
 // Generates a JWT if the validation key is valid.
 // Returns an object containing success status, the token
 // and any error messages if failure to generate token.
-function generateToken(validationKey) {
+function generateJwtToken(validationKey) {
 
     // Validate key sent
     if (validationKey !== "PlaceboValidationKey")
@@ -39,4 +39,4 @@ function generateToken(validationKey) {
     return response;
 }
 
-export default generateToken
+export default generateJwtToken;
