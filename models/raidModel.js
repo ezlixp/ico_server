@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const schema = mongoose.Schema;
 const raidSchema = new schema({
-    igns: { type: [String], required: true },
+    users: { type: [String], required: true },
     raid: { type: String, required: true },
     timestamp: { type: Number, required: true },
 });
