@@ -32,7 +32,7 @@ function mapRaidEndpoints(app) {
             // are the same as this one, then it's
             // likely to be the same raid. 
             const timeDiff = newRaid.timestamp - lastRaid.timestamp;
-            if (timeDiff < 10 && isSameUsers()) return;
+            if (timeDiff < 10000 && isSameUsers()) return;
 
             await newRaid.save();
             response.send({err: ""});
