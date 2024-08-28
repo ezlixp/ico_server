@@ -9,7 +9,7 @@ const secretKey = process.env.JWT_SECRET_KEY;
 function validateJwtToken(request, response, next) {
 	// Get authorization headers and extract token from "Bearer <token>"
 	if (request.headers["authorization"] == null) return response.status(401).json({error: "No token provided"});
-	const token = request.headers["authorization"];
+	const token = request.headers["authorization"].split(" ")[1];
 
 	jwt.verify(token, secretKey, (err) => {
 		if (err) return response.status(401).json({error: "Invalid token provided"});
