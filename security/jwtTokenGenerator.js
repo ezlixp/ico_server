@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken";
 import TokenResponseModel from "../models/responseModels.js";
-import dotenv from "dotenv";
+import "../config.js";
 
-dotenv.config();
 const secretKey = process.env.JWT_SECRET_KEY;
 const options = {expiresIn: "24h"};
 

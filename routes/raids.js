@@ -43,6 +43,7 @@ function mapRaidEndpoints(app) {
 				// are the same as this one, then it's
 				// likely to be the same raid.
 				const timeDiff = Math.abs(newRaid.timestamp - lastRaid.timestamp);
+				console.log(timeDiff);
 				if (timeDiff < 10000 && isSameUsers(lastRaid.users, newRaid.users)) {
 					response.send({err: "duplicate raid"});
 					return;
