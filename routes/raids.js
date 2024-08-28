@@ -2,7 +2,7 @@
 import validateJwtToken from "../security/jwtTokenValidator.js";
 
 function mapRaidEndpoints(app) {
-	app.get("/getRaids", validateJwtToken, async (request, response) => {
+	app.get("/getRaids", async (request, response) => {
 		try {
 			const raids = await RaidModel.find({});
 			response.status(200);
