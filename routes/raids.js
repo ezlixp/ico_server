@@ -1,4 +1,5 @@
 ﻿import RaidModel from "../models/raidModel.js";
+import UserModel from "../models/userModel.js";
 import userModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 
@@ -65,6 +66,20 @@ function mapRaidEndpoints(app) {
 			response.send({err: "something went wrong"});
 
 			console.error("postRaidError:", error);
+		}
+	});
+
+	app.get("/getAspectsOwed", async (request, response) => {
+		try {
+			const aspects = await UserModel.find({});
+			response.status(200);
+			response.send(aspects);
+
+			console.log("GET:", aspects);
+		} catch (error) {
+			response.status(500);
+			response.send("Something went wrong processing the request.");
+			console.error("getAspectsError:", error);
 		}
 	});
 
