@@ -6,6 +6,7 @@ import cors from "cors";
 import mapRaidEndpoints from "./routes/raids.js";
 import mapAuthenticationEndpoints from "./routes/authentication.js";
 import "./config.js";
+import mapAspectEndpoints from "./routes/aspects.js";
 
 const app = express();
 
@@ -28,3 +29,4 @@ try {
 
 mapAuthenticationEndpoints(app);
 mapRaidEndpoints(app);
+mapAspectEndpoints(app);
