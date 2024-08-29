@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import express, {json} from "express";
 import {connect} from "mongoose";
 import bodyParser from "body-parser";
