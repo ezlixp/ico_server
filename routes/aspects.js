@@ -23,7 +23,7 @@ function mapAspectEndpoints(app) {
 				UserModel.updateOne({user: user}, {$inc: {aspects: -1}}, {upsert: true})
 					.collation({locale: "en", strength: 2})
 					.then(() => {
-						console.log(user.toLowerCase(), "received an aspect");
+						console.log(user, "received an aspect");
 					});
 			});
 			response.send({err: ""});
