@@ -36,6 +36,7 @@ function mapAspectEndpoints(app) {
 			if (errorMsg !== "") {
 				errorMsg += "were not given aspects as it would put them in debt";
 			}
+			response.send({err: errorMsg});
 		} catch (error) {
 			response.status(500);
 			response.send({err: "something went wrong"});
