@@ -20,8 +20,8 @@ function mapAspectEndpoints(app) {
 	app.post("/aspects", validateJwtToken, async (request, response) => {
 		try {
 			request.body.users.forEach((user) => {
-				UserModel.updateOne({user: user}, {$inc: {aspects: -1}}, {upsert: true}).then((res) => {
-					console.log(user, "received an aspect");
+				UserModel.updateOne({user: user.toLowerCase()}, {$inc: {aspects: -1}}, {upsert: true}).then((res) => {
+					console.log(user.toLowerCase(), "received an aspect");
 				});
 			});
 			response.send({err: ""});

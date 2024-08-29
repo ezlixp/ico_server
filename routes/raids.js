@@ -20,15 +20,16 @@ function mapRaidEndpoints(app) {
 
 	app.post("/addRaid", validateJwtToken, async (request, response) => {
 		try {
+			const newUsers = request.body.users.sort().map((user) => user.toLowerCase());
 			const newRaid = new RaidModel({
-				users: request.body.users.sort(),
+				users: newUsers,
 				raid: request.body.raid,
 				timestamp: request.body.timestamp,
 			});
 
 			// Gets last raid that the same team completed
 			let lastRaid = null;
-			await RaidModel.findOne({users: request.body.users.sort()}, null, {
+			await RaidModel.findOne({users: newUsers}, null, {
 				sort: {timestamp: -1},
 			}).then((res) => {
 				lastRaid = res;
@@ -51,7 +52,6 @@ function mapRaidEndpoints(app) {
 				// likely to be the same raid.
 				const timeDiff = Math.abs(newRaid.timestamp - lastRaid.timestamp);
 				if (timeDiff < 10000) {
-					console.log(lastRaid.users, newRaid.users);
 					response.send({err: "duplicate raid"});
 					return;
 				}
@@ -67,6 +67,7 @@ function mapRaidEndpoints(app) {
 				});
 			}
 		} catch (error) {
+			response.status(500);
 			response.send({err: "something went wrong"});
 
 			console.error("postRaidError:", error);
