@@ -20,7 +20,9 @@ function mapRaidEndpoints(app) {
 
 	app.post("/addRaid", validateJwtToken, async (request, response) => {
 		try {
-			const newUsers = request.body.users.sort().map((user) => user.toLowerCase());
+			const newUsers = request.body.users.sort((a, b) => {
+				return a.toLowerCase() < b.toLowerCase();
+			});
 			const newRaid = new RaidModel({
 				users: newUsers,
 				raid: request.body.raid,
@@ -28,20 +30,22 @@ function mapRaidEndpoints(app) {
 			});
 
 			// Gets last raid that the same team completed
-			let lastRaid = null;
-			await RaidModel.findOne({users: newUsers}, null, {
+			const lastRaid = await RaidModel.findOne({users: newUsers}, null, {
 				sort: {timestamp: -1},
-			}).then((res) => {
-				lastRaid = res;
-			});
+			})
+				.collation({locale: "en", strength: 2})
+				.exec();
 
 			if (lastRaid == null) {
 				await newRaid.save().then(() => {
 					// Add users to db and increase aspect counter by 0.5
 					newRaid.users.forEach((user) => {
-						userModel.updateOne({user: user}, {$inc: {aspects: 0.5}}, {upsert: true}).then((res) => {
-							console.log(user, "got 0.5 aspects");
-						});
+						userModel
+							.updateOne({user: user}, {$inc: {aspects: 0.5}}, {upsert: true})
+							.collation({locale: "en", strength: 2})
+							.then(() => {
+								console.log(user, "got 0.5 aspects");
+							});
 					});
 					response.send({err: ""});
 				});
@@ -59,9 +63,12 @@ function mapRaidEndpoints(app) {
 				await newRaid.save().then(() => {
 					// Add users to db and increase aspect counter by 0.5
 					newRaid.users.forEach((user) => {
-						userModel.updateOne({user: user}, {$inc: {aspects: 0.5}}, {upsert: true}).then((res) => {
-							console.log(user, "got 0.5 aspects");
-						});
+						userModel
+							.updateOne({user: user}, {$inc: {aspects: 0.5}}, {upsert: true})
+							.collation({locale: "en", strength: 2})
+							.then(() => {
+								console.log(user, "got 0.5 aspects");
+							});
 					});
 					response.send({err: ""});
 				});

@@ -20,9 +20,11 @@ function mapAspectEndpoints(app) {
 	app.post("/aspects", validateJwtToken, async (request, response) => {
 		try {
 			request.body.users.forEach((user) => {
-				UserModel.updateOne({user: user.toLowerCase()}, {$inc: {aspects: -1}}, {upsert: true}).then(() => {
-					console.log(user.toLowerCase(), "received an aspect");
-				});
+				UserModel.updateOne({user: user}, {$inc: {aspects: -1}}, {upsert: true})
+					.collation({locale: "en", strength: 2})
+					.then(() => {
+						console.log(user.toLowerCase(), "received an aspect");
+					});
 			});
 			response.send({err: ""});
 		} catch (error) {
