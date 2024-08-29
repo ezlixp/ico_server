@@ -19,12 +19,23 @@ function mapAspectEndpoints(app) {
 
 	app.post("/aspects", validateJwtToken, async (request, response) => {
 		try {
+			let errorMsg = "";
 			request.body.users.forEach((user) => {
-				UserModel.updateOne({user: user.toLowerCase()}, {$inc: {aspects: -1}}, {upsert: true}).then((res) => {
-					console.log(user.toLowerCase(), "received an aspect");
+				UserModel.findOne({user: user.toLowerCase()}).then((res) => {
+					if (res.aspects >= 1) {
+						UserModel.updateOne({user: user.toLowerCase()}, {$inc: {aspects: -1}}, {upsert: true}).then(
+							() => {
+								console.log(user.toLowerCase(), "received an aspect");
+							}
+						);
+					} else {
+						errorMsg += res.user + ", ";
+					}
 				});
 			});
-			response.send({err: ""});
+			if (errorMsg !== "") {
+				errorMsg += "were not given aspects as it would put them in debt";
+			}
 		} catch (error) {
 			response.status(500);
 			response.send({err: "something went wrong"});
