@@ -1,18 +1,19 @@
-import express, { json } from "express";
-import { connect } from "mongoose";
+import express, {json} from "express";
+import {connect} from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
 import mapRaidEndpoints from "./routes/raids.js";
 import mapAuthenticationEndpoints from "./routes/authentication.js";
 import "./config.js";
 import mapAspectEndpoints from "./routes/aspects.js";
+import mapTomeEndpoints from "./routes/tomes.js";
 
 const app = express();
 
 app.use(json());
 app.use(cors());
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 // Connect to database
 try {
@@ -31,3 +32,4 @@ try {
 mapAuthenticationEndpoints(app);
 mapRaidEndpoints(app);
 mapAspectEndpoints(app);
+mapTomeEndpoints(app);
