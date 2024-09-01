@@ -7,6 +7,7 @@ import mapAuthenticationEndpoints from "./routes/authentication.js";
 import "./config.js";
 import mapAspectEndpoints from "./routes/aspects.js";
 import mapTomeEndpoints from "./routes/tomes.js";
+import mapWaitlistEndpoints from "./routes/waitlist.js";
 
 const app = express();
 
@@ -33,3 +34,4 @@ mapAuthenticationEndpoints(app);
 mapRaidEndpoints(app);
 mapAspectEndpoints(app);
 mapTomeEndpoints(app);
+mapWaitlistEndpoints(app);
