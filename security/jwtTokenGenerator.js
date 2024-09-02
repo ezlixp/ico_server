@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
-import { TokenResponseModel } from "../models/responseModels.js";
+import {TokenResponseModel} from "../models/responseModels.js";
 import "../config.js";
 
 const secretKey = process.env.JWT_SECRET_KEY;
-const options = { expiresIn: "24h" };
+const options = {expiresIn: "24h"};
 
 /**
  * Generates a JWT if the validation key is valid.
@@ -12,6 +12,7 @@ const options = { expiresIn: "24h" };
  */
 function generateJwtToken(validationKey) {
     // Validate key sent
+    console.log(validationKey);
     if (validationKey !== process.env.JWT_VALIDATION_KEY)
         return new TokenResponseModel(false, "Invalid validation key.", null);
 
