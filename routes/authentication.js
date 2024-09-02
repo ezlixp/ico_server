@@ -10,6 +10,7 @@ function mapAuthenticationEndpoints(app) {
     app.post(`${ENDPOINT_PREFIX}/getToken`, async (request, response) => {
         // Gets a token if correct validationKey is provided
         const validationKey = request.body.validationKey;
+        console.log(request.body);
         const result = generateJwtToken(validationKey);
 
         if (result.status) {

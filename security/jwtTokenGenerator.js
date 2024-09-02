@@ -12,7 +12,6 @@ const options = {expiresIn: "24h"};
  */
 function generateJwtToken(validationKey) {
     // Validate key sent
-    console.log(validationKey);
     if (validationKey !== process.env.JWT_VALIDATION_KEY)
         return new TokenResponseModel(false, "Invalid validation key.", null);
 
