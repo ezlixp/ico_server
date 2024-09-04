@@ -8,6 +8,7 @@ import "./config.js";
 import mapAspectEndpoints from "./routes/aspects.js";
 import mapTomeEndpoints from "./routes/tomes.js";
 import mapWaitlistEndpoints from "./routes/waitlist.js";
+import mapStatusEndpoints from "./routes/status.js";
 
 const app = express();
 
@@ -30,6 +31,7 @@ try {
 }
 
 // Map endpoints
+mapStatusEndpoints(app);
 mapAuthenticationEndpoints(app);
 mapRaidEndpoints(app);
 mapAspectEndpoints(app);

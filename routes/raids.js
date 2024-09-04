@@ -36,9 +36,7 @@ function mapRaidEndpoints(app) {
             // Gets last raid that the same team completed
             const lastRaid = await RaidModel.findOne({users: newUsers}, null, {
                 sort: {timestamp: -1},
-            })
-                .collation({locale: "en", strength: 2})
-                .exec();
+            }).collation({locale: "en", strength: 2});
 
             if (lastRaid == null) {
                 await newRaid.save().then(() => {
