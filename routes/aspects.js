@@ -22,21 +22,28 @@ function mapAspectEndpoints(app) {
     });
 
     app.post("/aspects", validateJwtToken, async (request, response) => {
-        try {
-            request.body.users.forEach((username) => {
-                UserModel.updateOne({username: username}, {$inc: {aspects: -1}}, {upsert: true})
-                    .collation({locale: "en", strength: 2})
-                    .then(() => {
+            try {
+                const updatePromises = request.body.users.map((username) => {
+                    UserModel.updateOne(
+                        {username: username},
+                        {$inc: {aspects: -1}},
+                        {upsert: true, collation: {locale: "en", strength: 2}}
+                    ).then(() => {
                         console.log(username, "received an aspect");
                     });
-            });
-            response.send({err: ""});
-        } catch (error) {
-            response.status(500);
-            response.send({err: "something went wrong"});
-            console.error("giveAspectError:", error);
+                });
+                await Promise.all(updatePromises);
+
+                response.send({err: ""});
+            } catch
+                (error) {
+                response.status(500);
+                response.send({err: "something went wrong"});
+                console.error("giveAspectError:", error);
+            }
         }
-    });
+    )
+    ;
 }
 
 export default mapAspectEndpoints;
