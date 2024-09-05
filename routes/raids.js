@@ -1,6 +1,5 @@
 ﻿import RaidModel from "../models/raidModel.js";
 import UserModel from "../models/userModel.js";
-import userModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 
 /**
@@ -42,8 +41,7 @@ function mapRaidEndpoints(app) {
                 await newRaid.save().then(() => {
                     // Add users to db and increase aspect counter by 0.5
                     newRaid.users.forEach((username) => {
-                        userModel
-                            .updateOne({username: username}, {$inc: {aspects: 0.5}}, {upsert: true})
+                        UserModel.updateOne({username: username}, {$inc: {aspects: 0.5}}, {upsert: true})
                             .collation({locale: "en", strength: 2})
                             .then(() => {
                                 console.log(username, "got 0.5 aspects");
@@ -65,8 +63,7 @@ function mapRaidEndpoints(app) {
                 await newRaid.save().then(() => {
                     // Add users to db and increase aspect counter by 0.5
                     newRaid.users.forEach((username) => {
-                        userModel
-                            .updateOne({username: username}, {$inc: {aspects: 0.5}}, {upsert: true})
+                        UserModel.updateOne({username: username}, {$inc: {aspects: 0.5}}, {upsert: true})
                             .collation({locale: "en", strength: 2})
                             .then(() => {
                                 console.log(username, "got 0.5 aspects");
