@@ -41,12 +41,12 @@ function mapRaidEndpoints(app) {
             if (lastRaid == null) {
                 await newRaid.save().then(() => {
                     // Add users to db and increase aspect counter by 0.5
-                    newRaid.users.forEach((user) => {
+                    newRaid.users.forEach((username) => {
                         userModel
-                            .updateOne({user: user}, {$inc: {aspects: 0.5}}, {upsert: true})
+                            .updateOne({username: username}, {$inc: {aspects: 0.5}}, {upsert: true})
                             .collation({locale: "en", strength: 2})
                             .then(() => {
-                                console.log(user, "got 0.5 aspects");
+                                console.log(username, "got 0.5 aspects");
                             });
                     });
                     response.send({err: ""});
@@ -64,12 +64,12 @@ function mapRaidEndpoints(app) {
 
                 await newRaid.save().then(() => {
                     // Add users to db and increase aspect counter by 0.5
-                    newRaid.users.forEach((user) => {
+                    newRaid.users.forEach((username) => {
                         userModel
-                            .updateOne({user: user}, {$inc: {aspects: 0.5}}, {upsert: true})
+                            .updateOne({username: username}, {$inc: {aspects: 0.5}}, {upsert: true})
                             .collation({locale: "en", strength: 2})
                             .then(() => {
-                                console.log(user, "got 0.5 aspects");
+                                console.log(username, "got 0.5 aspects");
                             });
                     });
                     response.send({err: ""});
