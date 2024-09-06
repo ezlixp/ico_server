@@ -1,5 +1,5 @@
-﻿import { Application, Request, Response } from "express";
-import generateJwtToken from "../security/jwtTokenGenerator";
+﻿import {Application, Request, Response} from "express";
+import generateJwtToken from "../security/jwtTokenGenerator.js";
 
 /**
  * Maps all authentication-related endpoints.
