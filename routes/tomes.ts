@@ -1,12 +1,12 @@
 ﻿import validateJwtToken from "../security/jwtTokenValidator.js";
 import TomeModel from "../models/tomeModel.js";
+import {Application, Request, Response} from "express";
 
 /**
  * Maps all tome-related endpoints
- * @param {Express} app
  */
-function mapTomeEndpoints(app) {
-    app.get("/tomes", async (request, response) => {
+function mapTomeEndpoints(app: Application) {
+    app.get("/tomes", async (request: Request, response: Response) => {
         try {
             // Get 10 users ordered by time added
             const tomeList = await TomeModel.find({}).sort({dateAdded: 1});
@@ -21,12 +21,14 @@ function mapTomeEndpoints(app) {
         }
     });
 
-    app.post("/tomes", validateJwtToken, async (request, response) => {
+    app.post("/tomes", validateJwtToken, async (request: Request, response: Response) => {
         try {
             // Save tome model on database
             const tomeData = request.body;
 
-            const exists = await TomeModel.findOne({username: tomeData.username}).collation({
+            const exists = await TomeModel.findOne({
+                username: tomeData.username,
+            }).collation({
                 locale: "en",
                 strength: 2,
             });
@@ -45,32 +47,40 @@ function mapTomeEndpoints(app) {
             response.status(201).send(tome);
             console.log(tome, "added to tome list");
         } catch (error) {
-            response.status(500).send({error: "Something went wrong processing your request."});
+            response.status(500).send({
+                error: "Something went wrong processing your request.",
+            });
             console.error("postTomeError:", error);
         }
     });
 
-    app.delete("/tomes/:username", validateJwtToken, async (request, response) => {
+    app.delete("/tomes/:username", validateJwtToken, async (request: Request, response: Response) => {
         try {
             // Get username from route
             const username = request.params.username;
 
             // Find entity by name and delete
-            const result = await TomeModel.findOneAndDelete({username: username}).collation({
+            const result = await TomeModel.findOneAndDelete({
+                username: username,
+            }).collation({
                 locale: "en",
                 strength: 2,
             });
 
             // If no entity was found, return 'Not Found'
             if (!result) {
-                response.status(404).send({error: "User could not be found in tome list."});
+                response.status(404).send({
+                    error: "User could not be found in tome list.",
+                });
                 return;
             }
 
             // Else return 'No Content'
             response.status(204).send();
         } catch (error) {
-            response.status(500).send({error: "Something went wrong processing your request."});
+            response.status(500).send({
+                error: "Something went wrong processing your request.",
+            });
             console.error("deleteTomeError:", error);
         }
     });

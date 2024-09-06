@@ -1,25 +1,27 @@
-import express, {json} from "express";
+import express, {Application} from "express";
 import {connect} from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
-import mapRaidEndpoints from "./routes/raids.js";
-import mapAuthenticationEndpoints from "./routes/authentication.js";
-import "./config.js";
-import mapAspectEndpoints from "./routes/aspects.js";
-import mapTomeEndpoints from "./routes/tomes.js";
-import mapWaitlistEndpoints from "./routes/waitlist.js";
-import mapStatusEndpoints from "./routes/status.js";
+import mapRaidEndpoints from "./routes/raids";
+import mapAuthenticationEndpoints from "./routes/authentication";
+import "./config";
+import mapAspectEndpoints from "./routes/aspects";
+import mapTomeEndpoints from "./routes/tomes";
+import mapWaitlistEndpoints from "./routes/waitlist";
+import mapStatusEndpoints from "./routes/status";
 
-const app = express();
+const app: Application = express();
 
-app.use(json());
+app.use(express.json());
 app.use(cors());
 
 app.use(bodyParser.urlencoded({extended: true}));
 
 // Connect to database
 try {
-    connect(process.env.DB_URL).then(() => {
+    const dbUrl: string = process.env.DB_URL as string;
+
+    connect(dbUrl).then(() => {
         const PORT = process.env.PORT || 3000;
 
         app.listen(PORT, () => {
