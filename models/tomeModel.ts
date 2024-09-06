@@ -1,4 +1,4 @@
-﻿import mongoose, { Model, Schema } from "mongoose";
+﻿import mongoose, {Model, Schema} from "mongoose";
 
 interface ITome extends Document {
     username: String;
@@ -6,8 +6,8 @@ interface ITome extends Document {
 }
 
 const tomeSchema: Schema<ITome> = new Schema({
-    username: { type: String, required: true },
-    dateAdded: { type: Date, required: true, default: Date.now() },
+    username: {type: String, required: true},
+    dateAdded: {type: Date, required: true, default: Date.now()},
 });
 
 const TomeModel: Model<ITome> = mongoose.model("Tome", tomeSchema);

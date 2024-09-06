@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, {Model, Schema} from "mongoose";
 
 interface IUser extends Document {
     username: String;
@@ -6,8 +6,8 @@ interface IUser extends Document {
 }
 
 const userSchema: Schema<IUser> = new Schema({
-    username: { type: String, required: true },
-    aspects: { type: Number, required: true },
+    username: {type: String, required: true},
+    aspects: {type: Number, required: true},
 });
 
 const UserModel: Model<IUser> = mongoose.model("User", userSchema);
