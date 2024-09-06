@@ -5,7 +5,7 @@ import generateJwtToken from "../security/jwtTokenGenerator.js";
  * Maps all authentication-related endpoints.
  */
 function mapAuthenticationEndpoints(app: Application): void {
-    app.post("auth/getToken", async (request: Request, response: Response) => {
+    app.post("/auth/getToken", async (request: Request, response: Response) => {
         // Gets a token if correct validationKey is provided
         const validationKey: string = request.body.validationKey;
         const result = generateJwtToken(validationKey);
