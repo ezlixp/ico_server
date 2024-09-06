@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "set NODE_ENV=development&&tsx index.ts"
+        "dev": "set NODE_ENV=development&&tsx --watch index.ts"
     },
     "author": "",
     "license": "ISC",
@@ -26,6 +26,7 @@
         "express": "^4.19.2",
         "jsonwebtoken": "^9.0.2",
         "mongodb": "^6.8.0",
-        "mongoose": "^8.5.3"
+        "mongoose": "^8.5.3",
+        "tsx": "^4.19.0"
     }
 }
