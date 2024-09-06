@@ -1,28 +1,20 @@
 ﻿{
-  "compilerOptions": {
-    "target": "ES6",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "rootDir": "./",
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "typeRoots": ["./node_modules/@types"],
-    "noEmitOnError": true
-  },
-  "include": [
-    "models/**/*",
-    "routes/**/*",
-    "security/**/*",
-    "index.ts",
-    "config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "rootDir": "./",
+        "outDir": "./dist",
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "typeRoots": ["./node_modules/@types"],
+        "noEmitOnError": true
+    },
+    "include": ["models/**/*", "routes/**/*", "security/**/*", "index.ts", "config.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }

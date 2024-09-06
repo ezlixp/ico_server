@@ -2,13 +2,13 @@ import express, {Application} from "express";
 import {connect} from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
-import mapRaidEndpoints from "./routes/raids";
-import mapAuthenticationEndpoints from "./routes/authentication";
+import mapRaidEndpoints from "./routes/raids.js";
+import mapAuthenticationEndpoints from "./routes/authentication.js";
 import "./config";
-import mapAspectEndpoints from "./routes/aspects";
-import mapTomeEndpoints from "./routes/tomes";
-import mapWaitlistEndpoints from "./routes/waitlist";
-import mapStatusEndpoints from "./routes/status";
+import mapAspectEndpoints from "./routes/aspects.js";
+import mapTomeEndpoints from "./routes/tomes.js";
+import mapWaitlistEndpoints from "./routes/waitlist.js";
+import mapStatusEndpoints from "./routes/status.js";
 
 const app: Application = express();
 

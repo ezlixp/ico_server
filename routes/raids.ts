@@ -1,6 +1,6 @@
-﻿import RaidModel from "../models/raidModel";
-import UserModel from "../models/userModel";
-import validateJwtToken from "../security/jwtTokenValidator";
+﻿import RaidModel from "../models/raidModel.js";
+import UserModel from "../models/userModel.js";
+import validateJwtToken from "../security/jwtTokenValidator.js";
 import { Application, Request, Response } from "express";
 
 interface RaidRequestBody {
