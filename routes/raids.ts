@@ -31,9 +31,7 @@ function mapRaidEndpoints(app: Application): void {
         try {
             const {users, raid, timestamp} = request.body;
 
-            const sortedUsers = users.sort((user1, user2) => {
-                return user1.toLowerCase().localeCompare(user2.toLowerCase());
-            });
+            const sortedUsers = users.sort((user1, user2) => user1.localeCompare(user2, "en", {sensitivity: "base"}));
 
             const newRaid = new RaidModel({
                 users: sortedUsers,
