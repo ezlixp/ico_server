@@ -28,54 +28,51 @@ function mapRaidEndpoints(app: Application): void {
     });
 
     app.post("/addRaid", validateJwtToken, async (request: Request<{}, {}, RaidRequestBody>, response: Response) => {
-            try {
-                const {users, raid, timestamp} = request.body;
+        try {
+            const {users, raid, timestamp} = request.body;
 
-                const sortedUsers = users
-                    .map(user => user.toLowerCase())
-                    .sort();
+            const sortedUsers = users.sort((user1, user2) => {
+                return user1.toLowerCase().localeCompare(user2.toLowerCase());
+            });
 
-                const newRaid = new RaidModel({
-                    users: sortedUsers,
-                    raid,
-                    timestamp,
-                });
+            const newRaid = new RaidModel({
+                users: sortedUsers,
+                raid,
+                timestamp,
+            });
 
-                // Gets last raid that the same team completed
-                const lastRaid = await RaidModel
-                    .findOne({users: sortedUsers})
-                    .sort({timestamp: -1})
-                    .collation({locale: "en", strength: 2});
+            // Gets last raid that the same team completed
+            const lastRaid = await RaidModel.findOne({users: sortedUsers})
+                .sort({timestamp: -1})
+                .collation({locale: "en", strength: 2});
 
-                // If there is a last raid and timestamp difference is < 10 seconds, return an error
-                if (lastRaid && (newRaid.timestamp.valueOf() - lastRaid.timestamp.valueOf()) < 10000) {
-                    response.send({err: "duplicate raid"});
-                    return;
-                }
-
-                await newRaid.save();
-
-                // Add users to db and increase aspect counter by 0.5
-                await Promise.all(
-                    newRaid.users.map(username => {
-                        UserModel.updateOne(
-                            {username: username},
-                            {$inc: {aspects: 0.5}},
-                            {upsert: true, collation: {locale: "en", strength: 2,}}
-                        );
-                        console.log(username, "got 0.5 aspects");
-                    })
-                );
-                response.send({err: ""});
-
-            } catch (error) {
-                response.status(500);
-                response.send({err: "something went wrong"});
-
-                console.error("postRaidError:", error);
+            // If there is a last raid and timestamp difference is < 10 seconds, return an error
+            if (lastRaid && newRaid.timestamp.valueOf() - lastRaid.timestamp.valueOf() < 10000) {
+                response.send({err: "duplicate raid"});
+                return;
             }
+
+            await newRaid.save();
+
+            // Add users to db and increase aspect counter by 0.5
+            await Promise.all(
+                newRaid.users.map((username) => {
+                    UserModel.updateOne(
+                        {username: username},
+                        {$inc: {aspects: 0.5}},
+                        {upsert: true, collation: {locale: "en", strength: 2}}
+                    );
+                    console.log(username, "got 0.5 aspects");
+                })
+            );
+            response.send({err: ""});
+        } catch (error) {
+            response.status(500);
+            response.send({err: "something went wrong"});
+
+            console.error("postRaidError:", error);
         }
-    );
+    });
 }
 
 export default mapRaidEndpoints;
