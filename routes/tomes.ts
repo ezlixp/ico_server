@@ -69,7 +69,7 @@ function mapTomeEndpoints(app: Application) {
 
             // If no entity was found, return 'Not Found'
             if (!result) {
-                response.status(400).send({
+                response.status(404).send({
                     error: "User could not be found in tome list.",
                 });
                 return;
