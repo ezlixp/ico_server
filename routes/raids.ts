@@ -59,7 +59,7 @@ function mapRaidEndpoints(app: Application): void {
                         {username: username},
                         {$inc: {aspects: 0.5}},
                         {upsert: true, collation: {locale: "en", strength: 2}}
-                    );
+                    ).exec();
                     console.log(username, "got 0.5 aspects");
                 })
             );
