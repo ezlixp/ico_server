@@ -1,12 +1,11 @@
-import { Application, Request, Response } from "express";
+import {Application, Request, Response, Router} from "express";
 
 /**
  * Maps all status-related endpoints
  */
-function mapStatusEndpoints(app: Application) {
-    app.head("/", (request: Request, response: Response) => {
-        response.send();
-    });
-}
+const statusRouter = Router();
+statusRouter.head("/", (request: Request, response: Response) => {
+    response.send();
+});
 
-export default mapStatusEndpoints;
+export default statusRouter;

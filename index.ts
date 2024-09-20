@@ -9,6 +9,13 @@ import mapAspectEndpoints from "./routes/aspects.js";
 import mapTomeEndpoints from "./routes/tomes.js";
 import mapWaitlistEndpoints from "./routes/waitlist.js";
 import mapStatusEndpoints from "./routes/status.js";
+import statusRouter from "./routes/status.js";
+import authenticationRouter from "./routes/authentication.js";
+import raidRouter from "./routes/raids.js";
+import aspectRouter from "./routes/aspects.js";
+import tomeRouter from "./routes/tomes.js";
+import waitlistRouter from "./routes/waitlist.js";
+import discordRouter from "./routes/discord.js";
 
 const app: Application = express();
 
@@ -33,9 +40,10 @@ try {
 }
 
 // Map endpoints
-mapStatusEndpoints(app);
-mapAuthenticationEndpoints(app);
-mapRaidEndpoints(app);
-mapAspectEndpoints(app);
-mapTomeEndpoints(app);
-mapWaitlistEndpoints(app);
+app.use(statusRouter);
+app.use("/auth", authenticationRouter);
+app.use(raidRouter);
+app.use(aspectRouter);
+app.use(tomeRouter);
+app.use(waitlistRouter);
+app.use("/discord", discordRouter);
