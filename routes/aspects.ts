@@ -17,7 +17,10 @@ io.of("/aspects").on("connection", (socket) => {
             ++messageIndex;
             console.log(args.player, messageIndex);
         }
-        ++socket.data.messageIndex;
+        socket.data.messageIndex = messageIndex;
+    });
+    socket.on("sync", () => {
+        socket.data.messageIndex = messageIndex;
     });
     socket.on("debug_index", () => {
         console.log(socket.data.messageIndex);
@@ -59,7 +62,6 @@ aspectRouter.post("/aspects", validateJwtToken, async (request: Request, respons
             });
         });
         await Promise.all(updatePromises);
-
         response.send({ err: "" });
     } catch (error) {
         response.status(500);
