@@ -1,14 +1,9 @@
-import express, {Application} from "express";
-import {connect} from "mongoose";
+import express from "express";
+import app, { server } from "./app.js";
+import { connect } from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
-import mapRaidEndpoints from "./routes/raids.js";
-import mapAuthenticationEndpoints from "./routes/authentication.js";
 import "./config";
-import mapAspectEndpoints from "./routes/aspects.js";
-import mapTomeEndpoints from "./routes/tomes.js";
-import mapWaitlistEndpoints from "./routes/waitlist.js";
-import mapStatusEndpoints from "./routes/status.js";
 import statusRouter from "./routes/status.js";
 import authenticationRouter from "./routes/authentication.js";
 import raidRouter from "./routes/raids.js";
@@ -17,12 +12,10 @@ import tomeRouter from "./routes/tomes.js";
 import waitlistRouter from "./routes/waitlist.js";
 import discordRouter from "./routes/discord.js";
 
-const app: Application = express();
-
 app.use(express.json());
 app.use(cors());
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect to database
 try {
@@ -31,7 +24,7 @@ try {
     connect(dbUrl).then(() => {
         const PORT = process.env.PORT || 3000;
 
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
     });

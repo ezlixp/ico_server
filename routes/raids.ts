@@ -13,6 +13,7 @@ interface RaidRequestBody {
  * Maps all raid-related endpoints.
  */
 const raidRouter = Router();
+
 raidRouter.get("/raids", async (request: Request, response: Response) => {
     try {
         const raids = await RaidModel.find({});

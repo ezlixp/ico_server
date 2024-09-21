@@ -7,6 +7,7 @@ import validateJwtToken from "../security/jwtTokenValidator.js";
  * @param {Express} app
  */
 const waitlistRouter = Router();
+
 waitlistRouter.get("/waitlist", async (request: Request, response: Response) => {
     try {
         // Get users sorted by creation date

@@ -5,6 +5,7 @@ import generateJwtToken from "../security/jwtTokenGenerator.js";
  * Maps all authentication-related endpoints.
  */
 const authenticationRouter = Router();
+
 authenticationRouter.post("/getToken", async (request: Request, response: Response) => {
     // Gets a token if correct validationKey is provided
     const validationKey: string = request.body.validationKey;
