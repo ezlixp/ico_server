@@ -1,6 +1,6 @@
 ﻿import validateJwtToken from "../security/jwtTokenValidator.js";
 import TomeModel from "../models/tomeModel.js";
-import {Request, Response, Router} from "express";
+import { Request, Response, Router } from "express";
 
 /**
  * Maps all tome-related endpoints
@@ -10,15 +10,42 @@ const tomeRouter = Router();
 tomeRouter.get("/tomes", async (request: Request, response: Response) => {
     try {
         // Get 10 users ordered by time added
-        const tomeList = await TomeModel.find({}).sort({dateAdded: 1});
+        const tomeList = await TomeModel.find({}).sort({ dateAdded: 1 });
 
         // Return 'OK' if nothing goes wrong
         response.status(200).send(tomeList);
         console.log("GET:", tomeList);
     } catch (error) {
         response.status(500);
-        response.send("Something went wrong processing the request.");
+        response.send({ error: "Something went wrong processing the request." });
         console.error("getTomesError:", error);
+    }
+});
+
+tomeRouter.get("/tomes/:username", async (request: Request<{ username: string }>, response: Response) => {
+    try {
+        // Get 10 users ordered by time added
+        const result = await TomeModel.findOne({ username: request.params.username }).collation({
+            strength: 2,
+            locale: "en",
+        });
+
+        if (!result) {
+            response.status(404).send({
+                error: "Specified user could not be found in tome list.",
+            });
+            return;
+        }
+
+        const position = (await TomeModel.find({ dateAdded: { $lt: result.dateAdded } }).countDocuments()) + 1;
+
+        // Return 'OK' if nothing goes wrong
+        response.status(200).send({ username: result.username, position: position });
+        console.log("GET:", result.username, "at position", position);
+    } catch (error) {
+        response.status(500);
+        response.send({ error: "Something went wrong processing the request." });
+        console.error("getTomesSpecificError:", error);
     }
 });
 
@@ -36,7 +63,7 @@ tomeRouter.post("/tomes", validateJwtToken, async (request: Request, response: R
 
         // If user exists, return 'Bad Request'
         if (exists) {
-            response.status(400).send({error: "User already in tome list."});
+            response.status(400).send({ error: "User already in tome list." });
             return;
         }
 
@@ -55,35 +82,39 @@ tomeRouter.post("/tomes", validateJwtToken, async (request: Request, response: R
     }
 });
 
-tomeRouter.delete("/tomes/:username", validateJwtToken, async (request: Request, response: Response) => {
-    try {
-        // Get username from route
-        const username = request.params.username;
+tomeRouter.delete(
+    "/tomes/:username",
+    validateJwtToken,
+    async (request: Request<{ username: string }>, response: Response) => {
+        try {
+            // Get username from route
+            const username = request.params.username;
 
-        // Find entity by name and delete
-        const result = await TomeModel.findOneAndDelete({
-            username: username,
-        }).collation({
-            locale: "en",
-            strength: 2,
-        });
-
-        // If no entity was found, return 'Not Found'
-        if (!result) {
-            response.status(404).send({
-                error: "User could not be found in tome list.",
+            // Find entity by name and delete
+            const result = await TomeModel.findOneAndDelete({
+                username: username,
+            }).collation({
+                locale: "en",
+                strength: 2,
             });
-            return;
-        }
 
-        // Else return 'No Content'
-        response.status(204).send();
-    } catch (error) {
-        response.status(500).send({
-            error: "Something went wrong processing your request.",
-        });
-        console.error("deleteTomeError:", error);
+            // If no entity was found, return 'Not Found'
+            if (!result) {
+                response.status(404).send({
+                    error: "User could not be found in tome list.",
+                });
+                return;
+            }
+
+            // Else return 'No Content'
+            response.status(204).send();
+        } catch (error) {
+            response.status(500).send({
+                error: "Something went wrong processing your request.",
+            });
+            console.error("deleteTomeError:", error);
+        }
     }
-});
+);
 
 export default tomeRouter;
