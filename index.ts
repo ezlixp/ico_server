@@ -1,5 +1,5 @@
 import express from "express";
-import app from "./app.js";
+import app, { server } from "./app.js";
 import { connect } from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -7,7 +7,7 @@ import "./config";
 import statusRouter from "./routes/status.js";
 import authenticationRouter from "./routes/authentication.js";
 import raidRouter from "./routes/raids.js";
-import aspectRouter, { socketRouter } from "./routes/aspects.js";
+import aspectRouter from "./routes/aspects.js";
 import tomeRouter from "./routes/tomes.js";
 import waitlistRouter from "./routes/waitlist.js";
 import discordRouter from "./routes/discord.js";
@@ -24,7 +24,7 @@ try {
     connect(dbUrl).then(() => {
         const PORT = process.env.PORT || 3000;
 
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
     });
@@ -37,7 +37,6 @@ app.use(statusRouter);
 app.use("/auth", authenticationRouter);
 app.use(raidRouter);
 app.use(aspectRouter);
-app.use(socketRouter);
 app.use(tomeRouter);
 app.use(waitlistRouter);
 app.use("/discord", discordRouter);
