@@ -68,7 +68,7 @@ aspectRouter.get("/aspects/:username", async (request: Request<{ username: strin
         });
 
         if (!aspect) {
-            response.status(404).send({ error: "Specified user could not be found in aspect list" });
+            response.status(404).send({ error: "Specified user could not be found in aspect list." });
             return;
         }
         response.send(aspect);
