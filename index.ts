@@ -11,6 +11,7 @@ import aspectRouter from "./routes/aspects.js";
 import tomeRouter from "./routes/tomes.js";
 import waitlistRouter from "./routes/waitlist.js";
 import "./routes/discord.js";
+import "./bot.js";
 
 app.use(express.json());
 app.use(cors());
