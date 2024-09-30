@@ -19,7 +19,7 @@ io.of("/discord").on("connection", (socket) => {
             ++messageIndex;
             ++socket.data.messageIndex;
             console.log(args.username, args.message);
-            io.of("/discord").emit("testmessage", args.username + ": " + args.message);
+            io.of("/discord").emit("message", args.username + ": " + args.message);
         } else {
             ++socket.data.messageIndex;
             if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
