@@ -1,6 +1,4 @@
-import { TextChannel } from "discord.js";
 import { io } from "../app.js";
-import client from "../bot.js";
 import "../config.js";
 
 /**
@@ -14,17 +12,14 @@ type sendEventArgs = {
 
 let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
-    console.log(socket.id);
+    console.log(socket.id + " discord");
     socket.data.messageIndex = messageIndex;
     socket.on("send", async (args: sendEventArgs) => {
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;
             ++socket.data.messageIndex;
             console.log(args.username, args.message);
-            const channel = client.channels.cache.find((ch) => ch.id == process.env.DISCORD_BOT_LOGGING_CHANNEL);
-            if (channel?.isTextBased) {
-                (<TextChannel>channel).send(`${args.username}: ${args.message}`);
-            }
+            io.of("/discord").emit("testmessage", args.username + ": " + args.message);
         } else {
             ++socket.data.messageIndex;
             if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
@@ -35,5 +30,8 @@ io.of("/discord").on("connection", (socket) => {
     });
     socket.on("debug_index", () => {
         console.log(socket.data.messageIndex);
+    });
+    socket.on("test", (message) => {
+        console.log(message);
     });
 });
