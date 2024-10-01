@@ -5,21 +5,16 @@ import "../config.js";
  * Maps all discord-related endpoints
  */
 
-type sendEventArgs = {
-    username: string;
-    message: string;
-};
-
 let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.id + " discord");
     socket.data.messageIndex = messageIndex;
-    socket.on("wynnMessage", async (args: sendEventArgs) => {
+    socket.on("wynnMessage", async (content: string) => {
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;
             ++socket.data.messageIndex;
-            console.log(args.username, args.message);
-            io.of("/discord").emit("wynnMessage", args.username + ": " + args.message);
+            console.log(content);
+            io.of("/discord").emit("wynnMessage", content);
         } else {
             ++socket.data.messageIndex;
             if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
