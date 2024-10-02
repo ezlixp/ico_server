@@ -17,11 +17,11 @@ let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.id + " discord");
     socket.data.messageIndex = messageIndex;
-    socket.on("wynnMessage", async (message: String) => {
+    socket.on("wynnMessage", async (message: string) => {
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;
             ++socket.data.messageIndex;
-            const matcher = message.match(guildMessagePattern);
+            const matcher = guildMessagePattern.exec(message);
             console.log(message);
             if (matcher) {
                 io.of("/discord").emit("wynnMessage", {
