@@ -9,7 +9,7 @@ type wynnMessageArgs = {
     Username: string;
     TextContent: string;
 };
-const guildMessagePattern = new RegExp(
+const guildMessagePattern: RegExp = new RegExp(
     "^(.*§[38])?(?<author>(\\[Discord Only\\] )?.+?)(§[38])?:(§[b8])? (?<content>.*)$"
 );
 
@@ -17,7 +17,7 @@ let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.id + " discord");
     socket.data.messageIndex = messageIndex;
-    socket.on("wynnMessage", async (message: string) => {
+    socket.on("wynnMessage", async (message: String) => {
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;
             ++socket.data.messageIndex;
