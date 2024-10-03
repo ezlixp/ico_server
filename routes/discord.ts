@@ -40,7 +40,7 @@ io.of("/discord").on("connection", (socket) => {
                     console.log(matcher.groups!.content);
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
-                        HeaderContent: matcher.groups!.author,
+                        HeaderContent: matcher.groups!.header,
                         TextContent: matcher.groups!.content,
                     });
                     if (pattern.callback) {
