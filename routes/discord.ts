@@ -13,7 +13,7 @@ type wynnMessagePattern = {
 const wynnMessagePatterns: wynnMessagePattern[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
     {
-        pattern: new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"),
+        pattern: new RegExp("^(?<header>\\[Discord Only\\] .+?): (?<content>.*)$"),
         messageType: 0,
         callback: (matcher) => {
             io.of("/discord").emit("discordMessage", {
