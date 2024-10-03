@@ -18,12 +18,9 @@ interface IDiscordMessage {
 
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
-    {
-        pattern: new RegExp("^(?<header>\\[Discord Only\\] .+?): (?<content>.*)$"),
-        messageType: 0,
-    },
     { pattern: new RegExp("(?<content>.*)"), customHeader: "[!] Info", messageType: 1 },
 ];
+const discordOnlyPattern = new RegExp("^(?<header>\\[Discord Only\\] .+?): (?<content>.*)$");
 
 let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
@@ -49,6 +46,16 @@ io.of("/discord").on("connection", (socket) => {
         } else {
             ++socket.data.messageIndex;
             if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
+        }
+    });
+    socket.on("discordOnly", (message: string) => {
+        const matcher = discordOnlyPattern.exec(message);
+        if (matcher) {
+            io.of("/discord").emit("wynnMessage", {
+                MessageType: 0,
+                HeaderContent: matcher.groups!.header,
+                TextContent: matcher.groups!.content,
+            });
         }
     });
     socket.on("discordMessage", (args: IDiscordMessage) => {
