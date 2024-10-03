@@ -8,6 +8,7 @@ import "../config.js";
 type wynnMessagePattern = {
     pattern: RegExp;
     messageType: number;
+    customHeader?: string;
     callback?: (matcher: RegExpExecArray) => void;
 };
 const wynnMessagePatterns: wynnMessagePattern[] = [
@@ -22,7 +23,7 @@ const wynnMessagePatterns: wynnMessagePattern[] = [
             });
         },
     },
-    { pattern: new RegExp("(?<content>.*)"), messageType: 1 },
+    { pattern: new RegExp("(?<content>.*)"), customHeader: "[!] Info", messageType: 1 },
 ];
 
 let messageIndex = 0;
@@ -40,7 +41,7 @@ io.of("/discord").on("connection", (socket) => {
                     console.log(matcher.groups!.content);
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
-                        HeaderContent: matcher.groups!.header,
+                        HeaderContent: pattern.customHeader || matcher.groups!.header,
                         TextContent: matcher.groups!.content,
                     });
                     if (pattern.callback) {
