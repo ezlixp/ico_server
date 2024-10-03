@@ -9,19 +9,12 @@ type wynnMessagePattern = {
     pattern: RegExp;
     messageType: number;
     customHeader?: string;
-    callback?: (matcher: RegExpExecArray) => void;
 };
 const wynnMessagePatterns: wynnMessagePattern[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
     {
         pattern: new RegExp("^(?<header>\\[Discord Only\\] .+?): (?<content>.*)$"),
         messageType: 0,
-        callback: (matcher) => {
-            io.of("/discord").emit("discordMessage", {
-                Author: matcher.groups!.header,
-                Content: matcher.groups!.content.replace(new RegExp("[\\sÁÀ]+"), " ").trim(),
-            });
-        },
     },
     { pattern: new RegExp("(?<content>.*)"), customHeader: "[!] Info", messageType: 1 },
 ];
@@ -44,9 +37,6 @@ io.of("/discord").on("connection", (socket) => {
                         HeaderContent: pattern.customHeader || matcher.groups!.header,
                         TextContent: matcher.groups!.content,
                     });
-                    if (pattern.callback) {
-                        pattern.callback(matcher);
-                    }
                     break;
                 }
             }
