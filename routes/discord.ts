@@ -19,7 +19,7 @@ const wynnMessagePatterns: wynnMessagePattern[] = [
         callback: (matcher) => {
             io.of("/discord").emit("discordMessage", {
                 Author: matcher.groups!.header,
-                Content: matcher.groups!.content,
+                Content: matcher.groups!.content.replace(new RegExp("[\\sÁÀ]+"), " ").trim(),
             });
         },
     },
