@@ -48,7 +48,7 @@ io.of("/discord").on("connection", (socket) => {
             if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
         }
     });
-    socket.on("discordOnly", (message: string) => {
+    socket.on("discordOnlyWynnMessage", (message: string) => {
         const matcher = discordOnlyPattern.exec(message);
         if (matcher) {
             io.of("/discord").emit("wynnMessage", {
