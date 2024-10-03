@@ -5,13 +5,25 @@ import "../config.js";
  * Maps all discord-related endpoints
  */
 
-type wynnMessageArgs = {
-    Username: string;
-    TextContent: string;
+type wynnMessagePattern = {
+    pattern: RegExp;
+    messageType: number;
+    callback?: (matcher: RegExpExecArray) => void;
 };
-const guildMessagePattern: RegExp = new RegExp(
-    "^(.*§[38])?(?<author>(\\[Discord Only\\] )?.+?)(§[38])?:(§[b8])? (?<content>.*)$"
-);
+const wynnMessagePatterns: wynnMessagePattern[] = [
+    { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
+    {
+        pattern: new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"),
+        messageType: 0,
+        callback: (matcher) => {
+            io.of("/discord").emit("discordMessage", {
+                Author: matcher.groups!.header,
+                Content: matcher.groups!.content,
+            });
+        },
+    },
+    { pattern: new RegExp("(?<content>.*)"), messageType: 1 },
+];
 
 let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
@@ -21,16 +33,21 @@ io.of("/discord").on("connection", (socket) => {
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;
             ++socket.data.messageIndex;
-            const matcher = guildMessagePattern.exec(message);
-            console.log(message);
-            if (matcher) {
-                io.of("/discord").emit("wynnMessage", {
-                    MessageType: 0,
-                    HeaderContent: matcher.groups!.author,
-                    TextContent: matcher.groups!.content,
-                });
-            } else {
-                io.of("/discord").emit("wynnMessage", { MessageType: 1, TextContent: message });
+            for (let i = 0; i < wynnMessagePatterns.length; i++) {
+                const pattern = wynnMessagePatterns[i];
+                const matcher = pattern.pattern.exec(message);
+                if (matcher) {
+                    console.log(matcher.groups!.content);
+                    io.of("/discord").emit("wynnMessage", {
+                        MessageType: pattern.messageType,
+                        HeaderContent: matcher.groups!.author,
+                        TextContent: matcher.groups!.content,
+                    });
+                    if (pattern.callback) {
+                        pattern.callback(matcher);
+                    }
+                    break;
+                }
             }
         } else {
             ++socket.data.messageIndex;
