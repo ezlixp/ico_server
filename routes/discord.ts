@@ -5,12 +5,18 @@ import "../config.js";
  * Maps all discord-related endpoints
  */
 
-type wynnMessagePattern = {
+interface IWynnMessage {
     pattern: RegExp;
     messageType: number;
     customHeader?: string;
-};
-const wynnMessagePatterns: wynnMessagePattern[] = [
+}
+
+interface IDiscordMessage {
+    Author: string;
+    Content: string;
+}
+
+const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
     {
         pattern: new RegExp("^(?<header>\\[Discord Only\\] .+?): (?<content>.*)$"),
@@ -45,8 +51,14 @@ io.of("/discord").on("connection", (socket) => {
             if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
         }
     });
-    socket.on("discordMessage", (args) => {
-        io.of("/discord").emit("discordMessage", args);
+    socket.on("discordMessage", (args: IDiscordMessage) => {
+        io.of("/discord").emit("discordMessage", {
+            ...args,
+            Content: args.Content.replace(
+                new RegExp("[^A-Za-z0-9!@#$%^&*()\\[\\]\\{\\}\\\\\\|;:'\",.<>/?`~ ]", "g"),
+                ""
+            ),
+        });
     });
     socket.on("sync", () => {
         socket.data.messageIndex = messageIndex;
