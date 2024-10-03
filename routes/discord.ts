@@ -16,10 +16,9 @@ const wynnMessagePatterns: wynnMessagePattern[] = [
         pattern: new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"),
         messageType: 0,
         callback: (matcher) => {
-            io.of("/discord").emit("wynnMessage", {
-                MessageType: 0,
-                HeaderContent: matcher.groups!.header,
-                TextContent: matcher.groups!.content,
+            io.of("/discord").emit("discordMessage", {
+                Author: matcher.groups!.header,
+                Content: matcher.groups!.content,
             });
         },
     },
