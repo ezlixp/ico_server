@@ -55,7 +55,6 @@ io.of("/discord").on("connection", (socket) => {
         }
     });
     socket.on("discordMessage", (args) => {
-        console.log(args);
         io.of("/discord").emit("discordMessage", args);
     });
     socket.on("sync", () => {
