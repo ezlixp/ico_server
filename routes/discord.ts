@@ -30,7 +30,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
             matcher.groups!.player2 +
             ", " +
             matcher.groups!.player3 +
-            ", and" +
+            ", and " +
             matcher.groups!.player4 +
             " completed " +
             matcher.groups!.raid,
