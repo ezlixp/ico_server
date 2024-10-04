@@ -45,13 +45,17 @@ const wynnMessagePatterns: IWynnMessage[] = [
         customHeader: "[!] Aspect",
     },
     {
-        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$"),
+        pattern: new RegExp(
+            "^§.((󏿼󐀆)|(󏿼󏿿󏿾))§. §.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$"
+        ),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + "has given a tome to " + matcher.groups!.receiver,
         customHeader: "[!] Tome",
     },
     {
-        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$"),
+        pattern: new RegExp(
+            "^§.((󏿼󐀆)|(󏿼󏿿󏿾))§. §.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$"
+        ),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
         customHeader: "[!] 🤑",
