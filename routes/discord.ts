@@ -8,6 +8,7 @@ import "../config.js";
 interface IWynnMessage {
     pattern: RegExp;
     messageType: number;
+    customMessage?: (matcher: RegExpExecArray) => string;
     customHeader?: string;
 }
 
@@ -18,6 +19,43 @@ interface IDiscordMessage {
 
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
+    {
+        pattern: new RegExp(
+            "^§[b8]((󏿼󐀆)|(󏿼󏿿󏿾))§[b8] §[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$"
+        ),
+        messageType: 1,
+        customMessage: (matcher) =>
+            matcher.groups!.player1 +
+            ", " +
+            matcher.groups!.player2 +
+            ", " +
+            matcher.groups!.player3 +
+            ", and" +
+            matcher.groups!.player4 +
+            " completed " +
+            matcher.groups!.raid,
+        customHeader: "[!] Guild Raida",
+    },
+    {
+        pattern: new RegExp(
+            "^§.((󏿼󐀆)|(󏿼󏿿󏿾))§. §.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$"
+        ),
+        messageType: 1,
+        customMessage: (matcher) => matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver,
+        customHeader: "[!] Aspect",
+    },
+    {
+        pattern: new RegExp("§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?"),
+        messageType: 1,
+        customMessage: (matcher) => matcher.groups!.giver + "has given a tome to " + matcher.groups!.receiver,
+        customHeader: "[!] Tome",
+    },
+    {
+        pattern: new RegExp("§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?"),
+        messageType: 1,
+        customMessage: (matcher) => matcher.groups!.giver + "has given a 1024 emeralds to " + matcher.groups!.receiver,
+        customHeader: "[!] :money_mouth:",
+    },
     { pattern: new RegExp("(?<content>.*)"), customHeader: "[!] Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^(?<header>\\[Discord Only\\] .+?): (?<content>.*)$");
@@ -38,7 +76,7 @@ io.of("/discord").on("connection", (socket) => {
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
                         HeaderContent: pattern.customHeader || matcher.groups!.header,
-                        TextContent: matcher.groups!.content,
+                        TextContent: pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content,
                     });
                     break;
                 }
