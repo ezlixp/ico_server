@@ -21,7 +21,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
     {
         pattern: new RegExp(
-            "^§[b8]((󏿼󐀆)|(󏿼󏿿󏿾))§[b8] §[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$"
+            "^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$"
         ),
         messageType: 1,
         customMessage: (matcher) =>
@@ -37,25 +37,19 @@ const wynnMessagePatterns: IWynnMessage[] = [
         customHeader: "[!] Guild Raida",
     },
     {
-        pattern: new RegExp(
-            "^§.((󏿼󐀆)|(󏿼󏿿󏿾))§. §.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$"
-        ),
+        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver,
         customHeader: "[!] Aspect",
     },
     {
-        pattern: new RegExp(
-            "^§.((󏿼󐀆)|(󏿼󏿿󏿾))§. §.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$"
-        ),
+        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + "has given a tome to " + matcher.groups!.receiver,
         customHeader: "[!] Tome",
     },
     {
-        pattern: new RegExp(
-            "^§.((󏿼󐀆)|(󏿼󏿿󏿾))§. §.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$"
-        ),
+        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
         customHeader: "[!] 🤑",
