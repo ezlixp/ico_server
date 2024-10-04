@@ -61,10 +61,7 @@ io.of("/discord").on("connection", (socket) => {
     socket.on("discordMessage", (args: IDiscordMessage) => {
         io.of("/discord").emit("discordMessage", {
             ...args,
-            Content: args.Content.replace(
-                new RegExp("[^A-Za-z0-9!@#$%^&*()\\-_+=[\\]{}|\\\\;:'\",.<>/?`~ ©® -㌀�퀀-��퀀-��퀀-�]", "g"),
-                ""
-            ),
+            Content: args.Content.replace(new RegExp("[‌⁤ÁÀ֎]", "g"), ""),
         });
     });
     socket.on("sync", () => {
