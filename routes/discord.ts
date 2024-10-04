@@ -45,7 +45,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
     {
         pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
-        customMessage: (matcher) => matcher.groups!.giver + "has given a tome to " + matcher.groups!.receiver,
+        customMessage: (matcher) => matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver,
         customHeader: "[!] Tome",
     },
     {
