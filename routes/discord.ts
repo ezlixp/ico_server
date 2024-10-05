@@ -7,6 +7,7 @@ import "../config.js";
 
 interface IWynnMessage {
     pattern: RegExp;
+    // 0 is normal in game message, 1 is info message, 2 is discord only message
     messageType: number;
     customMessage?: (matcher: RegExpExecArray) => string;
     customHeader?: string;
@@ -88,7 +89,7 @@ io.of("/discord").on("connection", (socket) => {
         const matcher = discordOnlyPattern.exec(message);
         if (matcher) {
             io.of("/discord").emit("wynnMessage", {
-                MessageType: 0,
+                MessageType: 2,
                 HeaderContent: matcher.groups!.header,
                 TextContent: matcher.groups!.content,
             });
