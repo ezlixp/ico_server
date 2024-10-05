@@ -35,27 +35,27 @@ const wynnMessagePatterns: IWynnMessage[] = [
             matcher.groups!.player4 +
             " completed " +
             matcher.groups!.raid,
-        customHeader: "[!] Guild Raida",
+        customHeader: "⚠ Guild Raida",
     },
     {
         pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver,
-        customHeader: "[!] Aspect",
+        customHeader: "⚠ Aspect",
     },
     {
         pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver,
-        customHeader: "[!] Tome",
+        customHeader: "⚠ Tome",
     },
     {
         pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
-        customHeader: "[!] 🤑",
+        customHeader: "⚠ 🤑",
     },
-    { pattern: new RegExp("(?<content>.*)"), customHeader: "[!] Info", messageType: 1 },
+    { pattern: new RegExp("(?<content>.*)"), customHeader: "⚠ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
