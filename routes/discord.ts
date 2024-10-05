@@ -57,7 +57,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
     },
     { pattern: new RegExp("(?<content>.*)"), customHeader: "[!] Info", messageType: 1 },
 ];
-const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$");
+const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
 let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
@@ -75,7 +75,9 @@ io.of("/discord").on("connection", (socket) => {
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
                         HeaderContent: pattern.customHeader || matcher.groups!.header,
-                        TextContent: pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content,
+                        TextContent: pattern.customMessage
+                            ? pattern.customMessage(matcher)
+                            : matcher.groups!.content.replace(new RegExp("§.", "g"), ""),
                     });
                     break;
                 }
