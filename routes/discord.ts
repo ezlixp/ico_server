@@ -57,7 +57,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
     },
     { pattern: new RegExp("(?<content>.*)"), customHeader: "[!] Info", messageType: 1 },
 ];
-const discordOnlyPattern = new RegExp("^(?<header>\\[Discord Only\\] .+?): (?<content>.*)$");
+const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$");
 
 let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
