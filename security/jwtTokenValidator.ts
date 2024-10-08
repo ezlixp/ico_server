@@ -10,8 +10,6 @@ const secretKey = process.env.JWT_SECRET_KEY as string;
  * If token is invalid, return status code 401 with an error message,
  * else, return void.
  */
-// Checks if the token provided in the request's headers is valid.
-// If token is invalid, return status code 401 with an error message.
 function validateJwtToken(request: Request, response: Response, next: NextFunction) {
     const authorizationHeader = request.headers["authorization"] as string | undefined;
 

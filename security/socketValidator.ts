@@ -6,12 +6,10 @@ import "../config.js";
 const secretKey = process.env.JWT_SECRET_KEY as string;
 
 /**
- * Checks if the token provided in the request's headers is valid.
- * If token is invalid, return status code 401 with an error message,
- * else, return void.
+ * Checks if the token provided in a socket's initial connection is valid.
+ * If token is invalid, return an error which will fire the "connection_error"
+ * event on the socket client.
  */
-// Checks if the token provided in the request's headers is valid.
-// If token is invalid, return status code 401 with an error message.
 function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
     const authorizationHeader = socket.handshake.headers.authorization as string;
 
