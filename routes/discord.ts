@@ -59,6 +59,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("(?<content>.*)"), customHeader: "⚠ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
+const latestModVersion = "guildapi/1.1.0-beta.7";
 
 let messageIndex = 0;
 io.of("/discord").use(validateSocket);
@@ -67,6 +68,10 @@ io.of("/discord").on("connection", (socket) => {
     socket.data.messageIndex = messageIndex;
 
     socket.on("wynnMessage", async (message: string) => {
+        if (socket.data.modVersion !== latestModVersion) {
+            console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
+            return;
+        }
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;
             ++socket.data.messageIndex;

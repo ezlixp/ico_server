@@ -27,6 +27,7 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
             return next(new Error("Invalid token provided"));
         }
         socket.data.username = socket.handshake.headers.from;
+        socket.data.modVersion = socket.handshake.headers["user-agent"];
         return next();
         // Goes to next step (function execution)
     });
