@@ -3,14 +3,15 @@ import UserModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 import { io } from "../app.js";
 import validateSocket from "../security/socketValidator.js";
+import { Socket } from "socket.io";
 let messageIndex = 0;
 
 type aspectEventArgs = {
     player: string;
 };
 
-io.of("/discord").use(validateSocket);
-io.of("/aspects").on("connection", (socket) => {
+io.of("/aspects").use(validateSocket);
+io.of("/aspects").on("connection", (socket: Socket) => {
     console.log(socket.id + " aspects");
     socket.data.messageIndex = messageIndex;
     socket.on("give_aspect", async (args: aspectEventArgs) => {

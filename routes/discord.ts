@@ -106,6 +106,14 @@ io.of("/discord").on("connection", (socket) => {
             Content: args.Content.replace(new RegExp("[‌⁤ÁÀ֎]", "g"), ""),
         });
     });
+    socket.on("listOnline", async (callback) => {
+        let out: string[] = [];
+        const sockets = await io.of("/discord").fetchSockets();
+        sockets.forEach((socket) => {
+            if (socket.data.username) out.push(socket.data.username);
+        });
+        callback(out);
+    });
     socket.on("sync", () => {
         socket.data.messageIndex = messageIndex;
     });

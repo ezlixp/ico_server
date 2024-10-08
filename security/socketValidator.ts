@@ -1,6 +1,5 @@
-import { NextFunction } from "express";
-import { ExtendedError, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
+import { ExtendedError, Socket } from "socket.io";
 import "../config.js";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
@@ -29,6 +28,7 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
             console.log("A websocket connection was blocked");
             return next(new Error("Invalid token provided"));
         }
+        socket.data.username = socket.handshake.headers.from;
         return next();
         // Goes to next step (function execution)
     });
