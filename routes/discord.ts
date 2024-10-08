@@ -1,5 +1,6 @@
 import { io } from "../app.js";
 import "../config.js";
+import validateSocket from "../security/socketValidator.js";
 
 /**
  * Maps all discord-related endpoints
@@ -60,9 +61,11 @@ const wynnMessagePatterns: IWynnMessage[] = [
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
 let messageIndex = 0;
+io.of("/discord").use(validateSocket);
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.id + " discord");
     socket.data.messageIndex = messageIndex;
+
     socket.on("wynnMessage", async (message: string) => {
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;

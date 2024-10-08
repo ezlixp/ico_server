@@ -2,12 +2,14 @@ import { Request, Response, Router } from "express";
 import UserModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 import { io } from "../app.js";
+import validateSocket from "../security/socketValidator.js";
 let messageIndex = 0;
 
 type aspectEventArgs = {
     player: string;
 };
 
+io.of("/discord").use(validateSocket);
 io.of("/aspects").on("connection", (socket) => {
     console.log(socket.id + " aspects");
     socket.data.messageIndex = messageIndex;
