@@ -68,7 +68,6 @@ io.of("/discord").on("connection", (socket) => {
     socket.data.messageIndex = messageIndex;
 
     socket.on("wynnMessage", (message: string) => {
-        console.log("receieved", message);
         if (!checkVersion(socket.data.modVersion)) {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
