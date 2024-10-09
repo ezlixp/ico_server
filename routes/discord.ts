@@ -64,10 +64,11 @@ const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<co
 let messageIndex = 0;
 io.of("/discord").use(validateSocket);
 io.of("/discord").on("connection", (socket) => {
-    console.log(socket.data.username + "connected to discord");
+    console.log(socket.data.username, "connected to discord");
     socket.data.messageIndex = messageIndex;
 
     socket.on("wynnMessage", (message: string) => {
+        console.log("receieved", message);
         if (!checkVersion(socket.data.modVersion)) {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
