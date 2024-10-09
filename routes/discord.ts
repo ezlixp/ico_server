@@ -1,6 +1,7 @@
 import { io } from "../app.js";
 import "../config.js";
 import validateSocket from "../security/socketValidator.js";
+import checkVersion from "../services/checkModVersionService.js";
 
 /**
  * Maps all discord-related endpoints
@@ -59,16 +60,15 @@ const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("(?<content>.*)"), customHeader: "⚠ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
-const latestModVersion = "guildapi/1.1.0-beta.7";
 
 let messageIndex = 0;
 io.of("/discord").use(validateSocket);
 io.of("/discord").on("connection", (socket) => {
-    console.log(socket.id + " discord");
+    console.log(socket.data.username + "connected to discord");
     socket.data.messageIndex = messageIndex;
 
     socket.on("wynnMessage", (message: string) => {
-        if (socket.data.modVersion !== latestModVersion) {
+        if (!checkVersion(socket.data.modVersion)) {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
         }

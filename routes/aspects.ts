@@ -12,7 +12,6 @@ type aspectEventArgs = {
 
 io.of("/aspects").use(validateSocket);
 io.of("/aspects").on("connection", (socket: Socket) => {
-    console.log(socket.id + " aspects");
     socket.data.messageIndex = messageIndex;
     socket.on("give_aspect", async (args: aspectEventArgs) => {
         if (socket.data.messageIndex === messageIndex) {
