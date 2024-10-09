@@ -79,7 +79,7 @@ io.of("/discord").on("connection", (socket) => {
                 const pattern = wynnMessagePatterns[i];
                 const matcher = pattern.pattern.exec(message);
                 if (matcher) {
-                    console.log(matcher.groups!.content);
+                    console.log(matcher.groups!.header, matcher.groups!.content, messageIndex);
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
                         HeaderContent: pattern.customHeader || matcher.groups!.header,
