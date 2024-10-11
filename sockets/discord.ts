@@ -1,5 +1,7 @@
 import { io } from "../app.js";
 import "../config.js";
+import RaidModel from "../models/raidModel.js";
+import UserModel from "../models/userModel.js";
 import validateSocket from "../security/socketValidator.js";
 import checkVersion from "../services/checkModVersionService.js";
 
@@ -27,22 +29,72 @@ const wynnMessagePatterns: IWynnMessage[] = [
             "^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$"
         ),
         messageType: 1,
-        customMessage: (matcher) =>
-            matcher.groups!.player1 +
-            ", " +
-            matcher.groups!.player2 +
-            ", " +
-            matcher.groups!.player3 +
-            ", and " +
-            matcher.groups!.player4 +
-            " completed " +
-            matcher.groups!.raid,
+        customMessage: (matcher) => {
+            try {
+                const users = [
+                    matcher.groups!.player1,
+                    matcher.groups!.player2,
+                    matcher.groups!.player3,
+                    matcher.groups!.player4,
+                ];
+                const raid = matcher.groups!.raid;
+                const timestamp = Date.now();
+
+                const sortedUsers = users.sort((user1, user2) =>
+                    user1.localeCompare(user2, "en", { sensitivity: "base" })
+                );
+
+                const newRaid = new RaidModel({
+                    users: sortedUsers,
+                    raid,
+                    timestamp,
+                });
+
+                newRaid.save();
+
+                // Add users to db and increase aspect counter by 0.5
+                Promise.all(
+                    newRaid.users.map((username) => {
+                        UserModel.updateOne(
+                            { username: username },
+                            { $inc: { aspects: 0.5 } },
+                            { upsert: true, collation: { locale: "en", strength: 2 } }
+                        ).then(() => console.log(username, "got 0.5 aspects"));
+                    })
+                );
+            } catch (error) {
+                console.error("postRaidError:", error);
+            }
+            return (
+                matcher.groups!.player1 +
+                ", " +
+                matcher.groups!.player2 +
+                ", " +
+                matcher.groups!.player3 +
+                ", and " +
+                matcher.groups!.player4 +
+                " completed " +
+                matcher.groups!.raid
+            );
+        },
         customHeader: "⚠ Guild Raida",
     },
     {
         pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$"),
         messageType: 1,
-        customMessage: (matcher) => matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver,
+        customMessage: (matcher) => {
+            UserModel.updateOne(
+                { username: matcher.groups!.receiver },
+                { $inc: { aspects: -1 } },
+                {
+                    upsert: true,
+                    collation: { locale: "en", strength: 2 },
+                }
+            ).then(() => {
+                console.log(matcher.groups!.receiver, "received an aspect");
+            });
+            return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
+        },
         customHeader: "⚠ Aspect",
     },
     {
@@ -97,7 +149,7 @@ io.of("/discord").on("connection", (socket) => {
             }
         } else {
             ++socket.data.messageIndex;
-            if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
+            if (socket.data.messageIndex < messageIndex - 1) socket.data.messageIndex = messageIndex;
         }
     });
     socket.on("discordOnlyWynnMessage", (message: string) => {
@@ -126,12 +178,6 @@ io.of("/discord").on("connection", (socket) => {
     });
     socket.on("sync", () => {
         socket.data.messageIndex = messageIndex;
-    });
-    socket.on("debug_index", () => {
-        console.log(socket.data.messageIndex);
-    });
-    socket.on("test", (message) => {
-        console.log(message);
     });
     socket.on("disconnect", (reason) => {
         console.log(socket.data.username, "disconnected with reason:", reason);

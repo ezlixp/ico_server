@@ -1,45 +1,6 @@
 import { Request, Response, Router } from "express";
 import UserModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
-import { io } from "../app.js";
-import validateSocket from "../security/socketValidator.js";
-import { Socket } from "socket.io";
-let messageIndex = 0;
-
-type aspectEventArgs = {
-    player: string;
-};
-
-io.of("/aspects").use(validateSocket);
-io.of("/aspects").on("connection", (socket: Socket) => {
-    socket.data.messageIndex = messageIndex;
-    socket.on("give_aspect", async (args: aspectEventArgs) => {
-        if (socket.data.messageIndex === messageIndex) {
-            ++messageIndex;
-            ++socket.data.messageIndex;
-            console.log(args.player, messageIndex);
-            UserModel.updateOne(
-                { username: args.player },
-                { $inc: { aspects: -1 } },
-                {
-                    upsert: true,
-                    collation: { locale: "en", strength: 2 },
-                }
-            ).then(() => {
-                console.log(args.player, "received an aspect");
-            });
-        } else {
-            ++socket.data.messageIndex;
-            if (socket.data.messageIndex < messageIndex - 10) socket.data.messageIndex = messageIndex;
-        }
-    });
-    socket.on("sync", () => {
-        socket.data.messageIndex = messageIndex;
-    });
-    socket.on("debug_index", () => {
-        console.log(socket.data.messageIndex);
-    });
-});
 
 /**
  * Maps all aspect-related endpoints.
