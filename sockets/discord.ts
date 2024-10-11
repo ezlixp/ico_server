@@ -145,7 +145,6 @@ io.of("/discord").on("connection", (socket) => {
             }
         } else {
             ++socket.data.messageIndex;
-            if (socket.data.messageIndex < messageIndex - 1) socket.data.messageIndex = messageIndex;
         }
     });
     socket.on("discordOnlyWynnMessage", (message: string) => {
