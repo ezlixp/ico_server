@@ -72,6 +72,7 @@ io.of("/discord").on("connection", (socket) => {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
         }
+        if (message === "You already have that potion active...") return;
         if (socket.data.messageIndex === messageIndex) {
             ++messageIndex;
             ++socket.data.messageIndex;
