@@ -133,4 +133,14 @@ io.of("/discord").on("connection", (socket) => {
     socket.on("test", (message) => {
         console.log(message);
     });
+    socket.on("disconnect", (reason) => {
+        console.log(socket.data.username, "disconnected with reason:", reason);
+        io.of("/discord")
+            .fetchSockets()
+            .then((sockets) => {
+                sockets.forEach((s) => {
+                    s.data.messageIndex = messageIndex;
+                });
+            });
+    });
 });
