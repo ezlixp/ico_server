@@ -129,7 +129,10 @@ io.of("/discord").on("connection", (socket) => {
                 const pattern = wynnMessagePatterns[i];
                 const matcher = pattern.pattern.exec(message);
                 if (matcher) {
-                    const message = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
+                    const message = (
+                        pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content
+                    ).replace(new RegExp("§.", "g"), "");
+
                     const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
                     console.log(header, message, messageIndex);
                     io.of("/discord").emit("wynnMessage", {
