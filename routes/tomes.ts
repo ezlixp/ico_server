@@ -14,7 +14,6 @@ tomeRouter.get("/tomes", async (request: Request, response: Response) => {
 
         // Return 'OK' if nothing goes wrong
         response.status(200).send(tomeList);
-        console.log("GET:", tomeList);
     } catch (error) {
         response.status(500);
         response.send({ error: "Something went wrong processing the request." });

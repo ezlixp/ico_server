@@ -13,8 +13,6 @@ aspectRouter.get("/aspects", async (request: Request, response: Response) => {
         const aspects = await UserModel.find({}).sort({ aspects: -1 }).limit(10);
 
         response.send(aspects);
-
-        console.log("GET:", aspects);
     } catch (error) {
         response.status(500);
         response.send({ error: "Something went wrong processing the request." });

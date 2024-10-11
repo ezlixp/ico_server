@@ -2,7 +2,6 @@ import { io } from "../app.js";
 import "../config.js";
 import RaidModel from "../models/raidModel.js";
 import UserModel from "../models/userModel.js";
-import validateSocket from "../security/socketValidator.js";
 import checkVersion from "../services/checkModVersionService.js";
 
 /**
@@ -114,7 +113,6 @@ const wynnMessagePatterns: IWynnMessage[] = [
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
 let messageIndex = 0;
-io.of("/discord").use(validateSocket);
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.data.username, "connected to discord");
     socket.data.messageIndex = messageIndex;
@@ -131,18 +129,13 @@ io.of("/discord").on("connection", (socket) => {
                 const pattern = wynnMessagePatterns[i];
                 const matcher = pattern.pattern.exec(message);
                 if (matcher) {
-                    console.log(
-                        pattern.customMessage ? pattern.customMessage(matcher) : "",
-                        matcher.groups!.header,
-                        matcher.groups!.content,
-                        messageIndex
-                    );
+                    const message = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
+                    const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                    console.log(header, message, messageIndex);
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
-                        HeaderContent: pattern.customHeader || matcher.groups!.header,
-                        TextContent: pattern.customMessage
-                            ? pattern.customMessage(matcher)
-                            : matcher.groups!.content.replace(new RegExp("§.", "g"), ""),
+                        HeaderContent: header,
+                        TextContent: message,
                     });
                     break;
                 }
