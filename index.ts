@@ -10,6 +10,7 @@ import raidRouter from "./routes/raids.js";
 import aspectRouter from "./routes/aspects.js";
 import tomeRouter from "./routes/tomes.js";
 import waitlistRouter from "./routes/waitlist.js";
+import modVersionRouter from "./routes/modVersion.js";
 import "./sockets/discord.js";
 
 app.use(express.json());
@@ -39,3 +40,4 @@ app.use(raidRouter);
 app.use(aspectRouter);
 app.use(tomeRouter);
 app.use(waitlistRouter);
+app.use(modVersionRouter);

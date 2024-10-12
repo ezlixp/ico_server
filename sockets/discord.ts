@@ -2,7 +2,7 @@ import { io } from "../app.js";
 import "../config.js";
 import RaidModel from "../models/raidModel.js";
 import UserModel from "../models/userModel.js";
-import checkVersion from "../services/checkModVersionService.js";
+import checkVersion from "../services/checkModVersion.js";
 
 /**
  * Maps all discord-related endpoints
