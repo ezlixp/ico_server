@@ -1,4 +1,4 @@
-const minimumModVersion = [1, 1, 0, 9]; // [0].[1].[2]-beta.[3]
+const minimumModVersion = [1, 1, 0, 10]; // [0].[1].[2]-beta.[3]
 const versionExtractorPattern = new RegExp(
     "guildapi/(?<major>\\d+).(?<minor>\\d+).(?<revision>\\d+)(-beta.(?<beta>\\d+))?"
 );
