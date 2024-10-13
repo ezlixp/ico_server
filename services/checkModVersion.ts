@@ -3,7 +3,8 @@ const versionExtractorPattern = new RegExp(
     "guildapi/(?<major>\\d+).(?<minor>\\d+).(?<revision>\\d+)(-beta.(?<beta>\\d+))?"
 );
 
-function isMinimumVersionSatisfied(versionString: string): boolean {
+function isMinimumVersionSatisfied(versionString: string | undefined): boolean {
+    if (!versionString) return false;
     const matcher = versionExtractorPattern.exec(versionString);
     if (!matcher) {
         console.log("malformed mod version received", versionString);

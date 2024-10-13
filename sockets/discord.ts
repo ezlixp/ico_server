@@ -3,23 +3,11 @@ import "../config.js";
 import RaidModel from "../models/raidModel.js";
 import UserModel from "../models/userModel.js";
 import checkVersion from "../services/checkModVersion.js";
+import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 
 /**
  * Maps all discord-related endpoints
  */
-
-interface IWynnMessage {
-    pattern: RegExp;
-    // 0 is normal in game message, 1 is info message, 2 is discord only message
-    messageType: number;
-    customMessage?: (matcher: RegExpExecArray) => string;
-    customHeader?: string;
-}
-
-interface IDiscordMessage {
-    Author: string;
-    Content: string;
-}
 
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
@@ -157,10 +145,10 @@ io.of("/discord").on("connection", (socket) => {
             });
         }
     });
-    socket.on("discordMessage", (args: IDiscordMessage) => {
+    socket.on("discordMessage", (message: IDiscordMessage) => {
         io.of("/discord").emit("discordMessage", {
-            ...args,
-            Content: args.Content.replace(new RegExp("[‌⁤ÁÀ֎]", "g"), ""),
+            ...message,
+            Content: message.Content.replace(new RegExp("[‌⁤ÁÀ֎]", "g"), ""),
         });
     });
     socket.on("listOnline", async (callback) => {
