@@ -11,7 +11,6 @@ wynnRouter.get("/online", async (request: Request, response: Response) => {
     const sockets = await io.of("/discord").fetchSockets();
     sockets.forEach((socket) => {
         if (socket.data.username) out.push(socket.data.username);
-        console.log(socket.data.username);
     });
     response.send(out);
 });
