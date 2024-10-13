@@ -164,7 +164,7 @@ io.of("/discord").on("connection", (socket) => {
         });
     });
     socket.on("listOnline", async (callback) => {
-        let out: string[] = [];
+        const out: string[] = [];
         const sockets = await io.of("/discord").fetchSockets();
         sockets.forEach((socket) => {
             if (socket.data.username) out.push(socket.data.username);

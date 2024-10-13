@@ -12,6 +12,7 @@ import tomeRouter from "./routes/tomes.js";
 import waitlistRouter from "./routes/waitlist.js";
 import modVersionRouter from "./routes/modVersion.js";
 import "./sockets/discord.js";
+import wynnRouter from "./routes/wynn.js";
 
 app.use(express.json());
 app.use(cors());
@@ -34,8 +35,9 @@ try {
 }
 
 // Map endpoints
-app.use(statusRouter);
 app.use("/auth", authenticationRouter);
+app.use("/wynn", wynnRouter);
+app.use(statusRouter);
 app.use(raidRouter);
 app.use(aspectRouter);
 app.use(tomeRouter);
