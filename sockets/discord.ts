@@ -114,7 +114,7 @@ const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<co
 
 let messageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
-    console.log(socket.data.username, "connected to discord");
+    console.log(socket.data.username, "connected to discord with version:", socket.data.modVersion);
     socket.data.messageIndex = messageIndex;
 
     socket.on("wynnMessage", (message: string) => {
