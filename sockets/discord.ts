@@ -125,7 +125,7 @@ io.of("/discord").on("connection", (socket) => {
                     console.log(header, rawMessage, messageIndex);
                     const message = rawMessage
                         .replace(new RegExp("§.", "g"), "")
-                        .replace(ENCODED_DATA_PATTERN, (match, _) => `<${decodeItem(match).name}>`);
+                        .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
                         HeaderContent: header,
