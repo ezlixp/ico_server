@@ -51,17 +51,21 @@ export function decodeItem(byteString: string): IItem {
             do {
                 bytes.push(byteReader.read());
             } while (byteReader.hasRemaining() && byteReader.peek() != 0);
-            const nullByte = byteReader.read();
-            if (nullByte != 0) {
-                console.log("malformed name data");
-                continue;
+            if (byteReader.hasRemaining()) {
+                const nullByte = byteReader.read();
+                if (nullByte != 0) {
+                    console.log("malformed name data");
+                    continue;
+                }
+                let name = "";
+                bytes.forEach((byte) => {
+                    name += String.fromCharCode(byte);
+                });
+                itemData.name = name;
             }
-            let name = "";
-            bytes.forEach((byte) => {
-                name += String.fromCharCode(byte);
-            });
-            itemData.name = name;
-        } else byteReader.read();
+        } else {
+            if (byteReader.hasRemaining()) byteReader.read();
+        }
     }
     return itemData;
 }
