@@ -36,12 +36,9 @@ export function decodeItem(byteString: string): IItem {
             return itemData;
         }
         const codePoint = bytes.codePointAt(0);
-        const id = (0xff00 & codePoint!) >> 8;
-        const data = 0xff & codePoint!;
-        byteArray.push(id, data);
-        if (id === dataTransformers.NAME) {
-            console.log(data, bytes);
-        }
+        const block1 = (0xff00 & codePoint!) >> 8;
+        const block2 = 0xff & codePoint!;
+        byteArray.push(block1, block2);
     }
     const byteReader = new ByteReader(byteArray);
     while (byteReader.hasRemaining()) {
