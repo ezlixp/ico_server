@@ -120,12 +120,12 @@ io.of("/discord").on("connection", (socket) => {
                 const pattern = wynnMessagePatterns[i];
                 const matcher = pattern.pattern.exec(message);
                 if (matcher) {
-                    const message = (pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content)
+                    const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                    const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
+                    console.log(header, rawMessage, messageIndex);
+                    const message = rawMessage
                         .replace(new RegExp("§.", "g"), "")
                         .replace(ENCODED_DATA_PATTERN, (match, _) => `<${decodeItem(match).name}>`);
-
-                    const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                    console.log(header, message, messageIndex);
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,
                         HeaderContent: header,
