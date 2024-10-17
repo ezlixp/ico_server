@@ -4,10 +4,13 @@ import RaidModel from "../models/raidModel.js";
 import UserModel from "../models/userModel.js";
 import checkVersion from "../services/checkModVersion.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
+import { decodeItem } from "../services/wynntilsItemEncoding.js";
 
 /**
  * Maps all discord-related endpoints
  */
+
+const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
@@ -117,9 +120,9 @@ io.of("/discord").on("connection", (socket) => {
                 const pattern = wynnMessagePatterns[i];
                 const matcher = pattern.pattern.exec(message);
                 if (matcher) {
-                    const message = (
-                        pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content
-                    ).replace(new RegExp("§.", "g"), "");
+                    const message = (pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content)
+                        .replace(new RegExp("§.", "g"), "")
+                        .replace(ENCODED_DATA_PATTERN, (match, _) => `<${decodeItem(match).name}>`);
 
                     const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
                     console.log(header, message, messageIndex);
