@@ -46,7 +46,7 @@ export function decodeItem(byteString: string): IItem {
     const byteReader = new ByteReader(byteArray);
     while (byteReader.hasRemaining()) {
         const blockId = byteReader.read();
-        if (blockId === dataTransformers.NAME) {
+        if (blockId === dataTransformers.NAME && !itemData.name) {
             const bytes: number[] = [];
             do {
                 bytes.push(byteReader.read());
@@ -63,8 +63,6 @@ export function decodeItem(byteString: string): IItem {
                 });
                 itemData.name = name;
             }
-        } else {
-            if (byteReader.hasRemaining()) byteReader.read();
         }
     }
     return itemData;
