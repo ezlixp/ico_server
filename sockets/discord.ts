@@ -144,7 +144,10 @@ io.of("/discord").on("connection", (socket) => {
             io.of("/discord").emit("wynnMessage", {
                 MessageType: 2,
                 HeaderContent: matcher.groups!.header,
-                TextContent: matcher.groups!.content,
+                TextContent: matcher.groups!.content.replace(
+                    ENCODED_DATA_PATTERN,
+                    (match, _) => `<${decodeItem(match).name}>`
+                ),
             });
         }
     });
