@@ -1,3 +1,4 @@
+import assert from "assert";
 import ByteReader from "../types/byteReader.js";
 
 interface IItem {
@@ -35,9 +36,17 @@ export function decodeItem(byteString: string): IItem {
             console.log(`malformed data character ${bytes}`);
             return itemData;
         }
-        const codePoint = bytes.codePointAt(0);
-        const block1 = (0xff00 & codePoint!) >> 8;
-        const block2 = 0xff & codePoint!;
+        let codePoint = bytes.codePointAt(0);
+        assert(codePoint != null);
+        if (codePoint >= 0x100000) {
+            if ((codePoint & 0xff) != 0xee) codePoint -= 2;
+            else {
+                byteArray.push(0xff);
+                continue;
+            }
+        }
+        const block1 = (0xff00 & codePoint) >> 8;
+        const block2 = 0xff & codePoint;
         byteArray.push(block1, block2);
     }
     const byteReader = new ByteReader(byteArray);
