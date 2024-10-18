@@ -27,6 +27,11 @@ const hrMessagePatterns: IWynnMessage[] = [
         messageType: 1,
         customHeader: "⚠️🤓",
     },
+    {
+        pattern: /^§3.+?§b deposited §e.+?§b to the Guild Bank \(§3.+?§b\)$/,
+        messageType: 1,
+        customHeader: "⚠️🤓",
+    },
 ];
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: /^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
