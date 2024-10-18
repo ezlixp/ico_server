@@ -38,6 +38,11 @@ const hrMessagePatterns: IWynnMessage[] = [
         messageType: 1,
         customHeader: "⚠️ Info",
     },
+    {
+        pattern: /^(?<content>§.A Guild Tome§. has been found and added to the Guild Rewards)$/,
+        messageType: 1,
+        customHeader: "⚠️ Info",
+    },
 ];
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: /^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
@@ -125,7 +130,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
         customHeader: "⚠️ 🤑",
     },
-    { pattern: /(?<content>.*)/, customHeader: "⚠️ Info", messageType: 1 },
+    { pattern: /^(?<content>.*)$/, customHeader: "⚠️ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
