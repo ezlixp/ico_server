@@ -19,6 +19,11 @@ const hrMessagePatterns: IWynnMessage[] = [
         customHeader: "⚠️ 🤓",
     },
     {
+        pattern: /^(?<content>§..+?§. changed §.\d+ upgrades§. on §3(?<territory>.*))$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+    {
         pattern: /^(?<content>Territory §.(?<territory>.+?)§. is \w+ more resources than it can store!)$/,
         messageType: 1,
         customHeader: "⚠️ 🤓",
