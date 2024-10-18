@@ -1,8 +1,24 @@
 export interface IWynnMessage {
+    /**
+     * Regex that this type of message should look like.
+     */
     pattern: RegExp;
-    // 0 is normal in game message, 1 is info message, 2 is discord only message
+    /**
+     * Message type to send to discord.
+     * 0 - Chat message,
+     * 1 - Info message,
+     * 2 - Discord only message,
+     */
     messageType: number;
+    /**
+     * A callback function to format a custom message based on the regex matcher.
+     * @param matcher regex matcher from message pattern
+     * @returns formatted message
+     */
     customMessage?: (matcher: RegExpExecArray) => string;
+    /**
+     * Custom title text/author
+     */
     customHeader?: string;
 }
 

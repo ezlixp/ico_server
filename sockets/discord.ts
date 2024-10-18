@@ -11,7 +11,23 @@ import { decodeItem } from "../services/wynntilsItemEncoding.js";
  */
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
-
+const hrMessagePatterns: IWynnMessage[] = [
+    {
+        pattern: /^§.(?<setter>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*)$/,
+        messageType: 1,
+        customHeader: "⚠️🤓",
+    },
+    {
+        pattern: /^Territory §.(?<territory>.+?)§. is \w+ more resources than it can store!$/,
+        messageType: 1,
+        customHeader: "⚠️🤓",
+    },
+    {
+        pattern: /^Territory §.(?<territory>.+?)§. production has stabilised$/,
+        messageType: 1,
+        customHeader: "⚠️🤓",
+    },
+];
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: /^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
     {
@@ -66,7 +82,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 matcher.groups!.raid
             );
         },
-        customHeader: "⚠ Guild Raida",
+        customHeader: "⚠️ Guild Raida",
     },
     {
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
@@ -90,51 +106,91 @@ const wynnMessagePatterns: IWynnMessage[] = [
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver,
-        customHeader: "⚠ Tome",
+        customHeader: "⚠️ Tome",
     },
     {
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
-        customHeader: "⚠ 🤑",
+        customHeader: "⚠️ 🤑",
     },
     { pattern: /(?<content>.*)/, customHeader: "⚠ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
 let messageIndex = 0;
+let hrMessageIndex = 0;
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.data.username, "connected to discord with version:", socket.data.modVersion);
     socket.data.messageIndex = messageIndex;
+    socket.data.hrMessageIndex = hrMessageIndex;
 
     socket.on("wynnMessage", (message: string) => {
         if (!checkVersion(socket.data.modVersion)) {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
         }
-        if (socket.data.messageIndex === messageIndex) {
-            ++messageIndex;
-            ++socket.data.messageIndex;
-            for (let i = 0; i < wynnMessagePatterns.length; i++) {
-                const pattern = wynnMessagePatterns[i];
-                const matcher = pattern.pattern.exec(message);
-                if (matcher) {
-                    const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                    const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
-                    console.log(header, rawMessage, messageIndex);
-                    const message = rawMessage
-                        .replace(new RegExp("§.", "g"), "")
-                        .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
-                    io.of("/discord").emit("wynnMessage", {
-                        MessageType: pattern.messageType,
-                        HeaderContent: header,
-                        TextContent: message,
-                    });
-                    break;
+        let isHrMessage = false;
+        for (let i = 0; i < hrMessagePatterns.length; i++) {
+            const pattern = hrMessagePatterns[i];
+            const matcher = pattern.pattern.exec(message);
+            if (matcher) {
+                isHrMessage = true;
+                break;
+            }
+        }
+        if (isHrMessage) {
+            if (socket.data.hrMessageIndex === hrMessageIndex) {
+                ++socket.data.hrMessageIndex;
+                ++hrMessageIndex;
+                for (let i = 0; i < hrMessagePatterns.length; i++) {
+                    const pattern = hrMessagePatterns[i];
+                    const matcher = pattern.pattern.exec(message);
+                    if (matcher) {
+                        const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                        const rawMessage = pattern.customMessage
+                            ? pattern.customMessage(matcher)
+                            : matcher.groups!.content;
+                        console.log("hr", header, rawMessage, messageIndex);
+                        const message = rawMessage.replace(new RegExp("§.", "g"), "");
+                        io.of("/discord").emit("wynnMessage", {
+                            MessageType: pattern.messageType,
+                            HeaderContent: header,
+                            TextContent: message,
+                        });
+                        break;
+                    }
                 }
+            } else {
+                ++socket.data.hrMessageIndex;
             }
         } else {
-            ++socket.data.messageIndex;
+            if (socket.data.messageIndex === messageIndex) {
+                ++socket.data.messageIndex;
+                ++messageIndex;
+                for (let i = 0; i < wynnMessagePatterns.length; i++) {
+                    const pattern = wynnMessagePatterns[i];
+                    const matcher = pattern.pattern.exec(message);
+                    if (matcher) {
+                        const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                        const rawMessage = pattern.customMessage
+                            ? pattern.customMessage(matcher)
+                            : matcher.groups!.content;
+                        console.log(header, rawMessage, messageIndex);
+                        const message = rawMessage
+                            .replace(new RegExp("§.", "g"), "")
+                            .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
+                        io.of("/discord").emit("wynnMessage", {
+                            MessageType: pattern.messageType,
+                            HeaderContent: header,
+                            TextContent: message,
+                        });
+                        break;
+                    }
+                }
+            } else {
+                ++socket.data.messageIndex;
+            }
         }
     });
     socket.on("discordOnlyWynnMessage", (message: string) => {

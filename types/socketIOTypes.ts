@@ -19,6 +19,7 @@ export interface InterServerEvents {
 
 export interface SocketData {
     messageIndex: number;
+    hrMessageIndex: number;
     username?: string;
     modVersion?: string;
 }
