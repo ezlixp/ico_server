@@ -13,11 +13,10 @@ import { decodeItem } from "../services/wynntilsItemEncoding.js";
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 
 const wynnMessagePatterns: IWynnMessage[] = [
-    { pattern: new RegExp("^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$"), messageType: 0 },
+    { pattern: /^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
     {
-        pattern: new RegExp(
-            "^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$"
-        ),
+        pattern:
+            /^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$/,
         messageType: 1,
         customMessage: (matcher) => {
             try {
@@ -70,7 +69,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         customHeader: "⚠ Guild Raida",
     },
     {
-        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$"),
+        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher) => {
             UserModel.updateOne(
@@ -88,18 +87,18 @@ const wynnMessagePatterns: IWynnMessage[] = [
         customHeader: "⚠ Aspect",
     },
     {
-        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$"),
+        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver,
         customHeader: "⚠ Tome",
     },
     {
-        pattern: new RegExp("^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$"),
+        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
         customHeader: "⚠ 🤑",
     },
-    { pattern: new RegExp("(?<content>.*)"), customHeader: "⚠ Info", messageType: 1 },
+    { pattern: /(?<content>.*)/, customHeader: "⚠ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
