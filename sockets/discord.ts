@@ -157,7 +157,7 @@ io.of("/discord").on("connection", (socket) => {
                         const rawMessage = pattern.customMessage
                             ? pattern.customMessage(matcher)
                             : matcher.groups!.content;
-                        console.log("hr", header, rawMessage, messageIndex);
+                        console.log("hr", header, rawMessage, hrMessageIndex);
                         const message = rawMessage.replace(new RegExp("§.", "g"), "");
                         io.of("/discord").emit("wynnMessage", {
                             MessageType: pattern.messageType,
