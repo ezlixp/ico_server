@@ -25,11 +25,35 @@ const dataTransformers = {
     END: 255,
 };
 
+function stringToBytes(byteString: string): number[] {
+    let byteArray: number[] = [];
+    for (let i = 0; i < byteString.length; i += 2) {
+        const bytes = byteString[i] + byteString[i + 1];
+        if (bytes.length !== 2) {
+            console.log(`malformed data character ${bytes}`);
+            return [];
+        }
+        let codePoint = bytes.codePointAt(0);
+        assert(codePoint != null);
+        if (codePoint >= 0x100000) {
+            if ((codePoint & 0xff) != 0xee) codePoint -= 2;
+            else {
+                byteArray.push(0xff);
+                continue;
+            }
+        }
+        const block1 = (0xff00 & codePoint) >> 8;
+        const block2 = 0xff & codePoint;
+        byteArray.push(block1, block2);
+    }
+    return byteArray;
+}
+
 export function decodeItem(byteString: string): IItem {
     const itemData: IItem = {
         name: "",
     };
-    let byteArray: number[] = [];
+    let byteArray: number[] = stringToBytes(byteString);
     for (let i = 0; i < byteString.length; i += 2) {
         const bytes = byteString[i] + byteString[i + 1];
         if (bytes.length !== 2) {
