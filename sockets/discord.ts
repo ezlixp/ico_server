@@ -14,12 +14,12 @@ const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/g
 const hrMessagePatterns: IWynnMessage[] = [
     {
         pattern:
-            /^(?<content>§.(?<setter>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*))$/,
+            /^(?<content>§.(?<username>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*))$/,
         messageType: 1,
         customHeader: "⚠️ 🤓",
     },
     {
-        pattern: /^(?<content>§..+?§. changed §.\d+ \w+§. on §3(?<territory>.*))$/,
+        pattern: /^(?<content>§.(?<username>.+?)§. changed §.\d+ \w+§. on §3(?<territory>.*))$/,
         messageType: 1,
         customHeader: "⚠️ 🤓",
     },
@@ -29,12 +29,17 @@ const hrMessagePatterns: IWynnMessage[] = [
         customHeader: "⚠️ 🤓",
     },
     {
-        pattern: /^(Territory §.(?<territory>.+?)§. production has stabilised)$/,
+        pattern: /^(?<content>Territory §.(?<territory>.+?)§. production has stabilised)$/,
         messageType: 1,
         customHeader: "⚠️ 🤓",
     },
     {
-        pattern: /^(?<content>§3.+?§b deposited §e.+?§b to the Guild Bank \(§3.+?§b\))$/,
+        pattern: /^(?<content>§.(?<username>.+?)§. applied the loadout §(?<loadout>..+?)§. on §.(?<territory>.*))$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+    {
+        pattern: /^(?<content>§.(?<username>.+?)§. \w+ §.(?<deposited>.+?)§. to the Guild Bank \(§.High Ranked§.\))$/,
         messageType: 1,
         customHeader: "⚠️ Info",
     },
@@ -116,7 +121,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
             });
             return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
         },
-        customHeader: "⚠ Aspect",
+        customHeader: "⚠️ Aspect",
     },
     {
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$/,

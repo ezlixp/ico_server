@@ -13,6 +13,7 @@ import waitlistRouter from "./routes/waitlist.js";
 import modVersionRouter from "./routes/modVersion.js";
 import "./sockets/discord.js";
 import wynnRouter from "./routes/wynn.js";
+import healthRouter from "./routes/healthCheck.js";
 
 app.use(express.json());
 app.use(cors());
@@ -37,6 +38,7 @@ try {
 // Map endpoints
 app.use("/auth", authenticationRouter);
 app.use("/wynn", wynnRouter);
+app.use("/healthz", healthRouter);
 app.use(statusRouter);
 app.use(raidRouter);
 app.use(aspectRouter);
