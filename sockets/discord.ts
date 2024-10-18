@@ -167,7 +167,7 @@ io.of("/discord").on("connection", (socket) => {
                         const rawMessage = pattern.customMessage
                             ? pattern.customMessage(matcher)
                             : matcher.groups!.content;
-                        console.log("hr", header, rawMessage, hrMessageIndex);
+                        console.log("hr", header, rawMessage, hrMessageIndex, "emitted by:", socket.data.username);
                         const message = rawMessage.replace(new RegExp("§.", "g"), "");
                         io.of("/discord").emit("wynnMessage", {
                             MessageType: pattern.messageType,
@@ -192,7 +192,7 @@ io.of("/discord").on("connection", (socket) => {
                         const rawMessage = pattern.customMessage
                             ? pattern.customMessage(matcher)
                             : matcher.groups!.content;
-                        console.log(header, rawMessage, messageIndex);
+                        console.log(header, rawMessage, messageIndex, "emitted by:", socket.data.username);
                         const message = rawMessage
                             .replace(new RegExp("§.", "g"), "")
                             .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
