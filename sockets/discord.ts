@@ -16,22 +16,22 @@ const hrMessagePatterns: IWynnMessage[] = [
         pattern:
             /^(?<content>§.(?<setter>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*))$/,
         messageType: 1,
-        customHeader: "⚠️🤓",
+        customHeader: "⚠️ 🤓",
     },
     {
         pattern: /^(?<content>Territory §.(?<territory>.+?)§. is \w+ more resources than it can store!)$/,
         messageType: 1,
-        customHeader: "⚠️🤓",
+        customHeader: "⚠️ 🤓",
     },
     {
         pattern: /^(Territory §.(?<territory>.+?)§. production has stabilised)$/,
         messageType: 1,
-        customHeader: "⚠️🤓",
+        customHeader: "⚠️ 🤓",
     },
     {
         pattern: /^(?<content>§3.+?§b deposited §e.+?§b to the Guild Bank \(§3.+?§b\))$/,
         messageType: 1,
-        customHeader: "⚠️Info",
+        customHeader: "⚠️ Info",
     },
 ];
 const wynnMessagePatterns: IWynnMessage[] = [
@@ -120,7 +120,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
         customHeader: "⚠️ 🤑",
     },
-    { pattern: /(?<content>.*)/, customHeader: "⚠ Info", messageType: 1 },
+    { pattern: /(?<content>.*)/, customHeader: "⚠️ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
