@@ -13,24 +13,25 @@ import { decodeItem } from "../services/wynntilsItemEncoding.js";
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [
     {
-        pattern: /^§.(?<setter>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*)$/,
+        pattern:
+            /^(?<content>§.(?<setter>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*))$/,
         messageType: 1,
         customHeader: "⚠️🤓",
     },
     {
-        pattern: /^Territory §.(?<territory>.+?)§. is \w+ more resources than it can store!$/,
+        pattern: /^(?<content>Territory §.(?<territory>.+?)§. is \w+ more resources than it can store!)$/,
         messageType: 1,
         customHeader: "⚠️🤓",
     },
     {
-        pattern: /^Territory §.(?<territory>.+?)§. production has stabilised$/,
+        pattern: /^(Territory §.(?<territory>.+?)§. production has stabilised)$/,
         messageType: 1,
         customHeader: "⚠️🤓",
     },
     {
-        pattern: /^§3.+?§b deposited §e.+?§b to the Guild Bank \(§3.+?§b\)$/,
+        pattern: /^(?<content>§3.+?§b deposited §e.+?§b to the Guild Bank \(§3.+?§b\))$/,
         messageType: 1,
-        customHeader: "⚠️🤓",
+        customHeader: "⚠️Info",
     },
 ];
 const wynnMessagePatterns: IWynnMessage[] = [

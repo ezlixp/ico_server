@@ -8,6 +8,9 @@ export interface IWynnMessage {
      * 0 - Chat message,
      * 1 - Info message,
      * 2 - Discord only message,
+     * Make sure to include a "header" named group,
+     * and a "content" named group in the regex if you didn't
+     * specify a custom header or a custom message, respectively.
      */
     messageType: number;
     /**
