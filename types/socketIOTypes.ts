@@ -7,6 +7,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
     wynnMessage: (message: string) => void;
+    hrMessage: (MessageChannel: string) => void;
     discordOnlyWynnMessage: (message: string) => void;
     discordMessage: (message: IDiscordMessage) => void;
     listOnline: (callback: (users: string[]) => void) => void;

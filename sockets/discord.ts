@@ -19,6 +19,12 @@ const hrMessagePatterns: IWynnMessage[] = [
         customHeader: "⚠️ 🤓",
     },
     {
+        pattern: /^(?<content>§.(?<username>.+?)§. removed §.(?<changed>.+?)§. from §.(?<territory>.*))$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+
+    {
         pattern: /^(?<content>§.(?<username>.+?)§. changed §.\d+ \w+§. on §3(?<territory>.*))$/,
         messageType: 1,
         customHeader: "⚠️ 🤓",
@@ -137,7 +143,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
     },
     { pattern: /^(?<content>.*)$/, customHeader: "⚠️ Info", messageType: 1 },
 ];
-const discordOnlyPattern = new RegExp("^\\[Discord Only\\] (?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
+const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
 let messageIndex = 0;
 let hrMessageIndex = 0;
@@ -151,67 +157,59 @@ io.of("/discord").on("connection", (socket) => {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
         }
-        let isHrMessage = false;
-        for (let i = 0; i < hrMessagePatterns.length; i++) {
-            const pattern = hrMessagePatterns[i];
-            const matcher = pattern.pattern.exec(message);
-            if (matcher) {
-                isHrMessage = true;
-                break;
-            }
-        }
-        if (isHrMessage) {
-            if (socket.data.hrMessageIndex === hrMessageIndex) {
-                ++socket.data.hrMessageIndex;
-                ++hrMessageIndex;
-                for (let i = 0; i < hrMessagePatterns.length; i++) {
-                    const pattern = hrMessagePatterns[i];
-                    const matcher = pattern.pattern.exec(message);
-                    if (matcher) {
-                        const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                        const rawMessage = pattern.customMessage
-                            ? pattern.customMessage(matcher)
-                            : matcher.groups!.content;
-                        console.log("hr", header, rawMessage, hrMessageIndex, "emitted by:", socket.data.username);
-                        const message = rawMessage.replace(new RegExp("§.", "g"), "");
-                        io.of("/discord").emit("wynnMessage", {
-                            MessageType: pattern.messageType,
-                            HeaderContent: header,
-                            TextContent: message,
-                        });
-                        break;
-                    }
+
+        if (socket.data.messageIndex === messageIndex) {
+            ++socket.data.messageIndex;
+            ++messageIndex;
+            for (let i = 0; i < wynnMessagePatterns.length; i++) {
+                const pattern = wynnMessagePatterns[i];
+                const matcher = pattern.pattern.exec(message);
+                if (matcher) {
+                    const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                    const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
+                    console.log(header, rawMessage, messageIndex, "emitted by:", socket.data.username);
+                    const message = rawMessage
+                        .replace(new RegExp("§.", "g"), "")
+                        .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
+                    io.of("/discord").emit("wynnMessage", {
+                        MessageType: pattern.messageType,
+                        HeaderContent: header,
+                        TextContent: message,
+                    });
+                    break;
                 }
-            } else {
-                ++socket.data.hrMessageIndex;
             }
         } else {
-            if (socket.data.messageIndex === messageIndex) {
-                ++socket.data.messageIndex;
-                ++messageIndex;
-                for (let i = 0; i < wynnMessagePatterns.length; i++) {
-                    const pattern = wynnMessagePatterns[i];
-                    const matcher = pattern.pattern.exec(message);
-                    if (matcher) {
-                        const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                        const rawMessage = pattern.customMessage
-                            ? pattern.customMessage(matcher)
-                            : matcher.groups!.content;
-                        console.log(header, rawMessage, messageIndex, "emitted by:", socket.data.username);
-                        const message = rawMessage
-                            .replace(new RegExp("§.", "g"), "")
-                            .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
-                        io.of("/discord").emit("wynnMessage", {
-                            MessageType: pattern.messageType,
-                            HeaderContent: header,
-                            TextContent: message,
-                        });
-                        break;
-                    }
+            ++socket.data.messageIndex;
+        }
+    });
+    socket.on("hrMessage", (message: string) => {
+        if (!checkVersion(socket.data.modVersion)) {
+            console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
+            return;
+        }
+
+        if (socket.data.hrMessageIndex === hrMessageIndex) {
+            ++socket.data.hrMessageIndex;
+            ++hrMessageIndex;
+            for (let i = 0; i < hrMessagePatterns.length; i++) {
+                const pattern = hrMessagePatterns[i];
+                const matcher = pattern.pattern.exec(message);
+                if (matcher) {
+                    const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                    const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
+                    console.log("hr", header, rawMessage, hrMessageIndex, "emitted by:", socket.data.username);
+                    const message = rawMessage.replace(new RegExp("§.", "g"), "");
+                    io.of("/discord").emit("wynnMessage", {
+                        MessageType: pattern.messageType,
+                        HeaderContent: header,
+                        TextContent: message,
+                    });
+                    break;
                 }
-            } else {
-                ++socket.data.messageIndex;
             }
+        } else {
+            ++socket.data.hrMessageIndex;
         }
     });
     socket.on("discordOnlyWynnMessage", (message: string) => {
@@ -227,7 +225,11 @@ io.of("/discord").on("connection", (socket) => {
             });
         }
     });
+    /**
+     * Event that gets fired upon a message that needs to be sent from discord to wynn (including discord only wynn messages)
+     */
     socket.on("discordMessage", (message: IDiscordMessage) => {
+        console.log(message);
         io.of("/discord").emit("discordMessage", {
             ...message,
             Content: message.Content.replace(new RegExp("[‌⁤ÁÀ֎]", "g"), ""),
