@@ -9,7 +9,7 @@ const aspectRouter = Router();
 aspectRouter.get("/aspects", async (request: Request, response: Response) => {
     try {
         // Get 10 users with the highest aspect count
-        const aspects = await UserModel.find({}).sort({ aspects: -1 }).limit(10);
+        const aspects = await UserModel.find({ aspects: { $gt: 0 } }).sort({ aspects: -1 });
 
         response.send(aspects);
     } catch (error) {

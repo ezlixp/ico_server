@@ -5,6 +5,7 @@ import UserModel from "../models/userModel.js";
 import checkVersion from "../services/checkModVersion.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../services/wynntilsItemEncoding.js";
+import updateAspects from "./updateAspects.js";
 
 /**
  * Maps all discord-related endpoints
@@ -115,16 +116,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher) => {
-            UserModel.updateOne(
-                { username: matcher.groups!.receiver },
-                { $inc: { aspects: -1 } },
-                {
-                    upsert: true,
-                    collation: { locale: "en", strength: 2 },
-                }
-            ).then(() => {
-                console.log(matcher.groups!.receiver, "received an aspect");
-            });
+            updateAspects(matcher.groups!.receiver);
             return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
         },
         customHeader: "⚠️ Aspect",

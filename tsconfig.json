@@ -15,6 +15,15 @@
         "typeRoots": ["./node_modules/@types"],
         "noEmitOnError": true
     },
-    "include": ["models/**/*", "routes/**/*", "security/**/*", "index.ts", "config.ts", "sockets/*"],
+    "include": [
+        "models/**/*",
+        "routes/**/*",
+        "security/**/*",
+        "sockets/**/*",
+        "services/**/*",
+        "index.ts",
+        "config.ts",
+        "app.ts"
+    ],
     "exclude": ["node_modules", "**/*.spec.ts", "test.ts"]
 }
