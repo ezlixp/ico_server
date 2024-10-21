@@ -1,7 +1,6 @@
 import { io } from "../app.js";
 import "../config.js";
 import RaidModel from "../models/raidModel.js";
-import UserModel from "../models/userModel.js";
 import checkVersion from "../services/checkModVersion.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../services/wynntilsItemEncoding.js";
@@ -88,11 +87,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 // Add users to db and increase aspect counter by 0.5
                 Promise.all(
                     newRaid.users.map((username) => {
-                        UserModel.updateOne(
-                            { username: username },
-                            { $inc: { aspects: 0.5 } },
-                            { upsert: true, collation: { locale: "en", strength: 2 } }
-                        ).then(() => console.log(username, "got 0.5 aspects"));
+                        updateAspects(username.toString());
                     })
                 );
             } catch (error) {

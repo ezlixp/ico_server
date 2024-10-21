@@ -1,5 +1,5 @@
 import UserModel from "../models/userModel.js";
-export default function updateAspects(username: string): void {
+export default async function updateAspects(username: string): Promise<void> {
     UserModel.updateOne(
         { username: username },
         { $inc: { aspects: -1 } },
