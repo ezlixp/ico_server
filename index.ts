@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Router } from "express";
 import app, { server } from "./app.js";
 import { connect } from "mongoose";
 import bodyParser from "body-parser";
@@ -36,14 +36,16 @@ try {
     console.error("Failed to connect to database:", error);
 }
 
+const router = Router();
+app.use("/api/v1", router);
 // Map endpoints
-app.use("/auth", authenticationRouter);
-app.use("/user-update", userUpdateRouter);
-app.use("/wynn", wynnRouter);
-app.use("/healthz", healthRouter);
-app.use("/mod", modVersionRouter);
-app.use(statusRouter);
-app.use(raidRouter);
-app.use(aspectRouter);
-app.use(tomeRouter);
-app.use(waitlistRouter);
+router.use("/auth", authenticationRouter);
+router.use("/user-update", userUpdateRouter);
+router.use("/wynn", wynnRouter);
+router.use("/healthz", healthRouter);
+router.use("/mod", modVersionRouter);
+router.use(statusRouter);
+router.use(raidRouter);
+router.use(aspectRouter);
+router.use(tomeRouter);
+router.use(waitlistRouter);
