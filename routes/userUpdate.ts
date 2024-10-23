@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 import updateAspects from "../sockets/updateAspects.js";
 import UserModel from "../models/userModel.js";
+import { UUIDtoUsername } from "../services/ConvertMinecraftUser.js";
 
 /**Maps all endpoints related to updating user information. */
 const userUpdateRouter = Router();
@@ -23,12 +24,13 @@ userUpdateRouter.post(
     async (request: Request<{ uuid: string }, {}, { toBlock: string }>, response: Response) => {
         try {
             const toBlock = request.body.toBlock;
+            const uuid = request.params.uuid.replaceAll("-", "");
             await UserModel.updateOne(
-                { uuid: request.params.uuid },
-                { $push: { blocked: toBlock } },
+                { uuid: uuid },
+                { username: await UUIDtoUsername(uuid), $push: { blocked: toBlock } },
                 { upsert: true, collation: { locale: "en", strength: 2 } }
             );
-            response.send();
+            response.send({ error: "" });
         } catch (error) {
             console.log("update blocked error:", error);
             response.status(500).send({ error: "somethign went wrong" });

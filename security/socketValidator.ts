@@ -14,7 +14,7 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
     const authorizationHeader = socket.handshake.headers.authorization as string;
 
     if (!authorizationHeader) {
-        console.log("A websocket connection was blocked");
+        console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);
         return next(new Error("No token provided"));
     }
 
@@ -23,7 +23,7 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
 
     jwt.verify(token, secretKey, (err) => {
         if (err) {
-            console.log("A websocket connection was blocked");
+            console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);
             return next(new Error("Invalid token provided"));
         }
         socket.data.username = socket.handshake.headers.from;

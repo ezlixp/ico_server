@@ -82,6 +82,7 @@ tomeRouter.post("/tomes", validateJwtToken, async (request: Request, response: R
     }
 });
 
+// TODO: implement search by uuid
 tomeRouter.delete(
     "/tomes/:username",
     validateJwtToken,

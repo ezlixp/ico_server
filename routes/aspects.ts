@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { UsernametoUUID } from "../services/ConvertMinecraftUser.js";
 import UserModel from "../models/userModel.js";
 
 /**
@@ -22,7 +23,7 @@ aspectRouter.get("/aspects", async (request: Request, response: Response) => {
 aspectRouter.get("/aspects/:username", async (request: Request<{ username: string }>, response: Response) => {
     try {
         // Get aspect data for specified user
-        const aspect = await UserModel.findOne({ username: request.params.username }).collation({
+        const aspect = await UserModel.findOne({ uuid: await UsernametoUUID(request.params.username) }).collation({
             locale: "en",
             strength: 2,
         });

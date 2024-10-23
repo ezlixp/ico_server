@@ -4,7 +4,6 @@ interface IModVersionResponse {
 }
 
 async function getLatestVersion(): Promise<IModVersionResponse | null> {
-    let json: JSON = JSON.parse("{}");
     const url = "https://api.modrinth.com/v2/project/guild-api/version";
     try {
         const response = await fetch(url);
