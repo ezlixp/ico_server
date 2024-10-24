@@ -12,7 +12,6 @@ const secretKey = process.env.JWT_SECRET_KEY as string;
  */
 function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
     const authorizationHeader = socket.handshake.headers.authorization as string;
-    console.log(authorizationHeader);
 
     if (!authorizationHeader) {
         console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);

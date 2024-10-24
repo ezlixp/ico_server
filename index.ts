@@ -14,7 +14,7 @@ import modVersionRouter from "./routes/modVersion.js";
 import "./sockets/discord.js";
 import wynnRouter from "./routes/wynn.js";
 import healthRouter from "./routes/healthCheck.js";
-import userUpdateRouter from "./routes/userUpdate.js";
+import userInfoRouter from "./routes/userInfo.js";
 
 app.use(express.json());
 app.use(cors());
@@ -40,7 +40,7 @@ const router = Router();
 app.use("/api/v1", router);
 // Map endpoints
 router.use("/auth", authenticationRouter);
-router.use("/user", userUpdateRouter);
+router.use("/user", userInfoRouter);
 router.use("/wynn", wynnRouter);
 router.use("/healthz", healthRouter);
 router.use("/mod", modVersionRouter);

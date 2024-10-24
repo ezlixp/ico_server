@@ -4,11 +4,11 @@ import updateAspects from "../sockets/updateAspects.js";
 import UserModel from "../models/userModel.js";
 import { UUIDtoUsername } from "../services/ConvertMinecraftUser.js";
 
-/**Maps all endpoints related to updating user information. */
-const userUpdateRouter = Router();
-userUpdateRouter.use(validateJwtToken);
+/**Maps all endpoints related to user information. */
+const userInfoRouter = Router();
+userInfoRouter.use(validateJwtToken);
 
-userUpdateRouter.post("/aspects", async (request: Request<{}, {}, { username: string }>, response: Response) => {
+userInfoRouter.post("/aspects", async (request: Request<{}, {}, { username: string }>, response: Response) => {
     try {
         const username = request.body.username;
         await updateAspects(username);
@@ -19,18 +19,14 @@ userUpdateRouter.post("/aspects", async (request: Request<{}, {}, { username: st
     }
 });
 
-userUpdateRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string }, {}, {}>, response: Response) => {
+userInfoRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string }, {}, {}>, response: Response) => {
     try {
         const uuid = request.params.uuid.replaceAll("-", "");
-        const user = await UserModel.findOne(
+        const user = await UserModel.findOneAndUpdate(
             { uuid: uuid },
-            { blocked: true },
-            { collation: { locale: "en", strength: 2 } }
+            { username: await UUIDtoUsername(uuid) },
+            { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
         );
-        if (!user) {
-            response.status(404).send({ error: "user not found" });
-            return;
-        }
         response.send(user.blocked);
     } catch (error) {
         console.log("get blocked error:", error);
@@ -38,7 +34,7 @@ userUpdateRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string },
     }
 });
 
-userUpdateRouter.post(
+userInfoRouter.post(
     "/blocked/:uuid",
     async (request: Request<{ uuid: string }, {}, { toBlock: string }>, response: Response) => {
         try {
@@ -46,8 +42,8 @@ userUpdateRouter.post(
             const uuid = request.params.uuid.replaceAll("-", "");
             await UserModel.updateOne(
                 { uuid: uuid },
-                { username: await UUIDtoUsername(uuid), $push: { blocked: toBlock } },
-                { upsert: true, collation: { locale: "en", strength: 2 } }
+                { username: await UUIDtoUsername(uuid), $addToSet: { blocked: toBlock } },
+                { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
             );
             response.send({ error: "" });
         } catch (error) {
@@ -57,4 +53,4 @@ userUpdateRouter.post(
     }
 );
 
-export default userUpdateRouter;
+export default userInfoRouter;
