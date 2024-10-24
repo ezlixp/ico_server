@@ -19,9 +19,11 @@ abstract class ResponseModel {
  */
 export class TokenResponseModel extends ResponseModel {
     token: string | null;
+    refreshToken: string | null;
 
-    constructor(status: boolean, error: string | null, token: string | null) {
+    constructor(status: boolean, error: string | null, token: string | null, refreshToken: string | null) {
         super(status, error);
         this.token = token;
+        this.refreshToken = refreshToken;
     }
 }

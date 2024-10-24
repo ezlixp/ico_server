@@ -19,6 +19,25 @@ userUpdateRouter.post("/aspects", async (request: Request<{}, {}, { username: st
     }
 });
 
+userUpdateRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string }, {}, {}>, response: Response) => {
+    try {
+        const uuid = request.params.uuid.replaceAll("-", "");
+        const user = await UserModel.findOne(
+            { uuid: uuid },
+            { blocked: true },
+            { collation: { locale: "en", strength: 2 } }
+        );
+        if (!user) {
+            response.status(404).send({ error: "user not found" });
+            return;
+        }
+        response.send(user.blocked);
+    } catch (error) {
+        console.log("get blocked error:", error);
+        response.status(500).send({ error: "something went wrong" });
+    }
+});
+
 userUpdateRouter.post(
     "/blocked/:uuid",
     async (request: Request<{ uuid: string }, {}, { toBlock: string }>, response: Response) => {
@@ -33,7 +52,7 @@ userUpdateRouter.post(
             response.send({ error: "" });
         } catch (error) {
             console.log("update blocked error:", error);
-            response.status(500).send({ error: "somethign went wrong" });
+            response.status(500).send({ error: "something went wrong" });
         }
     }
 );

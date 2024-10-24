@@ -40,7 +40,7 @@ const router = Router();
 app.use("/api/v1", router);
 // Map endpoints
 router.use("/auth", authenticationRouter);
-router.use("/user-update", userUpdateRouter);
+router.use("/user", userUpdateRouter);
 router.use("/wynn", wynnRouter);
 router.use("/healthz", healthRouter);
 router.use("/mod", modVersionRouter);

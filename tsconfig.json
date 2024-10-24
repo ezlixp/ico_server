@@ -21,6 +21,7 @@
         "security/**/*",
         "sockets/**/*",
         "services/**/*",
+        "types/**/*",
         "index.ts",
         "config.ts",
         "app.ts"
