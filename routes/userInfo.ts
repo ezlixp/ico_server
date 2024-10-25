@@ -45,11 +45,11 @@ userInfoRouter.post(
             });
             if (user) {
                 if (user.blocked.length >= 60) {
-                    response.status(400).send({ error: "blocked list full" });
+                    response.status(400).send({ error: "Blocked list full." });
                     return;
                 }
                 if (user.blocked.find((blocked) => blocked === toBlock)) {
-                    response.status(400).send({ error: "user already in block list" });
+                    response.status(400).send({ error: "User already in block list." });
                     return;
                 }
             }
@@ -58,6 +58,32 @@ userInfoRouter.post(
                 { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
             );
             response.send({ error: "" });
+        } catch (error) {
+            console.log("update blocked error:", error);
+            response.status(500).send({ error: "something went wrong" });
+        }
+    }
+);
+
+userInfoRouter.delete(
+    "/blocked/:uuid/:toRemove",
+    async (request: Request<{ uuid: string; toRemove: string }>, response: Response) => {
+        try {
+            const uuid = request.params.uuid.replaceAll("-", "");
+            const toRemove = request.params.toRemove;
+            const user = await UserModel.findOne({
+                uuid: uuid,
+            });
+            if (!user) {
+                response.status(404).send({ error: "user not found" });
+                return;
+            }
+            if (user.blocked.find((blocked) => blocked === toRemove)) {
+                await user.updateOne({ $pull: { blocked: toRemove } });
+                response.send({ error: "" });
+            } else {
+                response.status(404).send({ error: "Blocked user not found." });
+            }
         } catch (error) {
             console.log("update blocked error:", error);
             response.status(500).send({ error: "something went wrong" });
