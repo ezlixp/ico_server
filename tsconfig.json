@@ -26,5 +26,5 @@
         "config.ts",
         "app.ts"
     ],
-    "exclude": ["node_modules", "**/*.spec.ts", "test.ts"]
+    "exclude": ["node_modules", "**/*.spec.ts", "test/**/*"]
 }

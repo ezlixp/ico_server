@@ -25,7 +25,6 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
         // err.message:
         // invalid token: "invalid token"
         // expired: "jwt expired"
-        console.log(err?.message);
         if (err) {
             console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);
             return next(new Error("Invalid token provided"));
