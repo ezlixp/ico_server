@@ -4,7 +4,7 @@ import "../config.ts";
 
 const secretKey = process.env.JWT_SECRET_KEY as string;
 const refreshKey = process.env.JWT_REFRESH_SECRET_KEY as string;
-const options: jwt.SignOptions = { expiresIn: "10s" };
+const options: jwt.SignOptions = { expiresIn: "24h" };
 
 /**
  * Generates a JWT if the validation key is valid.
@@ -22,7 +22,7 @@ export function signJwtToken(username: string): TokenResponseModel {
     let response: TokenResponseModel;
     try {
         const jwtToken = jwt.sign({ username: "to be implemented" }, secretKey, options);
-        const refreshToken = jwt.sign({ username: "to be implemented" }, secretKey, { expiresIn: "7d" });
+        const refreshToken = jwt.sign({ username: "to be implemented" }, refreshKey, { expiresIn: "7d" });
 
         response = new TokenResponseModel(true, null, jwtToken, refreshToken);
     } catch (error) {

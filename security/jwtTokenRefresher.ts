@@ -7,13 +7,13 @@ import { signJwtToken } from "./jwtTokenGenerator.js";
  * @param {string} originalToken Original jwt token
  * @param {string} refreshToken Refresh token supplied with the original token
  */
-const secretKey = process.env.JWT_SECRET_KEY;
+const refreshKey = process.env.JWT_REFRESH_SECRET_KEY;
 export default function refreshJwtToken(refreshToken: string): TokenResponseModel {
     let validRefreshToken = false;
     const decoded = jwt.decode(refreshToken);
     if (!decoded || typeof decoded !== "object")
         return new TokenResponseModel(false, "Malformed token payload.", null, null);
-    jwt.verify(refreshToken, secretKey, (err) => {
+    jwt.verify(refreshToken, refreshKey, (err) => {
         if (err) return;
         validRefreshToken = true;
     });
