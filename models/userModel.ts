@@ -7,6 +7,7 @@ interface IUser extends Document {
     blocked: [String];
 }
 
+// TODO: figure out how to make collation default without having to add it to each request
 const userSchema: Schema<IUser> = new Schema({
     username: { type: String, required: true },
     uuid: { type: String, required: true },

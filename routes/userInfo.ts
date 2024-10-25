@@ -40,8 +40,20 @@ userInfoRouter.post(
         try {
             const toBlock = request.body.toBlock;
             const uuid = request.params.uuid.replaceAll("-", "");
-            await UserModel.updateOne(
-                { uuid: uuid },
+            const user = await UserModel.findOne({
+                uuid: uuid,
+            });
+            if (user) {
+                if (user.blocked.length >= 60) {
+                    response.status(400).send({ error: "blocked list full" });
+                    return;
+                }
+                if (user.blocked.find((blocked) => blocked === toBlock)) {
+                    response.status(400).send({ error: "user already in block list" });
+                    return;
+                }
+            }
+            await user?.updateOne(
                 { username: await UUIDtoUsername(uuid), $addToSet: { blocked: toBlock } },
                 { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
             );
