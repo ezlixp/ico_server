@@ -3,7 +3,7 @@ import { TokenResponseModel } from "../models/responseModels.js";
 import "../config.ts";
 
 const secretKey = process.env.JWT_SECRET_KEY as string;
-const options: jwt.SignOptions = { expiresIn: "6h" };
+const options: jwt.SignOptions = { expiresIn: "2h" };
 
 /**
  * Generates a JWT if the validation key is valid.
