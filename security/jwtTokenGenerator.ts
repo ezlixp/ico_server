@@ -21,8 +21,8 @@ export default function generateJwtToken(validationKey: string): TokenResponseMo
 export function signJwtToken(username: string): TokenResponseModel {
     let response: TokenResponseModel;
     try {
-        const jwtToken = jwt.sign({ username: "to be implemented" }, secretKey, options);
-        const refreshToken = jwt.sign({ username: "to be implemented" }, refreshKey, { expiresIn: "7d" });
+        const jwtToken = jwt.sign({ username: username }, secretKey, options);
+        const refreshToken = jwt.sign({ username: secretKey }, refreshKey, { expiresIn: "7d" });
 
         response = new TokenResponseModel(true, null, jwtToken, refreshToken);
     } catch (error) {
