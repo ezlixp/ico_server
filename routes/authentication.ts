@@ -24,11 +24,10 @@ authenticationRouter.post(
 
 authenticationRouter.post(
     "/refresh-token",
-    async (request: Request<{}, {}, { originalToken: string; refreshToken: string }>, response: Response) => {
+    async (request: Request<{}, {}, { refreshToken: string }>, response: Response) => {
         // Gets a token if correct validationKey is provided
-        const originalToken = request.body.originalToken;
         const refreshToken = request.body.refreshToken;
-        const result = refreshJwtToken(originalToken, refreshToken);
+        const result = refreshJwtToken(refreshToken);
 
         if (result.status) {
             response.status(200).json(result);
