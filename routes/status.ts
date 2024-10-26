@@ -1,7 +1,7 @@
-import {Application, Request, Response, Router} from "express";
+import { Request, Response, Router } from "express";
 
 /**
- * Maps all status-related endpoints
+ * Maps an app status checking endpoint
  */
 const statusRouter = Router();
 

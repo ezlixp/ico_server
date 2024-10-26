@@ -42,12 +42,3 @@ export async function UUIDtoUsername(uuid: string): Promise<string> {
     }
     return "";
 }
-
-// await UUIDtoUsername("39365bd45c7841de8901c7dc5b7c64c4").then((res) => console.log(res));
-// await UUIDtoUsername("39365bd45c7841de8901c7dc5b7c64c4").then((res) => console.log(res));
-// await UUIDtoUsername("39365bd45c7841de8901c7dc5b7c64c4").then((res) => console.log(res));
-// await UsernametoUUID("pixlze").then((res) => console.log(res));
-// await UsernametoUUID("pixlze").then((res) => console.log(res));
-// await UsernametoUUID("cbrt").then((res) => console.log(res));
-// console.log(UUIDUsernameMap);
-// console.log(UsernameUUIDMap);

@@ -16,7 +16,7 @@ export default function refreshJwtToken(refreshToken: string): TokenResponseMode
         if (err) return;
         validRefreshToken = true;
     });
-    // if valid jwt token and should be revoked, alarm bells here
+    // if a refresh token is already revoked on database, revoke all children refresh tokens as refresh tokens should not be reused
 
     if (!validRefreshToken) return new TokenResponseModel(false, null, null, "Invalid refresh token provided.");
 

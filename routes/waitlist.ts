@@ -4,7 +4,6 @@ import validateJwtToken from "../security/jwtTokenValidator.js";
 
 /**
  * Maps all tome-related endpoints
- * @param {Express} app
  */
 const waitlistRouter = Router();
 

@@ -6,10 +6,6 @@ import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../services/wynntilsItemEncoding.js";
 import updateAspects from "./updateAspects.js";
 
-/**
- * Maps all discord-related endpoints
- */
-
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [
     {

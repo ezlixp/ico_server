@@ -25,6 +25,11 @@ const dataTransformers = {
     END: 255,
 };
 
+/**Converts a string of unicode characters to the bytes that make them up, following wynntil's item encoding standard:
+ * @link {@link https://github.com/Wynntils/Wynntils/issues/2246}
+ * @param byteString String of private use area unicode characters
+ * @returns {number[]} Array of bytes in decimal format
+ */
 function stringToBytes(byteString: string): number[] {
     let byteArray: number[] = [];
     for (let i = 0; i < byteString.length; i += 2) {
@@ -49,6 +54,11 @@ function stringToBytes(byteString: string): number[] {
     return byteArray;
 }
 
+/**Decodes a string of unicode characters following wynntil's item encoding standard:
+ * @link {@link https://github.com/Wynntils/Wynntils/issues/2246}
+ * @param byteString String of private use area unicode characters
+ * @returns {IItem} Item data object
+ */
 export function decodeItem(byteString: string): IItem {
     const itemData: IItem = {
         name: "",
