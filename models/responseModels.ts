@@ -4,9 +4,9 @@
  */
 abstract class ResponseModel {
     status: boolean;
-    error: string | null;
+    error?: string;
 
-    protected constructor(status: boolean, error: string | null) {
+    protected constructor(status: boolean, error?: string) {
         this.status = status;
         this.error = error;
     }
@@ -21,7 +21,7 @@ export class TokenResponseModel extends ResponseModel {
     token: string | null;
     refreshToken: string | null;
 
-    constructor(status: boolean, error: string | null, token: string | null, refreshToken: string | null) {
+    constructor(status: boolean, token: string | null, refreshToken: string | null, error?: string) {
         super(status, error);
         this.token = token;
         this.refreshToken = refreshToken;

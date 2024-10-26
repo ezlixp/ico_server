@@ -12,7 +12,7 @@ const options: jwt.SignOptions = { expiresIn: "24h" };
 export default function generateJwtToken(validationKey: string): TokenResponseModel {
     // Validate key sent
     if (validationKey !== process.env.JWT_VALIDATION_KEY)
-        return new TokenResponseModel(false, "Invalid validation key.", null, null);
+        return new TokenResponseModel(false, null, null, "Invalid validation key.");
 
     // Generate the token
     return signJwtToken("to be implemented");
@@ -24,13 +24,13 @@ export function signJwtToken(username: string): TokenResponseModel {
         const jwtToken = jwt.sign({ username: username }, secretKey, options);
         const refreshToken = jwt.sign({ username: secretKey }, refreshKey, { expiresIn: "7d" });
 
-        response = new TokenResponseModel(true, null, jwtToken, refreshToken);
+        response = new TokenResponseModel(true, jwtToken, refreshToken);
     } catch (error) {
         response = new TokenResponseModel(
             false,
-            "There was an error creating the token: " + (error as Error).message,
             null,
-            null
+            null,
+            "There was an error creating the token: " + (error as Error).message
         );
     }
     return response;
