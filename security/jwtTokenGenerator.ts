@@ -2,8 +2,8 @@ import jwt from "jsonwebtoken";
 import { TokenResponseModel } from "../models/responseModels.js";
 import "../config.ts";
 
-const secretKey = process.env.JWT_SECRET_KEY as string;
-const refreshKey = process.env.JWT_REFRESH_SECRET_KEY as string;
+const secretKey = process.env.JWT_SECRET_KEY;
+const refreshKey = process.env.JWT_REFRESH_SECRET_KEY || "placeholder";
 const options: jwt.SignOptions = { expiresIn: "24h" };
 
 /**

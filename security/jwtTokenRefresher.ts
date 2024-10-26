@@ -7,7 +7,7 @@ import { signJwtToken } from "./jwtTokenGenerator.js";
  * @param {string} originalToken Original jwt token
  * @param {string} refreshToken Refresh token supplied with the original token
  */
-const refreshKey = process.env.JWT_REFRESH_SECRET_KEY;
+const refreshKey = process.env.JWT_REFRESH_SECRET_KEY || "placeholder";
 export default function refreshJwtToken(refreshToken: string): TokenResponseModel {
     let validRefreshToken = false;
     const decoded = jwt.decode(refreshToken);
