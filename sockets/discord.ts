@@ -211,7 +211,7 @@ io.of("/discord").on("connection", (socket) => {
         console.log(message);
         io.of("/discord").emit("discordMessage", {
             ...message,
-            Content: message.Content.replace(new RegExp("[‌⁤ÁÀ֎]", "g"), ""),
+            Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
         });
     });
     socket.on("listOnline", async (callback) => {
