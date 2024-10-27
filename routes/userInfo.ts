@@ -40,11 +40,11 @@ userInfoRouter.post(
         try {
             const toBlock = request.body.toBlock;
             const uuid = request.params.uuid.replaceAll("-", "");
-            const user = await UserModel.findOne(
+            const user = await UserModel.findOneAndUpdate(
                 {
                     uuid: uuid,
                 },
-                {},
+                { username: await UUIDtoUsername(uuid) },
                 { upsert: true, new: true }
             );
             if (user) {
@@ -57,10 +57,7 @@ userInfoRouter.post(
                     return;
                 }
             }
-            await user?.updateOne(
-                { username: await UUIDtoUsername(uuid), $addToSet: { blocked: toBlock } },
-                { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
-            );
+            await user.updateOne({ $addToSet: { blocked: toBlock } });
             response.send({ error: "" });
         } catch (error) {
             console.log("update blocked error:", error);
