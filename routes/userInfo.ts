@@ -40,9 +40,13 @@ userInfoRouter.post(
         try {
             const toBlock = request.body.toBlock;
             const uuid = request.params.uuid.replaceAll("-", "");
-            const user = await UserModel.findOne({
-                uuid: uuid,
-            });
+            const user = await UserModel.findOne(
+                {
+                    uuid: uuid,
+                },
+                {},
+                { upsert: true }
+            );
             if (user) {
                 if (user.blocked.length >= 60) {
                     response.status(400).send({ error: "Blocked list full." });
