@@ -1,8 +1,7 @@
 import { Request, Response, Router } from "express";
 import validateJwtToken from "../security/jwtTokenValidator.js";
-import updateAspects from "../sockets/updateAspects.js";
 import UserModel from "../models/userModel.js";
-import { UUIDtoUsername } from "../services/ConvertMinecraftUser.js";
+import { decrementAspects } from "../services/updateAspects.js";
 
 /**Maps all endpoints related to user information. */
 const userInfoRouter = Router();
@@ -11,7 +10,7 @@ userInfoRouter.use(validateJwtToken);
 userInfoRouter.post("/aspects", async (request: Request<{}, {}, { username: string }>, response: Response) => {
     try {
         const username = request.body.username;
-        await updateAspects(username);
+        await decrementAspects(username);
         response.send();
     } catch (error) {
         console.log("update aspects error:", error);
@@ -24,7 +23,7 @@ userInfoRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string }, {
         const uuid = request.params.uuid.replaceAll("-", "");
         const user = await UserModel.findOneAndUpdate(
             { uuid: uuid },
-            { username: await UUIDtoUsername(uuid) },
+            {},
             { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
         );
         response.send(user.blocked);
@@ -44,7 +43,7 @@ userInfoRouter.post(
                 {
                     uuid: uuid,
                 },
-                { username: await UUIDtoUsername(uuid) },
+                {},
                 { upsert: true, new: true }
             );
             if (user) {
