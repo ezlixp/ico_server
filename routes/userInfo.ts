@@ -45,7 +45,7 @@ userInfoRouter.post(
                     uuid: uuid,
                 },
                 {},
-                { upsert: true }
+                { upsert: true, new: true }
             );
             if (user) {
                 if (user.blocked.length >= 60) {
