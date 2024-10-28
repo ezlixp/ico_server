@@ -11,6 +11,7 @@ export async function UsernametoUUID(username: string): Promise<string> {
     const url = `https://api.mojang.com/users/profiles/minecraft/${username}`;
     try {
         const response = await fetch(url);
+        if (!response.body) throw "empty mojang username to uuid response";
         const res: { id: string } = await response.json();
         if (res.id) {
             UUIDUsernameMap[res.id] = { username: username, timestamp: Date.now() };
@@ -31,6 +32,7 @@ export async function UUIDtoUsername(uuid: string): Promise<string> {
     const url = `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`;
     try {
         const response = await fetch(url);
+        if (!response.body) throw "empty mojang uuid to username response";
         const res: { name: string } = await response.json();
         if (res.name) {
             UUIDUsernameMap[uuid] = { username: res.name, timestamp: Date.now() };
