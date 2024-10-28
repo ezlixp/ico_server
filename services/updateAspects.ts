@@ -22,7 +22,7 @@ export async function decrementAspects(username: string): Promise<void> {
 export async function incrementAspects(username: string): Promise<void> {
     UserModel.updateOne(
         { uuid: await UsernametoUUID(username) },
-        { username: username, $inc: { aspects: 0.5 } },
+        { username: username, $inc: { aspects: 0.5, raids: 1 } },
         {
             upsert: true,
             collation: { locale: "en", strength: 2 },

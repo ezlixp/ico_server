@@ -44,7 +44,7 @@ router.use("/user", userInfoRouter);
 router.use("/wynn", wynnRouter);
 router.use("/healthz", healthRouter);
 router.use("/mod", modVersionRouter);
-router.use(statusRouter);
+router.use("/raids", statusRouter);
 router.use(raidRouter);
 router.use(aspectRouter);
 router.use(tomeRouter);
