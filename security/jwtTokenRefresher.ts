@@ -1,29 +1,25 @@
 import { TokenResponseModel } from "../models/responseModels.js";
 import jwt from "jsonwebtoken";
 import "../config.js";
-import generateJwtToken from "./jwtTokenGenerator.js";
+import { signJwtToken } from "./jwtTokenGenerator.js";
 
 /** Refreshes a JWT token if the refresh token is valid
- * @param {string} originalToken Original jwt token
- * @param {string} refreshToken Refresh token supplied with the original token
+ * @param {string} refreshToken Refresh token supplied that will be revoked after one use
  */
-const secretKey = process.env.JWT_SECRET_KEY;
-export default function refreshJwtToken(originalToken: string, refreshToken: string): TokenResponseModel {
-    let validOriginalToken = false;
-    jwt.verify(originalToken, secretKey, (err) => {
-        if (err && err.message !== "jwt expired") return;
-        validOriginalToken = true;
-    });
-    if (!validOriginalToken) return new TokenResponseModel(false, "Invalid original token provided.", null, null);
-
+const refreshKey = process.env.JWT_REFRESH_SECRET_KEY || "placeholder";
+export default function refreshJwtToken(refreshToken: string): TokenResponseModel {
     let validRefreshToken = false;
-    jwt.verify(refreshToken, secretKey, (err) => {
-        const decoded = jwt.decode(refreshToken);
-        if (err || typeof decoded !== "object" || decoded?.originalToken !== originalToken) return;
+    const decoded = jwt.decode(refreshToken);
+    if (!decoded || typeof decoded !== "object")
+        return new TokenResponseModel(false, null, null, "Malformed token payload.");
+    jwt.verify(refreshToken, refreshKey, (err) => {
+        if (err) return;
         validRefreshToken = true;
     });
+    // if a refresh token is already revoked on database, revoke all children refresh tokens as refresh tokens should not be reused
 
-    if (!validRefreshToken) return new TokenResponseModel(false, "Invalid refresh token provided.", null, null);
+    if (!validRefreshToken) return new TokenResponseModel(false, null, null, "Invalid refresh token provided.");
 
-    return generateJwtToken(process.env.JWT_VALIDATION_KEY);
+    // TODO: revoke current refresh token here
+    return signJwtToken(decoded.username!);
 }

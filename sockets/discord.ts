@@ -4,11 +4,7 @@ import RaidModel from "../models/raidModel.js";
 import checkVersion from "../services/checkModVersion.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../services/wynntilsItemEncoding.js";
-import updateAspects from "./updateAspects.js";
-
-/**
- * Maps all discord-related endpoints
- */
+import { decrementAspects, incrementAspects } from "../services/updateAspects.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [
@@ -72,12 +68,8 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 const raid = matcher.groups!.raid;
                 const timestamp = Date.now();
 
-                const sortedUsers = users.sort((user1, user2) =>
-                    user1.localeCompare(user2, "en", { sensitivity: "base" })
-                );
-
                 const newRaid = new RaidModel({
-                    users: sortedUsers,
+                    users: users,
                     raid,
                     timestamp,
                 });
@@ -87,7 +79,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 // Add users to db and increase aspect counter by 0.5
                 Promise.all(
                     newRaid.users.map((username) => {
-                        updateAspects(username.toString());
+                        incrementAspects(username.toString());
                     })
                 );
             } catch (error) {
@@ -111,7 +103,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher) => {
-            updateAspects(matcher.groups!.receiver);
+            decrementAspects(matcher.groups!.receiver);
             return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
         },
         customHeader: "⚠️ Aspect",
@@ -219,7 +211,7 @@ io.of("/discord").on("connection", (socket) => {
         console.log(message);
         io.of("/discord").emit("discordMessage", {
             ...message,
-            Content: message.Content.replace(new RegExp("[‌⁤ÁÀ֎]", "g"), ""),
+            Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
         });
     });
     socket.on("listOnline", async (callback) => {

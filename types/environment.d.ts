@@ -6,6 +6,7 @@ declare global {
             DB_URL: string;
             JWT_VALIDATION_KEY: string;
             JWT_SECRET_KEY: string;
+            JWT_REFRESH_SECRET_KEY: string;
         }
     }
 }

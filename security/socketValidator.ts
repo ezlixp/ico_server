@@ -12,7 +12,6 @@ const secretKey = process.env.JWT_SECRET_KEY as string;
  */
 function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
     const authorizationHeader = socket.handshake.headers.authorization as string;
-    console.log(authorizationHeader);
 
     if (!authorizationHeader) {
         console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);
@@ -23,10 +22,6 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
     const token = authorizationHeader.split(" ")[1];
 
     jwt.verify(token, secretKey, (err) => {
-        // err.message:
-        // invalid token: "invalid token"
-        // expired: "jwt expired"
-        console.log(err?.message);
         if (err) {
             console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);
             return next(new Error("Invalid token provided"));

@@ -1,6 +1,8 @@
 import { Request, Response, Router } from "express";
 import { UsernametoUUID } from "../services/ConvertMinecraftUser.js";
 import UserModel from "../models/userModel.js";
+import validateJwtToken from "../security/jwtTokenValidator.js";
+import { decrementAspects } from "../services/updateAspects.js";
 
 /**
  * Maps all aspect-related endpoints.
@@ -40,5 +42,18 @@ aspectRouter.get("/aspects/:username", async (request: Request<{ username: strin
         console.error("getSpecificAspectsError:", error);
     }
 });
+
+aspectRouter.post(
+    "/aspects",
+    validateJwtToken,
+    async (request: Request<{}, {}, { username: string }>, response: Response) => {
+        try {
+            decrementAspects(request.body.username);
+        } catch (error) {
+            response.status(500).send({ error: "Something went wrong processing the request." });
+            console.error("postAspectError:", error);
+        }
+    }
+);
 
 export default aspectRouter;

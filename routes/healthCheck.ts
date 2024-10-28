@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 
 /**
- * Maps all health check related endpoints.
+ * Maps a health check endpoint
  */
 const healthRouter = Router();
 

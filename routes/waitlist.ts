@@ -4,7 +4,6 @@ import validateJwtToken from "../security/jwtTokenValidator.js";
 
 /**
  * Maps all tome-related endpoints
- * @param {Express} app
  */
 const waitlistRouter = Router();
 
@@ -65,7 +64,6 @@ waitlistRouter.delete("/waitlist/:username", validateJwtToken, async (request: R
             locale: "en",
             strength: 2,
         });
-        console.log(result);
 
         // If no entity was found, return 'Not Found'
         if (!result) {
