@@ -10,7 +10,7 @@ interface IUser extends Document {
 
 // TODO: figure out how to make collation default without having to add it to each request
 const userSchema: Schema<IUser> = new Schema({
-    username: { type: String, required: true },
+    username: { type: String, required: false },
     uuid: { type: String, required: true },
     aspects: { type: Number, required: true, default: 0 },
     raids: { type: Number, required: true, default: 0 },

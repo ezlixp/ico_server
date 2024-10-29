@@ -23,14 +23,18 @@ raidRouter.get("/", async (request: Request, response: Response) => {
 
 raidRouter.get("/leaderboard", async (request: Request, response: Response) => {
     try {
-        const topUsers = await UserModel.find({}).sort({ raids: "descending" }).limit(10);
+        const topUsers = await UserModel.find({ raids: { $gt: 0 } })
+            .sort({ raids: "descending" })
+            .limit(10);
+        let formattedTopUsers: { username: string; raids: number }[] = [];
         // TODO implement mojang api bulk uuid to username call
         for (let i = 0; i < topUsers.length; i++) {
-            topUsers[i] = await topUsers[i]
+            const topUser = await topUsers[i]
                 .$set({ username: await UUIDtoUsername(topUsers[i].uuid.toString()) })
                 .save();
+            formattedTopUsers.push({ username: topUser.username.toString(), raids: topUser.raids.valueOf() });
         }
-        response.send(topUsers);
+        response.send(formattedTopUsers);
     } catch (error) {
         response.status(500).send({ error: "Something went wrong processing the request" });
         console.error("getRaidsLeaderboardError:", error);
