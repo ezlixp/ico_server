@@ -22,7 +22,9 @@ raidRouter.get("/", async (request: Request, response: Response) => {
 
 raidRouter.get("/leaderboard", async (request: Request, response: Response) => {
     try {
-        const topUsers = await UserModel.find({}).sort({ raids: "descending" }).limit(10);
+        const topUsers = await UserModel.find({}, { raids: true, username: true })
+            .sort({ raids: "descending" })
+            .limit(10);
         response.send(topUsers);
     } catch (error) {
         response.status(500).send({ error: "Something went wrong processing the request" });
