@@ -28,6 +28,6 @@ export async function incrementAspects(username: string): Promise<void> {
             collation: { locale: "en", strength: 2 },
         }
     ).then(() => {
-        console.log(username, "received an aspect");
+        console.log(username, "is owed half an aspect");
     });
 }
