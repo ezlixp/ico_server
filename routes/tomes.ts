@@ -1,13 +1,14 @@
 ﻿import validateJwtToken from "../security/jwtTokenValidator.js";
 import TomeModel from "../models/tomeModel.js";
 import { Request, Response, Router } from "express";
+import verifyGuild from "../middleware/verifyGuild.middleware.js";
 
 /**
  * Maps all tome-related endpoints
  */
 const tomeRouter = Router();
 
-tomeRouter.get("/tomes", async (request: Request, response: Response) => {
+tomeRouter.get("/", async (request: Request, response: Response) => {
     try {
         // Get users ordered by time added
         const tomeList = await TomeModel.find({}).sort({ dateAdded: 1 });
@@ -21,7 +22,7 @@ tomeRouter.get("/tomes", async (request: Request, response: Response) => {
     }
 });
 
-tomeRouter.get("/tomes/:username", async (request: Request<{ username: string }>, response: Response) => {
+tomeRouter.get("/:username", async (request: Request<{ username: string }>, response: Response) => {
     try {
         // Search for specific user
         const result = await TomeModel.findOne({ username: request.params.username }).collation({
@@ -49,42 +50,47 @@ tomeRouter.get("/tomes/:username", async (request: Request<{ username: string }>
     }
 });
 
-tomeRouter.post("/tomes", validateJwtToken, async (request: Request, response: Response) => {
-    try {
-        // Save tome model on database
-        const tomeData = request.body;
+tomeRouter.post(
+    "/",
+    validateJwtToken,
+    verifyGuild("b250f587-ab5e-48cd-bf90-71e65d6dc9e7"),
+    async (request: Request<{}, {}, { username: string }>, response: Response) => {
+        try {
+            // Save tome model on database
+            const tomeData = request.body;
 
-        const exists = await TomeModel.findOne({
-            username: tomeData.username,
-        }).collation({
-            locale: "en",
-            strength: 2,
-        });
+            const exists = await TomeModel.findOne({
+                username: tomeData.username,
+            }).collation({
+                locale: "en",
+                strength: 2,
+            });
 
-        // If user exists, return 'Bad Request'
-        if (exists) {
-            response.status(400).send({ error: "User already in tome list." });
-            return;
+            // If user exists, return 'Bad Request'
+            if (exists) {
+                response.status(400).send({ error: "User already in tome list." });
+                return;
+            }
+
+            // Create and save user in the database
+            const tome = new TomeModel(tomeData);
+            await tome.save();
+
+            // Send 'Created' if saved successfully
+            response.status(201).send(tome);
+            console.log(tome, "added to tome list");
+        } catch (error) {
+            response.status(500).send({
+                error: "Something went wrong processing your request.",
+            });
+            console.error("postTomeError:", error);
         }
-
-        // Create and save user in the database
-        const tome = new TomeModel(tomeData);
-        await tome.save();
-
-        // Send 'Created' if saved successfully
-        response.status(201).send(tome);
-        console.log(tome, "added to tome list");
-    } catch (error) {
-        response.status(500).send({
-            error: "Something went wrong processing your request.",
-        });
-        console.error("postTomeError:", error);
     }
-});
+);
 
 // TODO: implement search by uuid
 tomeRouter.delete(
-    "/tomes/:username",
+    "/:username",
     validateJwtToken,
     async (request: Request<{ username: string }>, response: Response) => {
         try {
