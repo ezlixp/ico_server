@@ -1,5 +1,6 @@
 export function InsertDashes(str: string) {
     str = str.replace("-", "");
+    if (str.length != 32) return "";
     return (
         str.substring(0, 8) +
         "-" +
