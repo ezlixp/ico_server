@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { UsernametoUUID } from "../services/ConvertMinecraftUser.js";
+import { UsernametoUUID } from "../services/mojangApiClient.js";
 import UserModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 import { decrementAspects } from "../services/updateAspects.js";

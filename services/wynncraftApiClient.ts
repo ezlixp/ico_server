@@ -1,5 +1,7 @@
+import { UsernametoUUID } from "./mojangApiClient.js";
+
 async function getPlayersGuildAsync(username: string) {
-    const apiUrl = `https://api.wynncraft.com/v3/player/${username}`;
+    const apiUrl = `https://api.wynncraft.com/v3/player/${UsernametoUUID(username)}`;
 
     const response = await fetch(apiUrl);
     const data = await response.json();

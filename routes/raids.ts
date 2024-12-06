@@ -1,7 +1,7 @@
 ﻿import RaidModel from "../models/raidModel.js";
 import { Request, Response, Router } from "express";
 import UserModel from "../models/userModel.js";
-import { UUIDtoUsername } from "../services/ConvertMinecraftUser.js";
+import { UUIDtoUsername } from "../services/mojangApiClient.js";
 
 /**
  * Maps all raid-related endpoints base route: /raids.

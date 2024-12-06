@@ -1,5 +1,5 @@
 import UserModel from "../models/userModel.js";
-import { UsernametoUUID } from "./ConvertMinecraftUser.js";
+import { UsernametoUUID } from "./mojangApiClient.js";
 
 /** Decrements the number of aspects owed to a user by 1
  * @param username The user to decrement from
