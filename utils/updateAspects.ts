@@ -1,12 +1,12 @@
 import UserModel from "../models/userModel.js";
-import { UsernametoUUID } from "./mojangApiClient.js";
+import { UsernametoUuid } from "./mojangApiClient.js";
 
 /** Decrements the number of aspects owed to a user by 1
  * @param username The user to decrement from
  */
 export async function decrementAspects(username: string): Promise<void> {
     UserModel.updateOne(
-        { uuid: await UsernametoUUID(username) },
+        { uuid: await UsernametoUuid(username) },
         { username: username, $inc: { aspects: -1 } },
         {
             upsert: true,
@@ -21,7 +21,7 @@ export async function decrementAspects(username: string): Promise<void> {
  */
 export async function incrementAspects(username: string): Promise<void> {
     UserModel.updateOne(
-        { uuid: await UsernametoUUID(username) },
+        { uuid: await UsernametoUuid(username) },
         { username: username, $inc: { aspects: 0.5, raids: 1 } },
         {
             upsert: true,

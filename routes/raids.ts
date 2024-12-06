@@ -1,7 +1,7 @@
 ﻿import RaidModel from "../models/raidModel.js";
 import { Request, Response, Router } from "express";
 import UserModel from "../models/userModel.js";
-import { UUIDtoUsername } from "../services/mojangApiClient.js";
+import { UuidtoUsername } from "../utils/mojangApiClient.js";
 
 /**
  * Maps all raid-related endpoints base route: /raids.
@@ -30,7 +30,7 @@ raidRouter.get("/leaderboard", async (request: Request, response: Response) => {
         // TODO implement mojang api bulk uuid to username call
         for (let i = 0; i < topUsers.length; i++) {
             const topUser = await topUsers[i]
-                .$set({ username: await UUIDtoUsername(topUsers[i].uuid.toString()) })
+                .$set({ username: await UuidtoUsername(topUsers[i].uuid.toString()) })
                 .save();
             formattedTopUsers.push({ username: topUser.username.toString(), raids: topUser.raids.valueOf() });
         }

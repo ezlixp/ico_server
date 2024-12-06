@@ -1,10 +1,10 @@
 import { io } from "../app.js";
 import "../config.js";
 import RaidModel from "../models/raidModel.js";
-import checkVersion from "../services/checkModVersion.js";
+import checkVersion from "../utils/checkModVersion.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
-import { decodeItem } from "../services/wynntilsItemEncoding.js";
-import { decrementAspects, incrementAspects } from "../services/updateAspects.js";
+import { decodeItem } from "../utils/wynntilsItemEncoding.js";
+import { decrementAspects, incrementAspects } from "../utils/updateAspects.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [

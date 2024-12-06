@@ -4,7 +4,7 @@ const UsernameUUIDMap: { [key: string]: { uuid: string; timestamp: number } } = 
 /** Caches UUID to username conversions from Mojang api.*/
 const UUIDUsernameMap: { [key: string]: { username: string; timestamp: number } } = {};
 
-export async function UsernametoUUID(username: string): Promise<string> {
+export async function UsernametoUuid(username: string): Promise<string> {
     if (UsernameUUIDMap[username] && Date.now() - UsernameUUIDMap[username].timestamp < 1.728e9) {
         return UsernameUUIDMap[username].uuid;
     }
@@ -24,7 +24,7 @@ export async function UsernametoUUID(username: string): Promise<string> {
     return "";
 }
 
-export async function UUIDtoUsername(uuid: string): Promise<string> {
+export async function UuidtoUsername(uuid: string): Promise<string> {
     uuid = uuid.replaceAll("-", "");
     if (UUIDUsernameMap[uuid] && Date.now() - UUIDUsernameMap[uuid].timestamp < 1.728e9) {
         return UUIDUsernameMap[uuid].username;

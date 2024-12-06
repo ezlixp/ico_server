@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
-import { UsernametoUUID } from "../services/mojangApiClient.js";
+import { UsernametoUuid } from "../utils/mojangApiClient.js";
 import UserModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
-import { decrementAspects } from "../services/updateAspects.js";
+import { decrementAspects } from "../utils/updateAspects.js";
 import verifyGuild from "../middleware/verifyGuild.middleware.js";
 
 /**
@@ -25,7 +25,7 @@ aspectRouter.get("/", async (request: Request, response: Response) => {
 aspectRouter.get("/:username", async (request: Request<{ username: string }>, response: Response) => {
     try {
         // Get aspect data for specified user
-        const aspect = await UserModel.findOne({ uuid: await UsernametoUUID(request.params.username) }).collation({
+        const aspect = await UserModel.findOne({ uuid: await UsernametoUuid(request.params.username) }).collation({
             locale: "en",
             strength: 2,
         });
