@@ -22,7 +22,7 @@ export function signJwtToken(username: string): TokenResponseModel {
     let response: TokenResponseModel;
     try {
         const jwtToken = jwt.sign({ username: username }, secretKey, options);
-        const refreshToken = jwt.sign({ username: secretKey }, refreshKey, { expiresIn: "7d" });
+        const refreshToken = jwt.sign({ username: "placeholder" }, refreshKey, { expiresIn: "7d" });
 
         response = new TokenResponseModel(true, jwtToken, refreshToken);
     } catch (error) {
