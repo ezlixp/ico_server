@@ -204,12 +204,10 @@ io.of("/discord").on("connection", (socket) => {
                 ENCODED_DATA_PATTERN,
                 (match, _) => `<${decodeItem(match).name}>`
             );
-            isOnline(header).then((online) => {
-                io.of("/discord").emit("wynnMessage", {
-                    MessageType: 2,
-                    HeaderContent: matcher.groups!.header + (online ? "*" : ""),
-                    TextContent: message,
-                });
+            io.of("/discord").emit("wynnMessage", {
+                MessageType: 2,
+                HeaderContent: matcher.groups!.header,
+                TextContent: message,
             });
         }
     });
