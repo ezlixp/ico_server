@@ -15,8 +15,8 @@ modVersionRouter.get("/update", async (request: Request, response: Response) => 
     if (!latestVersion) {
         response.status(500).send({ error: "something went wrong" });
         console.log("get latest version error");
+        return;
     }
-    console.log(latestVersion);
     response.send(latestVersion);
 });
 
