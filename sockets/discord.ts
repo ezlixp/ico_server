@@ -199,13 +199,17 @@ io.of("/discord").on("connection", (socket) => {
     socket.on("discordOnlyWynnMessage", (message: string) => {
         const matcher = discordOnlyPattern.exec(message);
         if (matcher) {
-            io.of("/discord").emit("wynnMessage", {
-                MessageType: 2,
-                HeaderContent: matcher.groups!.header,
-                TextContent: matcher.groups!.content.replace(
-                    ENCODED_DATA_PATTERN,
-                    (match, _) => `<${decodeItem(match).name}>`
-                ),
+            const header = matcher.groups!.header;
+            const message = matcher.groups!.content.replace(
+                ENCODED_DATA_PATTERN,
+                (match, _) => `<${decodeItem(match).name}>`
+            );
+            isOnline(header).then((online) => {
+                io.of("/discord").emit("wynnMessage", {
+                    MessageType: 2,
+                    HeaderContent: matcher.groups!.header + (online ? "*" : ""),
+                    TextContent: message,
+                });
             });
         }
     });
