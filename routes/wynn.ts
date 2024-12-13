@@ -12,7 +12,7 @@ interface IOnlineUser {
 const wynnRouter = Router();
 
 wynnRouter.get("/online", async (request: Request, response: Response) => {
-    response.send(getOnlineUsers());
+    response.send(await getOnlineUsers());
 });
 
 export default wynnRouter;

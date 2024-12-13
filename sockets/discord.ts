@@ -155,7 +155,7 @@ io.of("/discord").on("connection", (socket) => {
                     isOnline(header).then((online) => {
                         io.of("/discord").emit("wynnMessage", {
                             MessageType: pattern.messageType,
-                            HeaderContent: header + online ? "*" : "",
+                            HeaderContent: header + (online ? "*" : ""),
                             TextContent: message,
                         });
                     });
