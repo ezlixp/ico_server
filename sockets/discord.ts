@@ -5,6 +5,7 @@ import checkVersion from "../utils/checkModVersion.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
 import { decrementAspects, incrementAspects } from "../utils/updateAspects.js";
+import { isOnline } from "../utils/socketUtils.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [
@@ -147,13 +148,16 @@ io.of("/discord").on("connection", (socket) => {
                     const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
                     const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
                     console.log(header, rawMessage, messageIndex, "emitted by:", socket.data.username);
+
                     const message = rawMessage
                         .replace(new RegExp("§.", "g"), "")
                         .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
-                    io.of("/discord").emit("wynnMessage", {
-                        MessageType: pattern.messageType,
-                        HeaderContent: header,
-                        TextContent: message,
+                    isOnline(header).then((online) => {
+                        io.of("/discord").emit("wynnMessage", {
+                            MessageType: pattern.messageType,
+                            HeaderContent: header + online ? "*" : "",
+                            TextContent: message,
+                        });
                     });
                     break;
                 }
@@ -178,6 +182,7 @@ io.of("/discord").on("connection", (socket) => {
                     const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
                     const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
                     console.log("hr", header, rawMessage, hrMessageIndex, "emitted by:", socket.data.username);
+
                     const message = rawMessage.replace(new RegExp("§.", "g"), "");
                     io.of("/discord").emit("wynnMessage", {
                         MessageType: pattern.messageType,

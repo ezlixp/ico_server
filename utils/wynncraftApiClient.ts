@@ -1,5 +1,5 @@
 import { UsernametoUuid } from "./mojangApiClient.js";
-import { InsertDashes } from "./UuidUtils.js";
+import { InsertDashes } from "./uuidUtils.js";
 
 async function getPlayersGuildAsync(username: string) {
     const apiUrl = `https://api.wynncraft.com/v3/player/${InsertDashes(await UsernametoUuid(username))}`;
