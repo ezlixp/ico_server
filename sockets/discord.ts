@@ -6,6 +6,7 @@ import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
 import { decrementAspects, incrementAspects } from "../utils/updateAspects.js";
 import { isOnline } from "../utils/socketUtils.js";
+import UserModel from "../models/userModel.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [
@@ -196,7 +197,7 @@ io.of("/discord").on("connection", (socket) => {
             ++socket.data.hrMessageIndex;
         }
     });
-    socket.on("discordOnlyWynnMessage", (message: string) => {
+    socket.on("discordOnlyWynnMessage", async (message: string) => {
         const matcher = discordOnlyPattern.exec(message);
         if (matcher) {
             const header = matcher.groups!.header;
@@ -204,11 +205,18 @@ io.of("/discord").on("connection", (socket) => {
                 ENCODED_DATA_PATTERN,
                 (match, _) => `<${decodeItem(match).name}>`
             );
-            io.of("/discord").emit("wynnMessage", {
-                MessageType: 2,
-                HeaderContent: matcher.groups!.header,
-                TextContent: message,
-            });
+            const user = await UserModel.findOne(
+                { username: header },
+                {},
+                { collation: { locale: "en", strength: 2 } }
+            ).exec();
+            if (user && !user.muted) {
+                io.of("/discord").emit("wynnMessage", {
+                    MessageType: 2,
+                    HeaderContent: header,
+                    TextContent: message,
+                });
+            }
         }
     });
     /**
