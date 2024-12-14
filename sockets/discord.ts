@@ -199,6 +199,7 @@ io.of("/discord").on("connection", (socket) => {
         }
     });
     socket.on("discordOnlyWynnMessage", async (message: string) => {
+        console.log(message);
         const matcher = discordOnlyPattern.exec(message);
         if (matcher) {
             const header = matcher.groups!.header;
