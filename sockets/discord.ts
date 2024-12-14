@@ -7,6 +7,7 @@ import { decodeItem } from "../utils/wynntilsItemEncoding.js";
 import { decrementAspects, incrementAspects } from "../utils/updateAspects.js";
 import { isOnline } from "../utils/socketUtils.js";
 import UserModel from "../models/userModel.js";
+import { UsernametoUuid } from "../utils/mojangApiClient.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [
@@ -206,7 +207,7 @@ io.of("/discord").on("connection", (socket) => {
                 (match, _) => `<${decodeItem(match).name}>`
             );
             const user = await UserModel.findOne(
-                { username: header },
+                { username: await UsernametoUuid(header) },
                 {},
                 { collation: { locale: "en", strength: 2 } }
             ).exec();
