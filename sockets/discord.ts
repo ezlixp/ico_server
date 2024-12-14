@@ -212,7 +212,7 @@ io.of("/discord").on("connection", (socket) => {
                 {},
                 { collation: { locale: "en", strength: 2 } }
             ).exec();
-            if (user && !user.muted) {
+            if (!user || !user.muted) {
                 io.of("/discord").emit("wynnMessage", {
                     MessageType: 2,
                     HeaderContent: header,
