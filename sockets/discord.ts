@@ -1,13 +1,13 @@
 import { io } from "../app.js";
 import "../config.js";
 import RaidModel from "../models/raidModel.js";
-import checkVersion from "../utils/checkModVersion.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
-import { decrementAspects, incrementAspects } from "../utils/updateAspects.js";
+import { decrementAspects, incrementAspects } from "../utils/aspectUtils.js";
 import { isOnline } from "../utils/socketUtils.js";
 import UserModel from "../models/userModel.js";
-import { UsernametoUuid } from "../utils/mojangApiClient.js";
+import { UsernametoUuid } from "../net/mojangApiClient.js";
+import { checkVersion } from "../utils/versionUtils.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const hrMessagePatterns: IWynnMessage[] = [

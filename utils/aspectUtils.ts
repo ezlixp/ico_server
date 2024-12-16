@@ -1,5 +1,5 @@
 import UserModel from "../models/userModel.js";
-import { UsernametoUuid } from "./mojangApiClient.js";
+import { UsernametoUuid } from "../net/mojangApiClient.js";
 
 /** Decrements the number of aspects owed to a user by 1
  * @param username The user to decrement from
