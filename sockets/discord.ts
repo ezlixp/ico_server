@@ -55,7 +55,7 @@ const hrMessagePatterns: IWynnMessage[] = [
     },
 ];
 const wynnMessagePatterns: IWynnMessage[] = [
-    { pattern: /^.*§[38](?<header>.+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
+    { pattern: /^.*§[38](?<header>[^ ]+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
     {
         pattern:
             /^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$/,
