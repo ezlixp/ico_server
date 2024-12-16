@@ -3,84 +3,13 @@ import "../config.js";
 import RaidModel from "../models/raidModel.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
-import { decrementAspects, incrementRaidRewards } from "../utils/aspectUtils.js";
+import { decrementAspects, incrementAspects } from "../utils/aspectUtils.js";
 import { isOnline } from "../utils/socketUtils.js";
 import UserModel from "../models/userModel.js";
 import { UsernametoUuid } from "../net/mojangApiClient.js";
 import { checkVersion } from "../utils/versionUtils.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
-const wynnMessagePatterns: IWynnMessage[] = [
-    { pattern: /^.*§[38](?<header>[^ ]+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
-    {
-        pattern:
-            /^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$/,
-        messageType: 1,
-        customMessage: (matcher) => {
-            try {
-                const users = [
-                    matcher.groups!.player1,
-                    matcher.groups!.player2,
-                    matcher.groups!.player3,
-                    matcher.groups!.player4,
-                ];
-                const raid = matcher.groups!.raid;
-                const timestamp = Date.now();
-
-                const newRaid = new RaidModel({
-                    users: users,
-                    raid,
-                    timestamp,
-                });
-
-                newRaid.save();
-
-                // Add users to db and increase aspect counter by 0.5
-                Promise.all(
-                    newRaid.users.map((username) => {
-                        incrementRaidRewards(username.toString());
-                    })
-                );
-            } catch (error) {
-                console.error("postRaidError:", error);
-            }
-            return (
-                matcher.groups!.player1 +
-                ", " +
-                matcher.groups!.player2 +
-                ", " +
-                matcher.groups!.player3 +
-                ", and " +
-                matcher.groups!.player4 +
-                " completed " +
-                matcher.groups!.raid
-            );
-        },
-        customHeader: "⚠️ Guild Raida",
-    },
-    {
-        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
-        messageType: 1,
-        customMessage: (matcher) => {
-            decrementAspects(matcher.groups!.receiver);
-            return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
-        },
-        customHeader: "⚠️ Aspect",
-    },
-    {
-        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$/,
-        messageType: 1,
-        customMessage: (matcher) => matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver,
-        customHeader: "⚠️ Tome",
-    },
-    {
-        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$/,
-        messageType: 1,
-        customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
-        customHeader: "⚠️ 🤑",
-    },
-    { pattern: /^(?<content>.*)$/, customHeader: "⚠️ Info", messageType: 1 },
-];
 const hrMessagePatterns: IWynnMessage[] = [
     {
         pattern:
@@ -124,6 +53,77 @@ const hrMessagePatterns: IWynnMessage[] = [
         messageType: 1,
         customHeader: "⚠️ Info",
     },
+];
+const wynnMessagePatterns: IWynnMessage[] = [
+    { pattern: /^.*§[38](?<header>[^ ]+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
+    {
+        pattern:
+            /^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$/,
+        messageType: 1,
+        customMessage: (matcher) => {
+            try {
+                const users = [
+                    matcher.groups!.player1,
+                    matcher.groups!.player2,
+                    matcher.groups!.player3,
+                    matcher.groups!.player4,
+                ];
+                const raid = matcher.groups!.raid;
+                const timestamp = Date.now();
+
+                const newRaid = new RaidModel({
+                    users: users,
+                    raid,
+                    timestamp,
+                });
+
+                newRaid.save();
+
+                // Add users to db and increase aspect counter by 0.5
+                Promise.all(
+                    newRaid.users.map((username) => {
+                        incrementAspects(username.toString());
+                    })
+                );
+            } catch (error) {
+                console.error("postRaidError:", error);
+            }
+            return (
+                matcher.groups!.player1 +
+                ", " +
+                matcher.groups!.player2 +
+                ", " +
+                matcher.groups!.player3 +
+                ", and " +
+                matcher.groups!.player4 +
+                " completed " +
+                matcher.groups!.raid
+            );
+        },
+        customHeader: "⚠️ Guild Raida",
+    },
+    {
+        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
+        messageType: 1,
+        customMessage: (matcher) => {
+            decrementAspects(matcher.groups!.receiver);
+            return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
+        },
+        customHeader: "⚠️ Aspect",
+    },
+    {
+        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$/,
+        messageType: 1,
+        customMessage: (matcher) => matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver,
+        customHeader: "⚠️ Tome",
+    },
+    {
+        pattern: /^§.(?<giver>.*?)(§.)? rewarded §.1024 Emeralds§. to §.(?<receiver>.*?)(§.)?$/,
+        messageType: 1,
+        customMessage: (matcher) => matcher.groups!.giver + " has given a 1024 emeralds to " + matcher.groups!.receiver,
+        customHeader: "⚠️ 🤑",
+    },
+    { pattern: /^(?<content>.*)$/, customHeader: "⚠️ Info", messageType: 1 },
 ];
 const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
