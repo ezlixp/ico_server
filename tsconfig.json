@@ -25,7 +25,8 @@
         "types/**/*",
         "index.ts",
         "config.ts",
-        "app.ts"
+        "app.ts",
+        "net/**/*"
     ],
     "exclude": ["node_modules", "**/*.spec.ts", "test/**/*"]
 }

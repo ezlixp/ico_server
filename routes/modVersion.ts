@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import getLatestVersion from "../utils/getLatestVersion.js";
+import { getLatestVersion } from "../utils/versionUtils.js";
 
 /**
  * Maps all mod version related endpoints.

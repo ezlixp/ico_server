@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 import UserModel from "../models/userModel.js";
-import { decrementAspects } from "../utils/updateAspects.js";
+import { decrementAspects } from "../utils/aspectUtils.js";
 
 /**Maps all endpoints related to user information. */
 const userInfoRouter = Router();

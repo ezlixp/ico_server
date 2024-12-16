@@ -7,7 +7,12 @@ const versionExtractorPattern = new RegExp(
     "guildapi/(?<major>\\d+).(?<minor>\\d+).(?<revision>\\d+)(-beta.(?<beta>\\d+))?"
 );
 
-function isMinimumVersionSatisfied(versionString: string | undefined): boolean {
+interface IModVersionResponse {
+    versionNumber: string;
+    download: string;
+}
+
+export function checkVersion(versionString: string | undefined): boolean {
     if (!versionString) return false;
     const matcher = versionExtractorPattern.exec(versionString);
     if (!matcher) {
@@ -26,4 +31,14 @@ function isMinimumVersionSatisfied(versionString: string | undefined): boolean {
     return true;
 }
 
-export default isMinimumVersionSatisfied;
+export async function getLatestVersion(): Promise<IModVersionResponse | null> {
+    const url = "https://api.modrinth.com/v2/project/guild-api/version";
+    try {
+        const response = await fetch(url);
+        const res = await response.json();
+        return { versionNumber: res[0].version_number, download: res[0].files[0].url };
+    } catch (error) {
+        console.log("get version error:", error);
+    }
+    return null;
+}

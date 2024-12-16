@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
-import { UsernametoUuid } from "../utils/mojangApiClient.js";
+import { UsernametoUuid } from "../net/mojangApiClient.js";
 import UserModel from "../models/userModel.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
-import { decrementAspects } from "../utils/updateAspects.js";
+import { decrementAspects } from "../utils/aspectUtils.js";
 import verifyGuild from "../middleware/verifyGuild.middleware.js";
 
 /**

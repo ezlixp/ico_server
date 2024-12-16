@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import checkIfPlayerIsGuildAsync from "../utils/wynncraftApiClient.js";
+import checkIfPlayerIsGuildAsync from "../net/wynncraftApiClient.js";
 
 export default function verifyGuild(
     guildId: string
