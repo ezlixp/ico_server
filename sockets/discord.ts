@@ -10,50 +10,6 @@ import { UsernametoUuid } from "../net/mojangApiClient.js";
 import { checkVersion } from "../utils/versionUtils.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
-const hrMessagePatterns: IWynnMessage[] = [
-    {
-        pattern:
-            /^(?<content>§.(?<username>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*))$/,
-        messageType: 1,
-        customHeader: "⚠️ 🤓",
-    },
-    {
-        pattern: /^(?<content>§.(?<username>.+?)§. removed §.(?<changed>.+?)§. from §.(?<territory>.*))$/,
-        messageType: 1,
-        customHeader: "⚠️ 🤓",
-    },
-
-    {
-        pattern: /^(?<content>§.(?<username>.+?)§. changed §.\d+ \w+§. on §3(?<territory>.*))$/,
-        messageType: 1,
-        customHeader: "⚠️ 🤓",
-    },
-    {
-        pattern: /^(?<content>Territory §.(?<territory>.+?)§. is \w+ more resources than it can store!)$/,
-        messageType: 1,
-        customHeader: "⚠️ 🤓",
-    },
-    {
-        pattern: /^(?<content>Territory §.(?<territory>.+?)§. production has stabilised)$/,
-        messageType: 1,
-        customHeader: "⚠️ 🤓",
-    },
-    {
-        pattern: /^(?<content>§.(?<username>.+?)§. applied the loadout §(?<loadout>..+?)§. on §.(?<territory>.*))$/,
-        messageType: 1,
-        customHeader: "⚠️ 🤓",
-    },
-    {
-        pattern: /^(?<content>§.(?<username>.+?)§. \w+ §.(?<deposited>.+?)§. to the Guild Bank \(§.High Ranked§.\))$/,
-        messageType: 1,
-        customHeader: "⚠️ Info",
-    },
-    {
-        pattern: /^(?<content>§.A Guild Tome§. has been found and added to the Guild Rewards)$/,
-        messageType: 1,
-        customHeader: "⚠️ Info",
-    },
-];
 const wynnMessagePatterns: IWynnMessage[] = [
     { pattern: /^.*§[38](?<header>[^ ]+?)(§[38])?:§[b8] (?<content>.*)$/, messageType: 0 },
     {
@@ -124,6 +80,50 @@ const wynnMessagePatterns: IWynnMessage[] = [
         customHeader: "⚠️ 🤑",
     },
     { pattern: /^(?<content>.*)$/, customHeader: "⚠️ Info", messageType: 1 },
+];
+const hrMessagePatterns: IWynnMessage[] = [
+    {
+        pattern:
+            /^(?<content>§.(?<username>.+?)§. set §.(?<bonus>.+?)§. to level §.(?<level>.+?)§. on §.(?<territory>.*))$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+    {
+        pattern: /^(?<content>§.(?<username>.+?)§. removed §.(?<changed>.+?)§. from §.(?<territory>.*))$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+
+    {
+        pattern: /^(?<content>§.(?<username>.+?)§. changed §.\d+ \w+§. on §3(?<territory>.*))$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+    {
+        pattern: /^(?<content>Territory §.(?<territory>.+?)§. is \w+ more resources than it can store!)$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+    {
+        pattern: /^(?<content>Territory §.(?<territory>.+?)§. production has stabilised)$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+    {
+        pattern: /^(?<content>§.(?<username>.+?)§. applied the loadout §(?<loadout>..+?)§. on §.(?<territory>.*))$/,
+        messageType: 1,
+        customHeader: "⚠️ 🤓",
+    },
+    {
+        pattern: /^(?<content>§.(?<username>.+?)§. \w+ §.(?<deposited>.+?)§. to the Guild Bank \(§.High Ranked§.\))$/,
+        messageType: 1,
+        customHeader: "⚠️ Info",
+    },
+    {
+        pattern: /^(?<content>§.A Guild Tome§. has been found and added to the Guild Rewards)$/,
+        messageType: 1,
+        customHeader: "⚠️ Info",
+    },
 ];
 const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
 
