@@ -8,7 +8,7 @@ import verifyGuild from "../middleware/verifyGuild.middleware.js";
 /**
  * Maps all aspect-related endpoints.
  */
-const aspectRouter = Router();
+const aspectRouter = Router({ mergeParams: true });
 
 aspectRouter.get("/", async (request: Request, response: Response) => {
     try {

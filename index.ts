@@ -15,6 +15,7 @@ import "./sockets/discord.js";
 import wynnRouter from "./routes/wynn.js";
 import healthRouter from "./routes/healthCheck.js";
 import userInfoRouter from "./routes/userInfo.js";
+import getGuildId from "./middleware/getGuildId.middleware.js";
 
 app.use(express.json());
 app.use(cors());
@@ -23,9 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect to database
 try {
-    const dbUrl: string = process.env.DB_URL as string;
-
-    connect(dbUrl).then(() => {
+    const dbUrl = process.env.DB_URL;
+    connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {
         const PORT = process.env.PORT || 3000;
 
         server.listen(PORT, () => {
@@ -36,8 +36,13 @@ try {
     console.error("Failed to connect to database:", error);
 }
 
-const router = Router();
+const router = Router({ mergeParams: true });
 app.use("/api/v1", router);
+app.use("/api/v2/:guildId", router);
+
+// set guildId property on future requests
+router.use(getGuildId);
+
 // Map endpoints
 router.use("/auth", authenticationRouter);
 router.use("/user", userInfoRouter);
