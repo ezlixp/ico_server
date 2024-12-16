@@ -129,6 +129,8 @@ const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$"); // re
 
 let messageIndex = 0;
 let hrMessageIndex = 0;
+
+// TODO: make middleware for handling mutes
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.data.username, "connected to discord with version:", socket.data.modVersion);
     socket.data.messageIndex = messageIndex;
@@ -201,7 +203,6 @@ io.of("/discord").on("connection", (socket) => {
     });
 
     socket.on("discordOnlyWynnMessage", async (message: string) => {
-        console.log(message);
         const matcher = discordOnlyPattern.exec(message);
         if (matcher) {
             const header = matcher.groups!.header;
@@ -215,6 +216,7 @@ io.of("/discord").on("connection", (socket) => {
                 { collation: { locale: "en", strength: 2 } }
             ).exec();
             if (!user || !user.muted) {
+                console.log(message);
                 io.of("/discord").emit("wynnMessage", {
                     MessageType: 2,
                     HeaderContent: header,
@@ -227,12 +229,23 @@ io.of("/discord").on("connection", (socket) => {
     /**
      * Event that gets fired upon a message that needs to be sent from discord to wynn (including discord only wynn messages)
      */
-    socket.on("discordMessage", (message: IDiscordMessage) => {
-        console.log(message);
-        io.of("/discord").emit("discordMessage", {
-            ...message,
-            Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
-        });
+    socket.on("discordMessage", async (message: IDiscordMessage) => {
+        const user = await UserModel.findOne(
+            { uuid: await UsernametoUuid(message.Author) },
+            {},
+            { collation: { locale: "en", strength: 2 } }
+        ).exec();
+
+        if (!user || !user.muted) {
+            console.log(message);
+            io.of("/discord").emit("discordMessage", {
+                ...message,
+                Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
+            });
+        } else {
+            console.log("muted message:", message);
+            io.of("/discord").to(socket.id).emit("discordMessage", { Author: "SYSTEM", Content: "You are muted." });
+        }
     });
 
     socket.on("listOnline", async (callback) => {
