@@ -168,6 +168,7 @@ io.of("/discord").on("connection", (socket) => {
             ++socket.data.messageIndex;
         }
     });
+
     socket.on("hrMessage", (message: string) => {
         if (!checkVersion(socket.data.modVersion)) {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
@@ -198,6 +199,7 @@ io.of("/discord").on("connection", (socket) => {
             ++socket.data.hrMessageIndex;
         }
     });
+
     socket.on("discordOnlyWynnMessage", async (message: string) => {
         console.log(message);
         const matcher = discordOnlyPattern.exec(message);
@@ -208,7 +210,7 @@ io.of("/discord").on("connection", (socket) => {
                 (match, _) => `<${decodeItem(match).name}>`
             );
             const user = await UserModel.findOne(
-                { username: await UsernametoUuid(header) },
+                { uuid: await UsernametoUuid(header) },
                 {},
                 { collation: { locale: "en", strength: 2 } }
             ).exec();
@@ -221,6 +223,7 @@ io.of("/discord").on("connection", (socket) => {
             }
         }
     });
+
     /**
      * Event that gets fired upon a message that needs to be sent from discord to wynn (including discord only wynn messages)
      */
@@ -231,6 +234,7 @@ io.of("/discord").on("connection", (socket) => {
             Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
         });
     });
+
     socket.on("listOnline", async (callback) => {
         const out: string[] = [];
         const sockets = await io.of("/discord").fetchSockets();
@@ -239,9 +243,11 @@ io.of("/discord").on("connection", (socket) => {
         });
         callback(out);
     });
+
     socket.on("sync", () => {
         socket.data.messageIndex = messageIndex;
     });
+
     socket.on("disconnect", (reason) => {
         console.log(socket.data.username, "disconnected with reason:", reason);
         io.of("/discord")
