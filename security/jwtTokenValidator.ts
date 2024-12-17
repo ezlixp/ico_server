@@ -26,6 +26,9 @@ function validateJwtToken(request: Request, response: Response, next: NextFuncti
         }
 
         const p = payload! as JwtPayload;
+        if (!p.guildId) {
+            return response.status(401).json({ error: "Invalid token provided." });
+        }
         if (p.guildId !== "*" && p.guildId !== request.guildId) {
             return response.status(401).json({ error: "Invalid token provided." });
         }
