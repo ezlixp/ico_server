@@ -40,8 +40,7 @@ aspectRouter.get("/:username", async (request: Request<{ username: string }>, re
         response.send(aspect);
         console.log("GET specific:", aspect);
     } catch (error) {
-        response.status(500);
-        response.send({ error: "Something went wrong processing the request." });
+        response.status(500).send({ error: "Something went wrong processing the request." });
         console.error("getSpecificAspectsError:", error);
     }
 });
