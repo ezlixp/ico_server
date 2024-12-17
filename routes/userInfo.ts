@@ -1,23 +1,12 @@
 import { Request, Response, Router } from "express";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 import UserModel from "../models/userModel.js";
-import { decrementAspects } from "../utils/aspectUtils.js";
 
 /**Maps all endpoints related to user information. */
 const userInfoRouter = Router();
 userInfoRouter.use(validateJwtToken);
 
-userInfoRouter.post("/aspects", async (request: Request<{}, {}, { username: string }>, response: Response) => {
-    try {
-        const username = request.body.username;
-        await decrementAspects(username, request.guildId);
-        response.send();
-    } catch (error) {
-        console.log("update aspects error:", error);
-        response.status(500).send({ error: "something went wrong" });
-    }
-});
-
+// TODO: validate token for uuid being updated
 userInfoRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string }, {}, {}>, response: Response) => {
     try {
         const uuid = request.params.uuid.replaceAll("-", "");
@@ -44,7 +33,7 @@ userInfoRouter.post(
                     uuid: uuid,
                 },
                 {},
-                { upsert: true, new: true }
+                { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
             );
             if (user) {
                 if (user.blocked.length >= 60) {
