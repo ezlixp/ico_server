@@ -17,7 +17,7 @@ userInfoRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string }, {
         );
         response.send(user.blocked);
     } catch (error) {
-        console.log("get blocked error:", error);
+        console.error("get blocked error:", error);
         response.status(500).send({ error: "something went wrong" });
     }
 });
@@ -48,7 +48,7 @@ userInfoRouter.post(
             await user.updateOne({ $addToSet: { blocked: toBlock } });
             response.send({ error: "" });
         } catch (error) {
-            console.log("update blocked error:", error);
+            console.error("update blocked error:", error);
             response.status(500).send({ error: "something went wrong" });
         }
     }
@@ -74,7 +74,7 @@ userInfoRouter.delete(
                 response.status(404).send({ error: "Blocked user not found." });
             }
         } catch (error) {
-            console.log("update blocked error:", error);
+            console.error("update blocked error:", error);
             response.status(500).send({ error: "something went wrong" });
         }
     }

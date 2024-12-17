@@ -11,7 +11,7 @@ const tomeRouter = Router();
 tomeRouter.get("/", async (request: Request, response: Response) => {
     try {
         // Get users ordered by time added
-        const tomeList = await guildDatabases[request.guildId].TomeModel.find({}).sort({ dateAdded: 1 });
+        const tomeList = await guildDatabases[request.guildId!].TomeModel.find({}).sort({ dateAdded: 1 });
 
         // Return 'OK' if nothing goes wrong
         response.status(200).send(tomeList);
@@ -25,7 +25,7 @@ tomeRouter.get("/", async (request: Request, response: Response) => {
 tomeRouter.get("/:username", async (request: Request<{ username: string }>, response: Response) => {
     try {
         // Search for specific user
-        const result = await guildDatabases[request.guildId].TomeModel.findOne({
+        const result = await guildDatabases[request.guildId!].TomeModel.findOne({
             username: request.params.username,
         }).collation({
             strength: 2,
@@ -40,7 +40,7 @@ tomeRouter.get("/:username", async (request: Request<{ username: string }>, resp
         }
 
         const position =
-            (await guildDatabases[request.guildId].TomeModel.find({
+            (await guildDatabases[request.guildId!].TomeModel.find({
                 dateAdded: { $lt: result.dateAdded.getTime() },
             }).countDocuments()) + 1;
 
@@ -63,7 +63,7 @@ tomeRouter.post(
             // Save tome model on database
             const tomeData = request.body;
 
-            const exists = await guildDatabases[request.guildId].TomeModel.findOne({
+            const exists = await guildDatabases[request.guildId!].TomeModel.findOne({
                 username: tomeData.username,
             }).collation({
                 locale: "en",
@@ -77,7 +77,7 @@ tomeRouter.post(
             }
 
             // Create and save user in the database
-            const tome = new guildDatabases[request.guildId].TomeModel(tomeData);
+            const tome = new guildDatabases[request.guildId!].TomeModel(tomeData);
             await tome.save();
 
             // Send 'Created' if saved successfully
@@ -102,7 +102,7 @@ tomeRouter.delete(
             const username = request.params.username;
 
             // Find entity by name and delete
-            const result = await guildDatabases[request.guildId].TomeModel.findOneAndDelete({
+            const result = await guildDatabases[request.guildId!].TomeModel.findOneAndDelete({
                 username: username,
             }).collation({
                 locale: "en",

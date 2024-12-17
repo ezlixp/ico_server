@@ -12,7 +12,7 @@ export default function verifyGuild(
             return;
         }
 
-        checkIfPlayerIsGuildAsync(request.body.username, request.guildId).then((res) => {
+        checkIfPlayerIsGuildAsync(request.body.username, request.guildId!).then((res) => {
             // If provided player is in specified guild, continue
             if (res || request.guildId === "**") next();
             // Otherwise, return 'Bad Request'
@@ -20,6 +20,6 @@ export default function verifyGuild(
         });
     } catch (error) {
         response.status(500).send({ error: "Something went wrong processing your request." });
-        console.log("check guild middleware error:", error);
+        console.error("check guild middleware error:", error);
     }
 }

@@ -8,6 +8,7 @@ export interface ISeverConfig extends Document {
     raidsChannel: Number;
     warQuestionsChannel: Number;
     warChannel: Number;
+    privilagedRoles: [Number];
     broadcastChannelIds: [Number];
 }
 
@@ -19,6 +20,7 @@ const serverConfigSchema: Schema<ISeverConfig> = new Schema({
     raidsChannel: { type: Number, required: true, default: -1 },
     warQuestionsChannel: { type: Number, required: true, default: -1 },
     warChannel: { type: Number, required: true, default: -1 },
+    privilagedRoles: { type: [Number], required: true, default: [] },
     broadcastChannelIds: { type: [Number], required: true, default: [] },
 });
 
@@ -30,6 +32,7 @@ const serverConfigSchema: Schema<ISeverConfig> = new Schema({
  * @property {Number} raidsChannel          - The channel id for raids, or -1 if not specified.
  * @property {Number} warQuestionsChannel   - The channel id for war questions, or -1 if not specified.
  * @property {Number} warChannel            - The channel id for wars, or -1 if not specified.
+ * @property {[Number]} privelagedRoles     - The roles in the discord server with additional permissions.
  * @property {[Number]} broadcastChannelIds - The channel ids to broadcast bridge messages to, not necessarily in the same server.
  */
 const serverConfigModel = mongoose.model("Server Config", serverConfigSchema);
