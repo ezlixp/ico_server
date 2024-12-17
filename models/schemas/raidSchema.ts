@@ -1,9 +1,9 @@
 import { Schema } from "mongoose";
 
-export interface IRaid extends Document {
-    users: [String];
-    raid: String;
-    timestamp: Number;
+export interface IRaid {
+    users: string[];
+    raid: string;
+    timestamp: number;
 }
 
 const raidSchema: Schema<IRaid> = new Schema({

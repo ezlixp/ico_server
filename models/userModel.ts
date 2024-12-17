@@ -1,10 +1,10 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-interface IUser extends Document {
-    uuid: String;
-    guildId: String;
-    blocked: [String];
-    muted: Boolean;
+interface IUser {
+    uuid: string;
+    guildId: string;
+    blocked: string[];
+    muted: boolean;
 }
 
 // TODO: figure out how to make collation default without having to add it to each request

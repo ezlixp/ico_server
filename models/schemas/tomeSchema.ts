@@ -1,7 +1,7 @@
 ﻿import { Schema } from "mongoose";
 
-export interface ITome extends Document {
-    username: String;
+export interface ITome {
+    username: string;
     dateAdded: Date;
 }
 
