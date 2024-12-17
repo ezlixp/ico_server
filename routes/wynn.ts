@@ -7,7 +7,7 @@ import { getOnlineUsers } from "../utils/socketUtils.js";
 const wynnRouter = Router();
 
 wynnRouter.get("/online", async (request: Request, response: Response) => {
-    response.send(await getOnlineUsers(request.guildId));
+    response.send(await getOnlineUsers(request.guildId!));
 });
 
 export default wynnRouter;

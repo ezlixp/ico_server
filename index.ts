@@ -17,6 +17,7 @@ import healthRouter from "./routes/healthCheck.js";
 import userInfoRouter from "./routes/userInfo.js";
 import getGuildId from "./middleware/getGuildId.middleware.js";
 import registerDatabases from "./models/guildDatabaseModel.js";
+import configRouter from "./routes/serverConfig.js";
 
 app.use(express.json());
 app.use(cors());
@@ -39,6 +40,8 @@ try {
 }
 
 const router = Router({ mergeParams: true });
+
+app.use(`/api/${process.env.npm_package_version}/config`, configRouter);
 app.use(`/api/${process.env.npm_package_version}/:guildId`, router);
 
 app.all(/\/api\/v[^2]/, (_: Request, response: Response) => {
@@ -48,7 +51,7 @@ app.all("*", (_: Request, response: Response) => {
     response.status(404).send({ error: "not found" });
 });
 
-// set guildId property on future requests
+// Set guildId property on future requests
 router.use(getGuildId);
 
 // Map endpoints

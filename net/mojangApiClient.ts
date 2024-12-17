@@ -19,7 +19,7 @@ export async function usernameToUuid(username: string): Promise<string> {
             return res.id;
         }
     } catch (error) {
-        console.log("username to uuid error:", error);
+        console.error("username to uuid error:", error);
     }
     return "";
 }
@@ -40,7 +40,7 @@ export async function uuidToUsername(uuid: string): Promise<string> {
             return res.name;
         }
     } catch (error) {
-        console.log("uuid to username error:", error);
+        console.error("uuid to username error:", error);
     }
     return "";
 }

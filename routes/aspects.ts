@@ -12,7 +12,7 @@ const aspectRouter = Router({ mergeParams: true });
 aspectRouter.get("/", async (request: Request, response: Response) => {
     try {
         // Get 10 users with the highest aspect count
-        const aspects = await guildDatabases[request.guildId].GuildUserModel.find({ aspects: { $gt: 0 } }).sort({
+        const aspects = await guildDatabases[request.guildId!].GuildUserModel.find({ aspects: { $gt: 0 } }).sort({
             aspects: -1,
         });
 
@@ -26,7 +26,7 @@ aspectRouter.get("/", async (request: Request, response: Response) => {
 aspectRouter.get("/:username", async (request: Request<{ username: string }>, response: Response) => {
     try {
         // Get aspect data for specified user
-        const aspect = await guildDatabases[request.guildId].GuildUserModel.findOne({
+        const aspect = await guildDatabases[request.guildId!].GuildUserModel.findOne({
             uuid: await usernameToUuid(request.params.username),
         }).collation({
             locale: "en",
@@ -47,7 +47,7 @@ aspectRouter.get("/:username", async (request: Request<{ username: string }>, re
 
 aspectRouter.post("/", validateJwtToken, async (request: Request<{}, {}, { username: string }>, response: Response) => {
     try {
-        decrementAspects(request.body.username, request.guildId);
+        decrementAspects(request.body.username, request.guildId!);
     } catch (error) {
         response.status(500).send({ error: "Something went wrong processing the request." });
         console.error("postAspectError:", error);
