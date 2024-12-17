@@ -1,10 +1,10 @@
 import { Schema } from "mongoose";
 
-export interface IGuildUser extends Document {
-    uuid: String;
-    aspects: Number;
-    emeralds: Number;
-    raids: Number;
+export interface IGuildUser {
+    uuid: string;
+    aspects: number;
+    emeralds: number;
+    raids: number;
 }
 
 // TODO: figure out how to make collation default without having to add it to each request

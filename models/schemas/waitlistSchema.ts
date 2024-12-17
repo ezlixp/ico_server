@@ -1,7 +1,7 @@
 ﻿import { Schema } from "mongoose";
 
-export interface IWaitlist extends Document {
-    username: String;
+export interface IWaitlist {
+    username: string;
     dateAdded: Date;
 }
 
