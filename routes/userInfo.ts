@@ -10,7 +10,7 @@ userInfoRouter.use(validateJwtToken);
 userInfoRouter.post("/aspects", async (request: Request<{}, {}, { username: string }>, response: Response) => {
     try {
         const username = request.body.username;
-        await decrementAspects(username);
+        await decrementAspects(username, request.guildId);
         response.send();
     } catch (error) {
         console.log("update aspects error:", error);

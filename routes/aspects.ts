@@ -1,9 +1,8 @@
 import { Request, Response, Router } from "express";
-import { UsernametoUuid } from "../net/mojangApiClient.js";
-import UserModel from "../models/userModel.js";
+import { usernameToUuid } from "../net/mojangApiClient.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
 import { decrementAspects } from "../utils/aspectUtils.js";
-import verifyGuild from "../middleware/verifyGuild.middleware.js";
+import { guildDatabases } from "../models/guildDatabaseModel.js";
 
 /**
  * Maps all aspect-related endpoints.
@@ -13,7 +12,9 @@ const aspectRouter = Router({ mergeParams: true });
 aspectRouter.get("/", async (request: Request, response: Response) => {
     try {
         // Get 10 users with the highest aspect count
-        const aspects = await UserModel.find({ aspects: { $gt: 0 } }).sort({ aspects: -1 });
+        const aspects = await guildDatabases[request.guildId].GuildUserModel.find({ aspects: { $gt: 0 } }).sort({
+            aspects: -1,
+        });
 
         response.send(aspects);
     } catch (error) {
@@ -25,7 +26,9 @@ aspectRouter.get("/", async (request: Request, response: Response) => {
 aspectRouter.get("/:username", async (request: Request<{ username: string }>, response: Response) => {
     try {
         // Get aspect data for specified user
-        const aspect = await UserModel.findOne({ uuid: await UsernametoUuid(request.params.username) }).collation({
+        const aspect = await guildDatabases[request.guildId].GuildUserModel.findOne({
+            uuid: await usernameToUuid(request.params.username),
+        }).collation({
             locale: "en",
             strength: 2,
         });
@@ -43,18 +46,13 @@ aspectRouter.get("/:username", async (request: Request<{ username: string }>, re
     }
 });
 
-aspectRouter.post(
-    "/",
-    validateJwtToken,
-    verifyGuild("b250f587-ab5e-48cd-bf90-71e65d6dc9e7"),
-    async (request: Request<{}, {}, { username: string }>, response: Response) => {
-        try {
-            decrementAspects(request.body.username);
-        } catch (error) {
-            response.status(500).send({ error: "Something went wrong processing the request." });
-            console.error("postAspectError:", error);
-        }
+aspectRouter.post("/", validateJwtToken, async (request: Request<{}, {}, { username: string }>, response: Response) => {
+    try {
+        decrementAspects(request.body.username, request.guildId);
+    } catch (error) {
+        response.status(500).send({ error: "Something went wrong processing the request." });
+        console.error("postAspectError:", error);
     }
-);
+});
 
 export default aspectRouter;

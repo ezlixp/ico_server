@@ -1,6 +1,6 @@
-import mongoose, { Model, Schema } from "mongoose";
+import { Schema } from "mongoose";
 
-interface IRaid extends Document {
+export interface IRaid extends Document {
     users: [String];
     raid: String;
     timestamp: Number;
@@ -12,6 +12,4 @@ const raidSchema: Schema<IRaid> = new Schema({
     timestamp: { type: Number, required: true },
 });
 
-const RaidModel: Model<IRaid> = mongoose.model("Raid", raidSchema);
-
-export default RaidModel;
+export default raidSchema;

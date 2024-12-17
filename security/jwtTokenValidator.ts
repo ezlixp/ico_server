@@ -1,4 +1,4 @@
-﻿import jwt from "jsonwebtoken";
+﻿import jwt, { JwtPayload } from "jsonwebtoken";
 import "../config.js";
 import { Request, Response, NextFunction } from "express";
 
@@ -14,15 +14,20 @@ function validateJwtToken(request: Request, response: Response, next: NextFuncti
     const authorizationHeader = request.headers["authorization"] as string | undefined;
 
     if (!authorizationHeader) {
-        return response.status(401).json({ error: "No token provided" });
+        return response.status(401).send({ error: "No token provided." });
     }
 
     // Get authorization headers and extract token from "Bearer <token>"
     const token = authorizationHeader.split(" ")[1];
 
-    jwt.verify(token, secretKey, (err) => {
+    jwt.verify(token, secretKey, (err, payload) => {
         if (err) {
-            return response.status(401).json({ error: "Invalid token provided" });
+            return response.status(401).send({ error: "Invalid token provided." });
+        }
+
+        const p = payload! as JwtPayload;
+        if (p.guildId != request.guildId) {
+            return response.status(401).json({ error: "Invalid token provided." });
         }
 
         next(); // Goes to next step (function execution)

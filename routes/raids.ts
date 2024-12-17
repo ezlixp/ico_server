@@ -1,7 +1,6 @@
-﻿import RaidModel from "../models/raidModel.js";
-import { Request, Response, Router } from "express";
-import UserModel from "../models/userModel.js";
-import { UuidtoUsername } from "../net/mojangApiClient.js";
+﻿import { Request, Response, Router } from "express";
+import { uuidToUsername } from "../net/mojangApiClient.js";
+import { guildDatabases } from "../models/guildDatabaseModel.js";
 
 /**
  * Maps all raid-related endpoints base route: /raids.
@@ -10,7 +9,7 @@ const raidRouter = Router();
 
 raidRouter.get("/", async (request: Request, response: Response) => {
     try {
-        const raids = await RaidModel.find({});
+        const raids = await guildDatabases[request.guildId].RaidModel.find({});
         response.status(200);
         response.send(raids);
 
@@ -23,16 +22,19 @@ raidRouter.get("/", async (request: Request, response: Response) => {
 
 raidRouter.get("/leaderboard", async (request: Request, response: Response) => {
     try {
-        const topUsers = await UserModel.find({ raids: { $gt: 0 } })
+        const topUsers = await guildDatabases[request.guildId].GuildUserModel.find({ raids: { $gt: 0 } })
             .sort({ raids: "descending" })
             .limit(10);
         let formattedTopUsers: { username: string; raids: number }[] = [];
         // TODO implement mojang api bulk uuid to username call
         for (let i = 0; i < topUsers.length; i++) {
             const topUser = await topUsers[i]
-                .$set({ username: await UuidtoUsername(topUsers[i].uuid.toString()) })
+                .$set({ username: await uuidToUsername(topUsers[i].uuid.toString()) })
                 .save();
-            formattedTopUsers.push({ username: topUser.username.toString(), raids: topUser.raids.valueOf() });
+            formattedTopUsers.push({
+                username: await uuidToUsername(topUser.uuid.toString()),
+                raids: topUser.raids.valueOf(),
+            });
         }
         response.send(formattedTopUsers);
     } catch (error) {

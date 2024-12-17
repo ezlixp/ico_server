@@ -1,12 +1,12 @@
 /** Caches username to UUID conversions from Mojang api.*/
-const UsernameUUIDMap: { [key: string]: { uuid: string; timestamp: number } } = {};
+const usernameUuidMap: { [key: string]: { uuid: string; timestamp: number } } = {};
 
 /** Caches UUID to username conversions from Mojang api.*/
-const UUIDUsernameMap: { [key: string]: { username: string; timestamp: number } } = {};
+const uuidUsernameMap: { [key: string]: { username: string; timestamp: number } } = {};
 
-export async function UsernametoUuid(username: string): Promise<string> {
-    if (UsernameUUIDMap[username] && Date.now() - UsernameUUIDMap[username].timestamp < 1.728e9) {
-        return UsernameUUIDMap[username].uuid;
+export async function usernameToUuid(username: string): Promise<string> {
+    if (usernameUuidMap[username] && Date.now() - usernameUuidMap[username].timestamp < 1.728e9) {
+        return usernameUuidMap[username].uuid;
     }
     const url = `https://api.mojang.com/users/profiles/minecraft/${username}`;
     try {
@@ -14,8 +14,8 @@ export async function UsernametoUuid(username: string): Promise<string> {
         if (!response.body) throw "empty mojang username to uuid response";
         const res: { id: string } = await response.json();
         if (res.id) {
-            UUIDUsernameMap[res.id] = { username: username, timestamp: Date.now() };
-            UsernameUUIDMap[username] = { uuid: res.id, timestamp: Date.now() };
+            uuidUsernameMap[res.id] = { username: username, timestamp: Date.now() };
+            usernameUuidMap[username] = { uuid: res.id, timestamp: Date.now() };
             return res.id;
         }
     } catch (error) {
@@ -24,10 +24,10 @@ export async function UsernametoUuid(username: string): Promise<string> {
     return "";
 }
 
-export async function UuidtoUsername(uuid: string): Promise<string> {
+export async function uuidToUsername(uuid: string): Promise<string> {
     uuid = uuid.replaceAll("-", "");
-    if (UUIDUsernameMap[uuid] && Date.now() - UUIDUsernameMap[uuid].timestamp < 1.728e9) {
-        return UUIDUsernameMap[uuid].username;
+    if (uuidUsernameMap[uuid] && Date.now() - uuidUsernameMap[uuid].timestamp < 1.728e9) {
+        return uuidUsernameMap[uuid].username;
     }
     const url = `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`;
     try {
@@ -35,8 +35,8 @@ export async function UuidtoUsername(uuid: string): Promise<string> {
         if (!response.body) throw "empty mojang uuid to username response";
         const res: { name: string } = await response.json();
         if (res.name) {
-            UUIDUsernameMap[uuid] = { username: res.name, timestamp: Date.now() };
-            UsernameUUIDMap[res.name] = { uuid: uuid, timestamp: Date.now() };
+            uuidUsernameMap[uuid] = { username: res.name, timestamp: Date.now() };
+            usernameUuidMap[res.name] = { uuid: uuid, timestamp: Date.now() };
             return res.name;
         }
     } catch (error) {

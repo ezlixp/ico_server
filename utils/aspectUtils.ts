@@ -1,12 +1,13 @@
-import UserModel from "../models/userModel.js";
-import { UsernametoUuid } from "../net/mojangApiClient.js";
+import { guildDatabases } from "../models/guildDatabaseModel.js";
+import { usernameToUuid } from "../net/mojangApiClient.js";
 
 /** Decrements the number of aspects owed to a user by 1
  * @param username The user to decrement from
+ * @param guildId The guild id of the user
  */
-export async function decrementAspects(username: string): Promise<void> {
-    UserModel.updateOne(
-        { uuid: await UsernametoUuid(username) },
+export async function decrementAspects(username: string, guildId: string): Promise<void> {
+    guildDatabases[guildId].GuildUserModel.updateOne(
+        { uuid: await usernameToUuid(username) },
         { username: username, $inc: { aspects: -1 } },
         {
             upsert: true,
@@ -17,11 +18,12 @@ export async function decrementAspects(username: string): Promise<void> {
     });
 }
 /** Increments the number of aspects owed to a user by 0.5
- * @param username The user to incr ement from
+ * @param username The user to increment from
+ * @param guildId The guild
  */
-export async function incrementAspects(username: string): Promise<void> {
-    UserModel.updateOne(
-        { uuid: await UsernametoUuid(username) },
+export async function incrementAspects(username: string, guildId: string): Promise<void> {
+    guildDatabases[guildId].GuildUserModel.updateOne(
+        { uuid: await usernameToUuid(username) },
         { username: username, $inc: { aspects: 0.5, raids: 1 } },
         {
             upsert: true,

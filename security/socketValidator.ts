@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { ExtendedError, Socket } from "socket.io";
 import "../config.js";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
-const secretKey = process.env.JWT_SECRET_KEY as string;
+const secretKey = process.env.JWT_SECRET_KEY;
 
 /**
  * Checks if the token provided in a socket's initial connection is valid.
@@ -21,15 +21,18 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
     // Get authorization headers and extract token from "Bearer <token>"
     const token = authorizationHeader.split(" ")[1];
 
-    jwt.verify(token, secretKey, (err) => {
+    jwt.verify(token, secretKey, (err, payload) => {
         if (err) {
             console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);
             return next(new Error("Invalid token provided"));
         }
-        socket.data.username = socket.handshake.headers.from;
+        socket.data.username = socket.handshake.headers.from || "!bot";
         socket.data.modVersion = socket.handshake.headers["user-agent"];
-        return next();
+        const p = payload! as JwtPayload;
+        socket.data.guildId = p.guildId;
+
         // Goes to next step (function execution)
+        return next();
     });
 }
 

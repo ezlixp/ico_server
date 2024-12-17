@@ -18,7 +18,7 @@ export interface IWynnMessage {
      * @param matcher regex matcher from message pattern
      * @returns formatted message
      */
-    customMessage?: (matcher: RegExpExecArray) => string;
+    customMessage?: (matcher: RegExpExecArray, guildId: string) => string;
     /**
      * Custom title text/author
      */
@@ -28,6 +28,7 @@ export interface IWynnMessage {
 export interface IDiscordMessage {
     Author: string;
     Content: string;
+    GuildId: string;
 }
 
 export interface IWynn2DiscordMessage {
