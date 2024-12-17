@@ -1,13 +1,13 @@
 import { io } from "../app.js";
 import "../config.js";
-import RaidModel from "../models/raidModel.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
 import { decrementAspects, incrementAspects } from "../utils/aspectUtils.js";
-import { isOnline } from "../utils/socketUtils.js";
-import UserModel from "../models/userModel.js";
-import { UsernametoUuid } from "../net/mojangApiClient.js";
+import { getOnlineUsers, isOnline } from "../utils/socketUtils.js";
+import { usernameToUuid } from "../net/mojangApiClient.js";
 import { checkVersion } from "../utils/versionUtils.js";
+import { guildDatabases, guildNames } from "../models/guildDatabaseModel.js";
+import UserModel from "../models/userModel.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const wynnMessagePatterns: IWynnMessage[] = [
@@ -16,7 +16,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         pattern:
             /^§[e8](?<player1>.*?)§[b8], §[e8](?<player2>.*?)§[b8], §[e8](?<player3>.*?)§[b8], and §[e8](?<player4>.*?)§[b8] finished §[38](?<raid>.*?)§[b8].*$/,
         messageType: 1,
-        customMessage: (matcher) => {
+        customMessage: (matcher, guildId) => {
             try {
                 const users = [
                     matcher.groups!.player1,
@@ -27,7 +27,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 const raid = matcher.groups!.raid;
                 const timestamp = Date.now();
 
-                const newRaid = new RaidModel({
+                const newRaid = new guildDatabases[guildId].RaidModel({
                     users: users,
                     raid,
                     timestamp,
@@ -38,7 +38,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 // Add users to db and increase aspect counter by 0.5
                 Promise.all(
                     newRaid.users.map((username) => {
-                        incrementAspects(username.toString());
+                        incrementAspects(username.toString(), guildId);
                     })
                 );
             } catch (error) {
@@ -61,8 +61,8 @@ const wynnMessagePatterns: IWynnMessage[] = [
     {
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
-        customMessage: (matcher) => {
-            decrementAspects(matcher.groups!.receiver);
+        customMessage: (matcher, guildId) => {
+            decrementAspects(matcher.groups!.receiver, guildId);
             return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
         },
         customHeader: "⚠️ Aspect",
@@ -125,43 +125,68 @@ const hrMessagePatterns: IWynnMessage[] = [
         customHeader: "⚠️ Info",
     },
 ];
-const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$"); // remove discord only at some point, need to remove it from mod too
+const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$");
 
-let messageIndex = 0;
-let hrMessageIndex = 0;
+const messageIndexes: { [key: string]: number } = {};
+const hrMessageIndexes: { [key: string]: number } = {};
+
+Object.entries(guildNames).forEach((value) => {
+    messageIndexes[value[0]] = 0;
+    hrMessageIndexes[value[0]] = 0;
+});
+
+let botId = "";
 
 // TODO: make middleware for handling mutes
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.data.username, "connected to discord with version:", socket.data.modVersion);
-    socket.data.messageIndex = messageIndex;
-    socket.data.hrMessageIndex = hrMessageIndex;
+    if (socket.data.guildId == "*") botId = socket.id;
+    else {
+        socket.data.messageIndex = messageIndexes[socket.data.guildId];
+        socket.data.hrMessageIndex = hrMessageIndexes[socket.data.guildId];
+        socket.join(socket.data.guildId);
+        console.log(socket.data.username, "joined", socket.data.guildId);
+    }
 
+    /**
+     * Event that gets fired upon a guild message captured by a mod client
+     */
     socket.on("wynnMessage", (message: string) => {
         if (!checkVersion(socket.data.modVersion)) {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
         }
 
-        if (socket.data.messageIndex === messageIndex) {
+        if (socket.data.messageIndex === messageIndexes[socket.data.guildId]) {
             ++socket.data.messageIndex;
-            ++messageIndex;
+            ++messageIndexes[socket.data.guildId];
             for (let i = 0; i < wynnMessagePatterns.length; i++) {
                 const pattern = wynnMessagePatterns[i];
                 const matcher = pattern.pattern.exec(message);
                 if (matcher) {
                     const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                    const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
-                    console.log(header, rawMessage, messageIndex, "emitted by:", socket.data.username);
+                    const rawMessage = pattern.customMessage
+                        ? pattern.customMessage(matcher, socket.data.guildId)
+                        : matcher.groups!.content;
+                    console.log(
+                        header,
+                        rawMessage,
+                        messageIndexes[socket.data.guildId],
+                        "emitted by:",
+                        socket.data.username
+                    );
 
                     const message = rawMessage
                         .replace(new RegExp("§.", "g"), "")
                         .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
-                    isOnline(header).then((online) => {
-                        io.of("/discord").emit("wynnMessage", {
-                            MessageType: pattern.messageType,
-                            HeaderContent: header + (online ? "*" : ""),
-                            TextContent: message,
-                        });
+                    isOnline(header, socket.data.guildId).then((online) => {
+                        io.of("/discord")
+                            .to(botId)
+                            .emit("wynnMessage", {
+                                MessageType: pattern.messageType,
+                                HeaderContent: header + (online ? "*" : ""),
+                                TextContent: message,
+                            });
                     });
                     break;
                 }
@@ -171,25 +196,37 @@ io.of("/discord").on("connection", (socket) => {
         }
     });
 
+    /**
+     * Event that gets fired upon an hr message captured by a mod client
+     */
     socket.on("hrMessage", (message: string) => {
         if (!checkVersion(socket.data.modVersion)) {
             console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
             return;
         }
 
-        if (socket.data.hrMessageIndex === hrMessageIndex) {
+        if (socket.data.hrMessageIndex === hrMessageIndexes[socket.data.guildId]) {
             ++socket.data.hrMessageIndex;
-            ++hrMessageIndex;
+            ++hrMessageIndexes[socket.data.guildId];
             for (let i = 0; i < hrMessagePatterns.length; i++) {
                 const pattern = hrMessagePatterns[i];
                 const matcher = pattern.pattern.exec(message);
                 if (matcher) {
                     const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                    const rawMessage = pattern.customMessage ? pattern.customMessage(matcher) : matcher.groups!.content;
-                    console.log("hr", header, rawMessage, hrMessageIndex, "emitted by:", socket.data.username);
+                    const rawMessage = pattern.customMessage
+                        ? pattern.customMessage(matcher, socket.data.guildId)
+                        : matcher.groups!.content;
+                    console.log(
+                        "hr",
+                        header,
+                        rawMessage,
+                        hrMessageIndexes[socket.data.guildId],
+                        "emitted by:",
+                        socket.data.username
+                    );
 
                     const message = rawMessage.replace(new RegExp("§.", "g"), "");
-                    io.of("/discord").emit("wynnMessage", {
+                    io.of("/discord").to(botId).emit("wynnMessage", {
                         MessageType: pattern.messageType,
                         HeaderContent: header,
                         TextContent: message,
@@ -202,6 +239,9 @@ io.of("/discord").on("connection", (socket) => {
         }
     });
 
+    /**
+     * Event that gets fired upon a discord only message being sent from a mod client
+     */
     socket.on("discordOnlyWynnMessage", async (message: string) => {
         const matcher = discordOnlyPattern.exec(message);
         if (matcher) {
@@ -211,13 +251,13 @@ io.of("/discord").on("connection", (socket) => {
                 (match, _) => `<${decodeItem(match).name}>`
             );
             const user = await UserModel.findOne(
-                { uuid: await UsernametoUuid(header) },
+                { uuid: await usernameToUuid(header) },
                 {},
                 { collation: { locale: "en", strength: 2 } }
             ).exec();
             if (!user || !user.muted) {
                 console.log(message);
-                io.of("/discord").emit("wynnMessage", {
+                io.of("/discord").to(botId).emit("wynnMessage", {
                     MessageType: 2,
                     HeaderContent: header,
                     TextContent: message,
@@ -231,34 +271,33 @@ io.of("/discord").on("connection", (socket) => {
      */
     socket.on("discordMessage", async (message: IDiscordMessage) => {
         const user = await UserModel.findOne(
-            { uuid: await UsernametoUuid(message.Author) },
+            { uuid: await usernameToUuid(message.Author) },
             {},
             { collation: { locale: "en", strength: 2 } }
         ).exec();
 
         if (!user || !user.muted) {
             console.log(message);
-            io.of("/discord").emit("discordMessage", {
-                ...message,
-                Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
-            });
+            io.of("/discord")
+                .to(message.GuildId)
+                .emit("discordMessage", {
+                    ...message,
+                    Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
+                });
         } else {
             console.log("muted message:", message);
-            io.of("/discord").to(socket.id).emit("discordMessage", { Author: "SYSTEM", Content: "You are muted." });
+            io.of("/discord")
+                .to(socket.id)
+                .emit("discordMessage", { Author: "SYSTEM", Content: "You are muted.", GuildId: "" });
         }
     });
 
     socket.on("listOnline", async (callback) => {
-        const out: string[] = [];
-        const sockets = await io.of("/discord").fetchSockets();
-        sockets.forEach((socket) => {
-            if (socket.data.username) out.push(socket.data.username);
-        });
-        callback(out);
+        callback((await getOnlineUsers(socket.data.guildId)).map((onlineUser) => onlineUser.Username));
     });
 
     socket.on("sync", () => {
-        socket.data.messageIndex = messageIndex;
+        socket.data.messageIndex = messageIndexes[socket.data.guildId];
     });
 
     socket.on("disconnect", (reason) => {
@@ -267,7 +306,7 @@ io.of("/discord").on("connection", (socket) => {
             .fetchSockets()
             .then((sockets) => {
                 sockets.forEach((s) => {
-                    s.data.messageIndex = messageIndex;
+                    s.data.messageIndex = messageIndexes[socket.data.guildId];
                 });
             });
     });

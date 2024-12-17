@@ -1,6 +1,5 @@
 ﻿import { Request, Response, Router } from "express";
 import generateJwtToken from "../security/jwtTokenGenerator.js";
-import refreshJwtToken from "../security/jwtTokenRefresher.js";
 
 /**
  * Maps all authentication-related endpoints.
@@ -12,7 +11,7 @@ authenticationRouter.post(
     async (request: Request<{}, {}, { validationKey: string }>, response: Response) => {
         // Gets a token if correct validationKey is provided
         const validationKey = request.body.validationKey;
-        const result = generateJwtToken(validationKey);
+        const result = await generateJwtToken(validationKey, request.guildId);
 
         if (result.status) {
             response.status(200).json(result);
@@ -22,19 +21,19 @@ authenticationRouter.post(
     }
 );
 
-authenticationRouter.post(
-    "/refresh-token",
-    async (request: Request<{}, {}, { refreshToken: string }>, response: Response) => {
-        // Gets a token if correct validationKey is provided
-        const refreshToken = request.body.refreshToken;
-        const result = refreshJwtToken(refreshToken);
+// authenticationRouter.post(
+//     "/refresh-token",
+//     async (request: Request<{}, {}, { refreshToken: string }>, response: Response) => {
+//         // Gets a token if correct validationKey is provided
+//         const refreshToken = request.body.refreshToken;
+//         const result = refreshJwtToken(refreshToken);
 
-        if (result.status) {
-            response.status(200).json(result);
-        } else {
-            response.status(400).json(result);
-        }
-    }
-);
+//         if (result.status) {
+//             response.status(200).json(result);
+//         } else {
+//             response.status(400).json(result);
+//         }
+//     }
+// );
 
 export default authenticationRouter;

@@ -21,6 +21,7 @@ export interface InterServerEvents {
 export interface SocketData {
     messageIndex: number;
     hrMessageIndex: number;
+    guildId: string;
     username?: string;
     modVersion?: string;
 }

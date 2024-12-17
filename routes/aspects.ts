@@ -1,9 +1,8 @@
-import {Request, Response, Router} from "express";
-import {UsernametoUuid} from "../net/mojangApiClient.js";
-import UserModel from "../models/userModel.js";
+import { Request, Response, Router } from "express";
+import { usernameToUuid } from "../net/mojangApiClient.js";
 import validateJwtToken from "../security/jwtTokenValidator.js";
-import {decrementAspects, decrementEmeralds} from "../utils/aspectUtils.js";
-import verifyGuild from "../middleware/verifyGuild.middleware.js";
+import { decrementAspects } from "../utils/aspectUtils.js";
+import { guildDatabases } from "../models/guildDatabaseModel.js";
 
 /**
  * Maps all aspect-related endpoints.
@@ -13,11 +12,13 @@ const aspectRouter = Router({ mergeParams: true });
 aspectRouter.get("/", async (request: Request, response: Response) => {
     try {
         // Get 10 users with the highest aspect count
-        const aspects = await UserModel.find({aspects: {$gt: 0}}).sort({aspects: -1});
+        const aspects = await guildDatabases[request.guildId].GuildUserModel.find({ aspects: { $gt: 0 } }).sort({
+            aspects: -1,
+        });
 
         response.send(aspects);
     } catch (error) {
-        response.status(500).send({error: "Something went wrong processing the request."});
+        response.status(500).send({ error: "Something went wrong processing the request." });
         console.error("getAspectsError:", error);
     }
 });
@@ -25,49 +26,33 @@ aspectRouter.get("/", async (request: Request, response: Response) => {
 aspectRouter.get("/:username", async (request: Request<{ username: string }>, response: Response) => {
     try {
         // Get aspect data for specified user
-        const aspect = await UserModel.findOne({uuid: await UsernametoUuid(request.params.username)}).collation({
+        const aspect = await guildDatabases[request.guildId].GuildUserModel.findOne({
+            uuid: await usernameToUuid(request.params.username),
+        }).collation({
             locale: "en",
             strength: 2,
         });
 
         if (!aspect) {
-            response.status(404).send({error: "Specified user could not be found in aspect list."});
+            response.status(404).send({ error: "Specified user could not be found in aspect list." });
             return;
         }
         response.send(aspect);
         console.log("GET specific:", aspect);
     } catch (error) {
         response.status(500);
-        response.send({error: "Something went wrong processing the request."});
+        response.send({ error: "Something went wrong processing the request." });
         console.error("getSpecificAspectsError:", error);
     }
 });
 
-aspectRouter.post(
-    "/",
-    validateJwtToken,
-    verifyGuild("b250f587-ab5e-48cd-bf90-71e65d6dc9e7"),
-    async (request: Request<{}, {}, { username: string }>, response: Response) => {
-        try {
-            decrementAspects(request.body.username);
-        } catch (error) {
-            response.status(500).send({error: "Something went wrong processing the request."});
-            console.error("postAspectError:", error);
-        }
+aspectRouter.post("/", validateJwtToken, async (request: Request<{}, {}, { username: string }>, response: Response) => {
+    try {
+        decrementAspects(request.body.username, request.guildId);
+    } catch (error) {
+        response.status(500).send({ error: "Something went wrong processing the request." });
+        console.error("postAspectError:", error);
     }
-);
-
-aspectRouter.post(
-    "/emeralds",
-    validateJwtToken,
-    verifyGuild("b250f587-ab5e-48cd-bf90-71e65d6dc9e7"),
-    async (request: Request<{}, {}, { username: string }>, response: Response) => {
-        try {
-            decrementEmeralds(request.body.username);
-        } catch (error) {
-            response.status(500).send({error: "Something went wrong processing the request."});
-            console.error("postEmeraldError:", error);
-        }
-    })
+});
 
 export default aspectRouter;

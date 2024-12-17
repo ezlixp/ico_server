@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express, { Request, Response, Router } from "express";
 import app, { server } from "./app.js";
 import { connect } from "mongoose";
 import bodyParser from "body-parser";
@@ -16,6 +16,7 @@ import wynnRouter from "./routes/wynn.js";
 import healthRouter from "./routes/healthCheck.js";
 import userInfoRouter from "./routes/userInfo.js";
 import getGuildId from "./middleware/getGuildId.middleware.js";
+import registerDatabases from "./models/guildDatabaseModel.js";
 
 app.use(express.json());
 app.use(cors());
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 try {
     const dbUrl = process.env.DB_URL;
     connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {
+        registerDatabases();
         const PORT = process.env.PORT || 3000;
 
         server.listen(PORT, () => {
@@ -37,8 +39,14 @@ try {
 }
 
 const router = Router({ mergeParams: true });
-app.use("/api/v1", router);
-app.use("/api/v2/:guildId", router);
+app.use(`/api/${process.env.npm_package_version}/:guildId`, router);
+
+app.all(/\/api\/v[^2]/, (_: Request, response: Response) => {
+    response.status(301).send({ error: `please use /api/${process.env.npm_package_version}` });
+});
+app.all("*", (_: Request, response: Response) => {
+    response.status(404).send({ error: "not found" });
+});
 
 // set guildId property on future requests
 router.use(getGuildId);
