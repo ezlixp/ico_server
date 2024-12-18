@@ -13,18 +13,19 @@ configRouter.use(validateJwtToken);
 configRouter.use("/:serverId", serverConfigRouter);
 
 serverConfigRouter.use(validateJwtToken);
-serverConfigRouter.use(async (request: Request, response: Response, next: NextFunction) => {
-    const query = ServerConfigModel.findOne({ serverId: request.params.serverId });
-    request.serverQuery = query;
-    console.log(typeof query);
-    const server = await query.exec();
-    if (!server) {
-        response.status(404).send({ error: "Could not find specified server." });
-        return;
+serverConfigRouter.use(
+    async (request: Request<{ serverId: number }, {}, {}>, response: Response, next: NextFunction) => {
+        const query = ServerConfigModel.findOne({ serverId: request.params.serverId });
+        const server = await query.exec();
+        if (!server) {
+            response.status(404).send({ error: "Could not find specified server." });
+            return;
+        }
+        request.serverId = request.params.serverId;
+        request.serverConfig = server;
+        next();
     }
-    request.serverConfig = server;
-    next();
-});
+);
 
 configRouter.post("/", async (request: Request<{}, {}, { serverId: number; guildId: string }>, response: Response) => {
     try {
@@ -55,7 +56,7 @@ serverConfigRouter.get("/", async (request: Request, response: Response) => {
 
 serverConfigRouter.delete("/", async (request: Request, response: Response) => {
     try {
-        request.serverQuery!.deleteOne().exec();
+        await ServerConfigModel.findOneAndDelete({ serverId: request.serverId }).exec();
         response.status(204).send();
     } catch (error) {
         console.error("delete server config error:", error);
@@ -95,11 +96,12 @@ serverConfigRouter.patch(
     }
 );
 
+// currently no validation for duplicate roles
 serverConfigRouter.post(
     "/privileged-role",
-    async (request: Request<{}, {}, { newRoleId: number }>, response: Response) => {
+    async (request: Request<{}, {}, { roleId: number }>, response: Response) => {
         try {
-            request.serverConfig!.privilegedRoles.push(request.body.newRoleId);
+            request.serverConfig!.privilegedRoles.push(request.body.roleId);
             await request.serverConfig!.save();
             response.send(request.serverConfig);
         } catch (error) {
@@ -130,18 +132,23 @@ serverConfigRouter.delete(
 
 serverConfigRouter.post("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
     try {
+        if (request.body.guildId === request.serverConfig!.guildId) {
+            response.status(400).send({ error: "Cannot invite self." });
+            return;
+        }
+
         const invited = await ServerConfigModel.findOne({ guildId: request.body.guildId }).exec();
         if (!invited) {
             response.status(404).send({ error: "Could not find specified guild server." });
             return;
         }
-        request.serverConfig!.outgoingInvites.push(request.body.guildId);
-        await request.serverConfig!.save();
 
         invited.invites.push(request.serverConfig!.guildId);
         await invited.save();
+        request.serverConfig!.outgoingInvites.push(request.body.guildId);
+        await request.serverConfig!.save();
 
-        response.status(204).send();
+        response.send(request.serverConfig);
     } catch (error) {
         console.error("post invite error:", error);
         response.status(500).send({ error: "Something went wrong processing the request." });
@@ -150,6 +157,11 @@ serverConfigRouter.post("/invite", async (request: Request<{}, {}, { guildId: st
 
 serverConfigRouter.delete("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
     try {
+        if (request.body.guildId === request.serverConfig!.guildId) {
+            response.status(400).send({ error: "Cannot invite self." });
+            return;
+        }
+
         const invited = await ServerConfigModel.findOne({ guildId: request.body.guildId }).exec();
         const myGuildId = request.serverConfig!.guildId;
         if (!invited) {
@@ -171,7 +183,7 @@ serverConfigRouter.delete("/invite", async (request: Request<{}, {}, { guildId: 
         await request.serverConfig!.save();
         await invited.save();
 
-        response.status(204).send();
+        response.send(request.serverConfig);
     } catch (error) {
         console.error("delete invite error:", error);
         response.status(500).send({ error: "Something went wrong processing the request." });
@@ -183,6 +195,11 @@ serverConfigRouter.post(
     "/invite/accept",
     async (request: Request<{}, {}, { guildId: string; channelId: number }>, response: Response) => {
         try {
+            if (request.body.guildId === request.serverConfig!.guildId) {
+                response.status(400).send({ error: "Cannot invite self." });
+                return;
+            }
+
             const guildId = request.body.guildId;
             const channelId = request.body.channelId;
             const inviter = await ServerConfigModel.findOne({ guildId: guildId }).exec();
@@ -204,7 +221,7 @@ serverConfigRouter.post(
             request.serverConfig!.listeningChannelIds.push({ guildId: guildId, channelId: channelId });
             await request.serverConfig!.save();
 
-            response.status(204).send();
+            response.send(request.serverConfig);
         } catch (error) {
             console.error("accept invite error:", error);
             response.status(500).send({ error: "Something went wrong processing the request." });
@@ -214,6 +231,11 @@ serverConfigRouter.post(
 
 serverConfigRouter.post("/invite/reject", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
     try {
+        if (request.body.guildId === request.serverConfig!.guildId) {
+            response.status(400).send({ error: "Cannot invite self." });
+            return;
+        }
+
         const guildId = request.body.guildId;
         const inviter = await ServerConfigModel.findOne({ guildId: guildId });
         if (!inviter) {

@@ -28,9 +28,9 @@ const serverConfigSchema: Schema<ISeverConfig> = new Schema({
     raidsChannel: { type: Number, required: true, default: -1 },
     warQuestionsChannel: { type: Number, required: true, default: -1 },
     warChannel: { type: Number, required: true, default: -1 },
-    privilegedRoles: { type: [Number], required: true, default: [] },
-    invites: { type: [String], required: true, default: [] },
-    outgoingInvites: { type: [String] },
+    privilegedRoles: { type: [{ type: Number, required: true }], required: true, default: [] },
+    invites: { type: [{ type: String, required: true }], required: true, default: [] },
+    outgoingInvites: { type: [{ type: String, required: true }] },
     listeningChannelIds: {
         type: [
             {
@@ -41,7 +41,7 @@ const serverConfigSchema: Schema<ISeverConfig> = new Schema({
         required: true,
         default: [],
     },
-    broadcastChannelIds: { type: [Number], required: true, default: [] },
+    broadcastChannelIds: { type: [{ type: Number, required: true }], required: true, default: [] },
 });
 
 /**
