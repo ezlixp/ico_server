@@ -28,6 +28,13 @@ serverConfigRouter.use(async (request: Request, response: Response, next: NextFu
 
 configRouter.post("/", async (request: Request<{}, {}, { serverId: number; guildId: string }>, response: Response) => {
     try {
+        const server = await ServerConfigModel.findOne()
+            .or([{ serverId: request.body.serverId }, { guildId: request.body.guildId }])
+            .exec();
+        if (server) {
+            response.status(400).send({ error: "Configuration already set up for specified server or guild." });
+            return;
+        }
         const newServer = new ServerConfigModel({ serverId: request.body.serverId, guildId: request.body.guildId });
         await newServer.save();
         response.send(newServer);
@@ -80,7 +87,7 @@ serverConfigRouter.patch(
             if (body.warQuestionsChannel) request.serverConfig!.warQuestionsChannel = body.warQuestionsChannel;
             if (body.warChannel) request.serverConfig!.warChannel = body.warChannel;
             await request.serverConfig!.save();
-            response.status(204).send();
+            response.send(request.serverConfig);
         } catch (error) {
             console.error("patch server config error:", error);
             response.status(500).send({ error: "Something went wrong processing the request." });
@@ -94,7 +101,7 @@ serverConfigRouter.post(
         try {
             request.serverConfig!.privilegedRoles.push(request.body.newRoleId);
             await request.serverConfig!.save();
-            response.status(204).send();
+            response.send(request.serverConfig);
         } catch (error) {
             console.error("privileged role post error:", error);
             response.status(500).send({ error: "Something went wrong processing the request." });
@@ -113,7 +120,7 @@ serverConfigRouter.delete(
             }
             request.serverConfig!.privilegedRoles.splice(index, 1);
             await request.serverConfig?.save();
-            response.status(204).send();
+            response.send(request.serverConfig);
         } catch (error) {
             console.error("privileged role delete error:", error);
             response.status(500).send({ error: "Something went wrong processing the request." });
