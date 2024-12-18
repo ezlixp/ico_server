@@ -63,5 +63,5 @@ router.use("/mod", modVersionRouter);
 router.use("/raids", raidRouter);
 router.use("/aspects", aspectRouter);
 router.use("/tomes", tomeRouter);
+router.use("/waitlist", waitlistRouter);
 router.use(statusRouter);
-router.use(waitlistRouter);
