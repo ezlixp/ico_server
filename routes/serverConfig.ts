@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import validateJwtToken from "../security/jwtTokenValidator.js";
-import serverConfigModel from "../models/serverConfigModel.js";
+import ServerConfigModel from "../models/serverConfigModel.js";
 
 /**
  * Maps all server config related endpoints. request.guildId is NOT defined in these routes, but request.serverId is.
@@ -14,7 +14,7 @@ configRouter.use("/:serverId", serverConfigRouter);
 
 serverConfigRouter.use(validateJwtToken);
 serverConfigRouter.use(async (request: Request, response: Response, next: NextFunction) => {
-    const query = serverConfigModel.findOne({ serverId: request.params.serverId });
+    const query = ServerConfigModel.findOne({ serverId: request.params.serverId });
     request.serverQuery = query;
     console.log(typeof query);
     const server = await query.exec();
@@ -28,7 +28,7 @@ serverConfigRouter.use(async (request: Request, response: Response, next: NextFu
 
 configRouter.post("/", async (request: Request<{}, {}, { serverId: number; guildId: string }>, response: Response) => {
     try {
-        const newServer = new serverConfigModel({ serverId: request.body.serverId, guildId: request.body.guildId });
+        const newServer = new ServerConfigModel({ serverId: request.body.serverId, guildId: request.body.guildId });
         await newServer.save();
         response.send(newServer);
     } catch (error) {
@@ -123,7 +123,7 @@ serverConfigRouter.delete(
 
 serverConfigRouter.post("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
     try {
-        const invited = await serverConfigModel.findOne({ guildId: request.body.guildId }).exec();
+        const invited = await ServerConfigModel.findOne({ guildId: request.body.guildId }).exec();
         if (!invited) {
             response.status(404).send({ error: "Could not find specified guild server." });
             return;
@@ -143,7 +143,7 @@ serverConfigRouter.post("/invite", async (request: Request<{}, {}, { guildId: st
 
 serverConfigRouter.delete("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
     try {
-        const invited = await serverConfigModel.findOne({ guildId: request.body.guildId }).exec();
+        const invited = await ServerConfigModel.findOne({ guildId: request.body.guildId }).exec();
         const myGuildId = request.serverConfig!.guildId;
         if (!invited) {
             response.status(404).send({ error: "Could not find specified guild server." });
@@ -171,20 +171,66 @@ serverConfigRouter.delete("/invite", async (request: Request<{}, {}, { guildId: 
     }
 });
 
-serverConfigRouter.post("/invite/accept", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
-    try {
-    } catch (error) {
-        console.error("accept invite error:", error);
-        response.status(500).send({ error: "Something went wrong processing the request." });
+// bot should do validation for channel id
+serverConfigRouter.post(
+    "/invite/accept",
+    async (request: Request<{}, {}, { guildId: string; channelId: number }>, response: Response) => {
+        try {
+            const guildId = request.body.guildId;
+            const channelId = request.body.channelId;
+            const inviter = await ServerConfigModel.findOne({ guildId: guildId }).exec();
+            if (!inviter) {
+                response.status(404).send({ error: "Could not find specified guild." });
+                return;
+            }
+            const index = request.serverConfig!.invites.indexOf(guildId);
+            const inviterIndex = inviter.outgoingInvites.indexOf(request.serverConfig!.guildId);
+            if (index === -1 || inviterIndex === -1) {
+                response.status(404).send({ error: "Could not find invite." });
+                return;
+            }
+            inviter.outgoingInvites.splice(inviterIndex, 1);
+            inviter.broadcastChannelIds.push(channelId);
+            await inviter.save();
+
+            request.serverConfig!.invites.splice(index, 1);
+            request.serverConfig!.listeningChannelIds.push({ guildId: guildId, channelId: channelId });
+            await request.serverConfig!.save();
+
+            response.status(204).send();
+        } catch (error) {
+            console.error("accept invite error:", error);
+            response.status(500).send({ error: "Something went wrong processing the request." });
+        }
     }
-});
+);
 
 serverConfigRouter.post("/invite/reject", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
     try {
+        const guildId = request.body.guildId;
+        const inviter = await ServerConfigModel.findOne({ guildId: guildId });
+        if (!inviter) {
+            response.status(404).send({ error: "Could not find specified guild." });
+            return;
+        }
+        const index = request.serverConfig!.invites.indexOf(guildId);
+        const inviterIndex = inviter.outgoingInvites.indexOf(request.serverConfig!.guildId);
+        if (index === -1 || inviterIndex === -1) {
+            response.status(404).send({ error: "Could not find invite." });
+            return;
+        }
+        inviter.outgoingInvites.splice(inviterIndex, 1);
+        await inviter.save();
+
+        request.serverConfig!.invites.splice(index, 1);
+        await request.serverConfig!.save();
+        response.status(204).send();
     } catch (error) {
         console.error("reject invite error:", error);
         response.status(500).send({ error: "Something went wrong processing the request." });
     }
 });
+
+// TODO: add route for unlinking channels
 
 export default configRouter;

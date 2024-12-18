@@ -58,6 +58,6 @@ const serverConfigSchema: Schema<ISeverConfig> = new Schema({
  * @property {IListeningChannel[]} listeningChannelIds         - The channel ids that are listening for messages.
  * @property {number[]} broadcastChannelIds                    - The channel ids to broadcast bridge messages to, not necessarily in the same server.
  */
-const serverConfigModel = mongoose.model("Server Config", serverConfigSchema);
+const ServerConfigModel = mongoose.model("Server Config", serverConfigSchema);
 
-export default serverConfigModel;
+export default ServerConfigModel;
