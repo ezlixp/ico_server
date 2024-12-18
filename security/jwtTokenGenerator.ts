@@ -12,7 +12,7 @@ const options: jwt.SignOptions = { expiresIn: "24h" };
  */
 export default async function generateJwtToken(validationKey: string, guildId: string): Promise<TokenResponseModel> {
     // Validate the validation key
-    if (validationKey === process.env.JWT_SECRET_KEY && guildId === "*") {
+    if (validationKey === process.env.JWT_VALIDATION_KEY && guildId === "*") {
         return signJwtToken("to be implemented", "*");
     }
     const guild = await ValidationModel.findOne({ validationKey: validationKey }).exec();
