@@ -7,7 +7,7 @@ import { guildDatabases } from "../models/guildDatabaseModel.js";
  */
 const waitlistRouter = Router();
 
-waitlistRouter.get("/waitlist", async (request: Request, response: Response) => {
+waitlistRouter.get("/", async (request: Request, response: Response) => {
     try {
         // Get users sorted by creation date
         const waitlist = await guildDatabases[request.guildId!].WaitlistModel.find({}).sort({
@@ -22,7 +22,7 @@ waitlistRouter.get("/waitlist", async (request: Request, response: Response) => 
     }
 });
 
-waitlistRouter.post("/waitlist", validateJwtToken, async (request: Request, response: Response) => {
+waitlistRouter.post("/", validateJwtToken, async (request: Request, response: Response) => {
     try {
         const username = request.body.username;
 
@@ -52,7 +52,7 @@ waitlistRouter.post("/waitlist", validateJwtToken, async (request: Request, resp
     }
 });
 
-waitlistRouter.delete("/waitlist/:username", validateJwtToken, async (request: Request, response: Response) => {
+waitlistRouter.delete("/:username", validateJwtToken, async (request: Request, response: Response) => {
     try {
         // Get username from route
         const username = request.params.username;
