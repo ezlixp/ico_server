@@ -19,10 +19,10 @@ export async function decrementAspects(username: string): Promise<void> {
 /** Increments the number of aspects owed to a user by 0.5
  * @param username The user to incr ement from
  */
-export async function incrementAspects(username: string): Promise<void> {
+export async function incrementRaidRewards(username: string): Promise<void> {
     UserModel.updateOne(
         { uuid: await UsernametoUuid(username) },
-        { username: username, $inc: { aspects: 0.5, raids: 1 } },
+        { username: username, $inc: { aspects: 0.5, raids: 1, emeraldsOwed: 512 } },
         {
             upsert: true,
             collation: { locale: "en", strength: 2 },
