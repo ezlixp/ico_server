@@ -3,7 +3,7 @@ import "../config.js";
 import RaidModel from "../models/raidModel.js";
 import { IDiscordMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
-import { decrementAspects, incrementAspects } from "../utils/aspectUtils.js";
+import { decrementAspects, incrementRaidRewards } from "../utils/aspectUtils.js";
 import { isOnline } from "../utils/socketUtils.js";
 import UserModel from "../models/userModel.js";
 import { UsernametoUuid } from "../net/mojangApiClient.js";
@@ -38,7 +38,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 // Add users to db and increase aspect counter by 0.5
                 Promise.all(
                     newRaid.users.map((username) => {
-                        incrementAspects(username.toString());
+                        incrementRaidRewards(username.toString());
                     })
                 );
             } catch (error) {
