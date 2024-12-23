@@ -34,15 +34,15 @@ configRouter.post(
             {},
             {},
             {
-                discordGuildId: number;
+                discordGuildId: string;
                 wynnGuildId: string;
-                tomeChannel?: number;
-                layoffsChannel?: number;
-                raidsChannel?: number;
-                warChannel?: number;
-                privilegedRoles?: number[];
-                listeningChannel?: number;
-                broadcastingChannel?: number;
+                tomeChannel?: string;
+                layoffsChannel?: string;
+                raidsChannel?: string;
+                warChannel?: string;
+                privilegedRoles?: string[];
+                listeningChannel?: string;
+                broadcastingChannel?: string;
             }
         >,
         response: Response
@@ -106,13 +106,13 @@ serverConfigRouter.patch(
             {},
             {},
             {
-                tomeChannel?: number;
-                layoffsChannel?: number;
-                raidsChannel?: number;
-                warChannel?: number;
-                privilegedRoles?: number[];
-                listeningChannel?: number;
-                broadcastingChannel?: number;
+                tomeChannel?: string;
+                layoffsChannel?: string;
+                raidsChannel?: string;
+                warChannel?: string;
+                privilegedRoles?: string[];
+                listeningChannel?: string;
+                broadcastingChannel?: string;
             }
         >,
         response: Response
@@ -143,7 +143,7 @@ serverConfigRouter.patch(
 // currently no validation for duplicate roles
 serverConfigRouter.post(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: number }>, response: Response) => {
+    async (request: Request<{}, {}, { roleId: string }>, response: Response) => {
         try {
             request.serverConfig!.privilegedRoles.push(request.body.roleId);
             await request.serverConfig!.save();
@@ -157,7 +157,7 @@ serverConfigRouter.post(
 
 serverConfigRouter.delete(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: number }>, response: Response) => {
+    async (request: Request<{}, {}, { roleId: string }>, response: Response) => {
         try {
             const index = request.serverConfig!.privilegedRoles.indexOf(request.body.roleId);
             if (index === -1) {
