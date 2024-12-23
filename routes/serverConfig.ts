@@ -39,8 +39,8 @@ configRouter.post(
                 return;
             }
             const newServer = new ServerConfigModel({
-                serverId: request.body.discordGuildId,
-                guildId: request.body.wynnGuildId,
+                discordGuildId: request.body.discordGuildId,
+                wynnGuildId: request.body.wynnGuildId,
             });
             await newServer.save();
             response.send(newServer);

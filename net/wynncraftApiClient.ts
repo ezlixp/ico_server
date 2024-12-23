@@ -14,11 +14,11 @@ async function getPlayersGuildAsync(username: string) {
     }
 }
 
-export default async function checkIfPlayerIsGuildAsync(username: string, guildId: string) {
+export default async function checkIfPlayerIsGuildAsync(username: string, wynnGuildId: string) {
     const guild = await getPlayersGuildAsync(username);
 
     if (guild != null) {
-        if (guild.uuid == guildId) {
+        if (guild.uuid == wynnGuildId) {
             return true;
         }
     }
