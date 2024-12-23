@@ -7,42 +7,42 @@ import mongoose, { Schema } from "mongoose";
 
 export interface ISeverConfig {
     wynnGuildId: string;
-    discordGuildId: number;
-    tomeChannel: number;
-    layoffsChannel: number;
-    raidsChannel: number;
-    warChannel: number;
-    privilegedRoles: number[];
+    discordGuildId: string;
+    tomeChannel: string;
+    layoffsChannel: string;
+    raidsChannel: string;
+    warChannel: string;
+    privilegedRoles: string[];
     // invites: string[];
     // outgoingInvites: string[];
-    listeningChannel: number;
-    broadcastingChannel: number;
+    listeningChannel: string;
+    broadcastingChannel: string;
 }
 
 const serverConfigSchema: Schema<ISeverConfig> = new Schema({
     wynnGuildId: { type: String, required: true },
-    discordGuildId: { type: Number, required: true },
-    tomeChannel: { type: Number, required: true, default: -1 },
-    layoffsChannel: { type: Number, required: true, default: -1 },
-    raidsChannel: { type: Number, required: true, default: -1 },
-    warChannel: { type: Number, required: true, default: -1 },
-    privilegedRoles: { type: [{ type: Number, required: true }], required: true, default: [] },
+    discordGuildId: { type: String, required: true },
+    tomeChannel: { type: String, required: true, default: "" },
+    layoffsChannel: { type: String, required: true, default: "" },
+    raidsChannel: { type: String, required: true, default: "" },
+    warChannel: { type: String, required: true, default: "" },
+    privilegedRoles: { type: [{ type: String, required: true }], required: true, default: [] },
     // invites: { type: [{ type: String, required: true }], required: true, default: [] },
     // outgoingInvites: { type: [{ type: String, required: true }] },
-    listeningChannel: { type: Number, required: true, default: -1 },
-    broadcastingChannel: { type: Number, required: true, default: -1 },
+    listeningChannel: { type: String, required: true, default: "" },
+    broadcastingChannel: { type: String, required: true, default: "" },
 });
 
 /**
  * @property {string} wynnGuildId         - The guild id a server is connected to.
- * @property {number} discordGuildId      - The server id a guild is connected to.
- * @property {number} tomeChannel         - The channel id for tomes, or -1 if not specified.
- * @property {number} layoffsChannel      - The channel id for layoffs, or -1 if not specified.
- * @property {number} raidsChannel        - The channel id for raids, or -1 if not specified.
- * @property {number} warChannel          - The channel id for wars, or -1 if not specified.
- * @property {number[]} privilegedRoles   - The roles in the discord server with additional permissions.
- * @property {number} listeningChannel    - The channel ids that are listening for messages.
- * @property {number} broadcastingChannel - The channel ids to broadcast bridge messages to, not necessarily in the same server.
+ * @property {string} discordGuildId      - The server id a guild is connected to.
+ * @property {string} tomeChannel         - The channel id for tomes, or -1 if not specified.
+ * @property {string} layoffsChannel      - The channel id for layoffs, or -1 if not specified.
+ * @property {string} raidsChannel        - The channel id for raids, or -1 if not specified.
+ * @property {string} warChannel          - The channel id for wars, or -1 if not specified.
+ * @property {string[]} privilegedRoles   - The roles in the discord server with additional permissions.
+ * @property {string} listeningChannel    - The channel ids that are listening for messages.
+ * @property {string} broadcastingChannel - The channel ids to broadcast bridge messages to, not necessarily in the same server.
  */
 const ServerConfigModel = mongoose.model("Server Config", serverConfigSchema);
 
