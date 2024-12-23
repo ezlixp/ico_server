@@ -14,7 +14,7 @@ configRouter.use("/:discordGuildId", serverConfigRouter);
 
 serverConfigRouter.use(validateJwtToken);
 serverConfigRouter.use(
-    async (request: Request<{ discordGuildId: number }, {}, {}>, response: Response, next: NextFunction) => {
+    async (request: Request<{ discordGuildId: string }, {}, {}>, response: Response, next: NextFunction) => {
         const query = ServerConfigModel.findOne({ discordGuildId: request.params.discordGuildId });
         const server = await query.exec();
         if (!server) {
