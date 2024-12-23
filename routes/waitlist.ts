@@ -10,7 +10,7 @@ const waitlistRouter = Router();
 waitlistRouter.get("/", async (request: Request, response: Response) => {
     try {
         // Get users sorted by creation date
-        const waitlist = await guildDatabases[request.guildId!].WaitlistModel.find({}).sort({
+        const waitlist = await guildDatabases[request.wynnGuildId!].WaitlistModel.find({}).sort({
             dateAdded: 1,
         });
 
@@ -27,7 +27,7 @@ waitlistRouter.post("/", validateJwtToken, async (request: Request, response: Re
         const username = request.body.username;
 
         // Check if user is already in database
-        const exists = await guildDatabases[request.guildId!].WaitlistModel.findOne({
+        const exists = await guildDatabases[request.wynnGuildId!].WaitlistModel.findOne({
             username: username,
         }).collation({
             locale: "en",
@@ -40,7 +40,7 @@ waitlistRouter.post("/", validateJwtToken, async (request: Request, response: Re
         }
 
         // Save user on database
-        const waitlistUser = new guildDatabases[request.guildId!].WaitlistModel({ username: username });
+        const waitlistUser = new guildDatabases[request.wynnGuildId!].WaitlistModel({ username: username });
         await waitlistUser.save();
 
         response.status(201).send({ waitlistUser });
@@ -58,7 +58,7 @@ waitlistRouter.delete("/:username", validateJwtToken, async (request: Request, r
         const username = request.params.username;
 
         // Find entity by name and delete
-        const result = await guildDatabases[request.guildId!].WaitlistModel.findOneAndDelete({
+        const result = await guildDatabases[request.wynnGuildId!].WaitlistModel.findOneAndDelete({
             username: username,
         }).collation({
             locale: "en",

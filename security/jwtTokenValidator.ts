@@ -29,7 +29,7 @@ function validateJwtToken(request: Request, response: Response, next: NextFuncti
         if (!p.guildId) {
             return response.status(401).json({ error: "Invalid token provided." });
         }
-        if (p.guildId !== "*" && p.guildId !== request.guildId) {
+        if (p.guildId !== "*" && p.guildId !== request.wynnGuildId) {
             return response.status(401).json({ error: "Invalid token provided." });
         }
 

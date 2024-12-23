@@ -11,7 +11,7 @@ authenticationRouter.post(
     async (request: Request<{}, {}, { validationKey: string }>, response: Response) => {
         // Gets a token if correct validationKey is provided
         const validationKey = request.body.validationKey;
-        const result = await generateJwtToken(validationKey, request.guildId!);
+        const result = await generateJwtToken(validationKey, request.wynnGuildId!);
 
         if (result.status) {
             response.status(200).json(result);
