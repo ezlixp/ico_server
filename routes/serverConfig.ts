@@ -129,135 +129,135 @@ serverConfigRouter.delete(
     }
 );
 
-serverConfigRouter.post("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
-    try {
-        if (request.body.guildId === request.serverConfig!.wynnGuildId) {
-            response.status(400).send({ error: "Cannot invite self." });
-            return;
-        }
+// serverConfigRouter.post("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
+//     try {
+//         if (request.body.guildId === request.serverConfig!.wynnGuildId) {
+//             response.status(400).send({ error: "Cannot invite self." });
+//             return;
+//         }
 
-        const invited = await ServerConfigModel.findOne({ wynnGuildId: request.body.guildId }).exec();
-        if (!invited) {
-            response.status(404).send({ error: "Could not find specified guild server." });
-            return;
-        }
+//         const invited = await ServerConfigModel.findOne({ wynnGuildId: request.body.guildId }).exec();
+//         if (!invited) {
+//             response.status(404).send({ error: "Could not find specified guild server." });
+//             return;
+//         }
 
-        invited.invites.push(request.serverConfig!.wynnGuildId);
-        await invited.save();
-        request.serverConfig!.outgoingInvites.push(request.body.guildId);
-        await request.serverConfig!.save();
+//         invited.invites.push(request.serverConfig!.wynnGuildId);
+//         await invited.save();
+//         request.serverConfig!.outgoingInvites.push(request.body.guildId);
+//         await request.serverConfig!.save();
 
-        response.send(request.serverConfig);
-    } catch (error) {
-        console.error("post invite error:", error);
-        response.status(500).send({ error: "Something went wrong processing the request." });
-    }
-});
+//         response.send(request.serverConfig);
+//     } catch (error) {
+//         console.error("post invite error:", error);
+//         response.status(500).send({ error: "Something went wrong processing the request." });
+//     }
+// });
 
-serverConfigRouter.delete("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
-    try {
-        if (request.body.guildId === request.serverConfig!.wynnGuildId) {
-            response.status(400).send({ error: "Cannot invite self." });
-            return;
-        }
+// serverConfigRouter.delete("/invite", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
+//     try {
+//         if (request.body.guildId === request.serverConfig!.wynnGuildId) {
+//             response.status(400).send({ error: "Cannot invite self." });
+//             return;
+//         }
 
-        const invited = await ServerConfigModel.findOne({ wynnGuildId: request.body.guildId }).exec();
-        const myGuildId = request.serverConfig!.wynnGuildId;
-        if (!invited) {
-            response.status(404).send({ error: "Could not find specified guild server." });
-            return;
-        }
-        const myIndex = request.serverConfig!.outgoingInvites.indexOf(request.body.guildId);
-        const invitedIndex = invited.invites.indexOf(myGuildId);
-        if (myIndex === -1) {
-            response.status(404).send({ error: "Specified guild server was not invited." });
-        }
-        if (invitedIndex === -1) {
-            console.warn("two way invite broken for guild ids:", myGuildId, invited.wynnGuildId);
-        } else {
-            invited.invites.splice(invitedIndex, 1);
-        }
-        request.serverConfig!.outgoingInvites.splice(myIndex, 1);
+//         const invited = await ServerConfigModel.findOne({ wynnGuildId: request.body.guildId }).exec();
+//         const myGuildId = request.serverConfig!.wynnGuildId;
+//         if (!invited) {
+//             response.status(404).send({ error: "Could not find specified guild server." });
+//             return;
+//         }
+//         const myIndex = request.serverConfig!.outgoingInvites.indexOf(request.body.guildId);
+//         const invitedIndex = invited.invites.indexOf(myGuildId);
+//         if (myIndex === -1) {
+//             response.status(404).send({ error: "Specified guild server was not invited." });
+//         }
+//         if (invitedIndex === -1) {
+//             console.warn("two way invite broken for guild ids:", myGuildId, invited.wynnGuildId);
+//         } else {
+//             invited.invites.splice(invitedIndex, 1);
+//         }
+//         request.serverConfig!.outgoingInvites.splice(myIndex, 1);
 
-        await request.serverConfig!.save();
-        await invited.save();
+//         await request.serverConfig!.save();
+//         await invited.save();
 
-        response.send(request.serverConfig);
-    } catch (error) {
-        console.error("delete invite error:", error);
-        response.status(500).send({ error: "Something went wrong processing the request." });
-    }
-});
+//         response.send(request.serverConfig);
+//     } catch (error) {
+//         console.error("delete invite error:", error);
+//         response.status(500).send({ error: "Something went wrong processing the request." });
+//     }
+// });
 
-// bot should do validation for channel id
-serverConfigRouter.post(
-    "/invite/accept",
-    async (request: Request<{}, {}, { guildId: string; channelId: number }>, response: Response) => {
-        try {
-            if (request.body.guildId === request.serverConfig!.wynnGuildId) {
-                response.status(400).send({ error: "Cannot invite self." });
-                return;
-            }
+// // bot should do validation for channel id
+// serverConfigRouter.post(
+//     "/invite/accept",
+//     async (request: Request<{}, {}, { guildId: string; channelId: number }>, response: Response) => {
+//         try {
+//             if (request.body.guildId === request.serverConfig!.wynnGuildId) {
+//                 response.status(400).send({ error: "Cannot invite self." });
+//                 return;
+//             }
 
-            const guildId = request.body.guildId;
-            const channelId = request.body.channelId;
-            const inviter = await ServerConfigModel.findOne({ wynnGuildId: guildId }).exec();
-            if (!inviter) {
-                response.status(404).send({ error: "Could not find specified guild." });
-                return;
-            }
-            const index = request.serverConfig!.invites.indexOf(guildId);
-            const inviterIndex = inviter.outgoingInvites.indexOf(request.serverConfig!.wynnGuildId);
-            if (index === -1 || inviterIndex === -1) {
-                response.status(404).send({ error: "Could not find invite." });
-                return;
-            }
-            inviter.outgoingInvites.splice(inviterIndex, 1);
-            inviter.broadcastingChannels.push(channelId);
-            await inviter.save();
+//             const guildId = request.body.guildId;
+//             const channelId = request.body.channelId;
+//             const inviter = await ServerConfigModel.findOne({ wynnGuildId: guildId }).exec();
+//             if (!inviter) {
+//                 response.status(404).send({ error: "Could not find specified guild." });
+//                 return;
+//             }
+//             const index = request.serverConfig!.invites.indexOf(guildId);
+//             const inviterIndex = inviter.outgoingInvites.indexOf(request.serverConfig!.wynnGuildId);
+//             if (index === -1 || inviterIndex === -1) {
+//                 response.status(404).send({ error: "Could not find invite." });
+//                 return;
+//             }
+//             inviter.outgoingInvites.splice(inviterIndex, 1);
+//             inviter.broadcastingChannels.push(channelId);
+//             await inviter.save();
 
-            request.serverConfig!.invites.splice(index, 1);
-            request.serverConfig!.listeningChannels.push({ guildId: guildId, channelId: channelId });
-            await request.serverConfig!.save();
+//             request.serverConfig!.invites.splice(index, 1);
+//             request.serverConfig!.listeningChannel.push({ guildId: guildId, channelId: channelId });
+//             await request.serverConfig!.save();
 
-            response.send(request.serverConfig);
-        } catch (error) {
-            console.error("accept invite error:", error);
-            response.status(500).send({ error: "Something went wrong processing the request." });
-        }
-    }
-);
+//             response.send(request.serverConfig);
+//         } catch (error) {
+//             console.error("accept invite error:", error);
+//             response.status(500).send({ error: "Something went wrong processing the request." });
+//         }
+//     }
+// );
 
-serverConfigRouter.post("/invite/reject", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
-    try {
-        if (request.body.guildId === request.serverConfig!.wynnGuildId) {
-            response.status(400).send({ error: "Cannot invite self." });
-            return;
-        }
+// serverConfigRouter.post("/invite/reject", async (request: Request<{}, {}, { guildId: string }>, response: Response) => {
+//     try {
+//         if (request.body.guildId === request.serverConfig!.wynnGuildId) {
+//             response.status(400).send({ error: "Cannot invite self." });
+//             return;
+//         }
 
-        const guildId = request.body.guildId;
-        const inviter = await ServerConfigModel.findOne({ wynnGuildId: guildId });
-        if (!inviter) {
-            response.status(404).send({ error: "Could not find specified guild." });
-            return;
-        }
-        const index = request.serverConfig!.invites.indexOf(guildId);
-        const inviterIndex = inviter.outgoingInvites.indexOf(request.serverConfig!.wynnGuildId);
-        if (index === -1 || inviterIndex === -1) {
-            response.status(404).send({ error: "Could not find invite." });
-            return;
-        }
-        inviter.outgoingInvites.splice(inviterIndex, 1);
-        await inviter.save();
+//         const guildId = request.body.guildId;
+//         const inviter = await ServerConfigModel.findOne({ wynnGuildId: guildId });
+//         if (!inviter) {
+//             response.status(404).send({ error: "Could not find specified guild." });
+//             return;
+//         }
+//         const index = request.serverConfig!.invites.indexOf(guildId);
+//         const inviterIndex = inviter.outgoingInvites.indexOf(request.serverConfig!.wynnGuildId);
+//         if (index === -1 || inviterIndex === -1) {
+//             response.status(404).send({ error: "Could not find invite." });
+//             return;
+//         }
+//         inviter.outgoingInvites.splice(inviterIndex, 1);
+//         await inviter.save();
 
-        request.serverConfig!.invites.splice(index, 1);
-        await request.serverConfig!.save();
-        response.status(204).send();
-    } catch (error) {
-        console.error("reject invite error:", error);
-        response.status(500).send({ error: "Something went wrong processing the request." });
-    }
-});
+//         request.serverConfig!.invites.splice(index, 1);
+//         await request.serverConfig!.save();
+//         response.status(204).send();
+//     } catch (error) {
+//         console.error("reject invite error:", error);
+//         response.status(500).send({ error: "Something went wrong processing the request." });
+//     }
+// });
 
 // TODO: add route for unlinking channels
 
