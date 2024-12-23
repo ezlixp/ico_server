@@ -10,21 +10,24 @@ const options: jwt.SignOptions = { expiresIn: "24h" };
 /**
  * Generates a JWT if the validation key is valid.
  */
-export default async function generateJwtToken(validationKey: string, guildId: string): Promise<TokenResponseModel> {
+export default async function generateJwtToken(
+    validationKey: string,
+    wynnGuildId: string
+): Promise<TokenResponseModel> {
     // Validate the validation key
-    if (validationKey === process.env.JWT_VALIDATION_KEY && guildId === "*") {
+    if (validationKey === process.env.JWT_VALIDATION_KEY && wynnGuildId === "*") {
         return signJwtToken("to be implemented", "*");
     }
     const guild = await ValidationModel.findOne({ validationKey: validationKey }).exec();
     if (!guild) {
         return new TokenResponseModel(false, null, null, "Invalid validation key.");
     }
-    if (guild.guildId !== guildId) {
+    if (guild.wynnGuildId !== wynnGuildId) {
         return new TokenResponseModel(false, null, null, "Invalid validation key.");
     }
 
     // Generate the token
-    return signJwtToken("to be implemented", guildId);
+    return signJwtToken("to be implemented", wynnGuildId);
 }
 
 export function signJwtToken(username: string, guildId: string): TokenResponseModel {
