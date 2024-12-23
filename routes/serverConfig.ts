@@ -55,19 +55,20 @@ configRouter.post(
                 response.status(400).send({ error: "Configuration already set up for specified server or guild." });
                 return;
             }
+            const body = request.body;
             const newServer = new ServerConfigModel({
-                discordGuildId: request.body.discordGuildId,
-                wynnGuildId: request.body.wynnGuildId,
-                tomeChannel: request.body.tomeChannel,
-                layoffsChannel: request.body.layoffsChannel,
-                raidsChannel: request.body.raidsChannel,
-                warChannel: request.body.warChannel,
-                listeningChannel: request.body.listeningChannel,
-                broadcastingChannel: request.body.broadcastingChannel,
+                discordGuildId: body.discordGuildId,
+                wynnGuildId: body.wynnGuildId,
             });
-            if (request.body.privilegedRoles)
+            if (body.tomeChannel) newServer.tomeChannel = body.tomeChannel;
+            if (body.layoffsChannel) newServer.layoffsChannel = body.layoffsChannel;
+            if (body.raidsChannel) newServer.raidsChannel = body.raidsChannel;
+            if (body.warChannel) newServer.warChannel = body.warChannel;
+            if (body.broadcastingChannel) newServer.broadcastingChannel = body.broadcastingChannel;
+            if (body.listeningChannel) newServer.listeningChannel = body.listeningChannel;
+            if (body.privilegedRoles)
                 await Promise.all([
-                    request.body.privilegedRoles.forEach((v) => {
+                    body.privilegedRoles.forEach((v) => {
                         newServer.privilegedRoles.push(v);
                     }),
                 ]);
