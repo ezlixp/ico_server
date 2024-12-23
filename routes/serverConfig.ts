@@ -85,7 +85,6 @@ serverConfigRouter.patch(
             if (body.tomeChannel) request.serverConfig!.tomeChannel = body.tomeChannel;
             if (body.layoffsChannel) request.serverConfig!.layoffsChannel = body.layoffsChannel;
             if (body.raidsChannel) request.serverConfig!.raidsChannel = body.raidsChannel;
-            if (body.warQuestionsChannel) request.serverConfig!.warQuestionsChannel = body.warQuestionsChannel;
             if (body.warChannel) request.serverConfig!.warChannel = body.warChannel;
             await request.serverConfig!.save();
             response.send(request.serverConfig);
