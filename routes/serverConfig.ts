@@ -80,8 +80,9 @@ serverConfigRouter.patch(
                 tomeChannel?: number;
                 layoffsChannel?: number;
                 raidsChannel?: number;
-                warQuestionsChannel?: number;
                 warChannel?: number;
+                listeningChannel?: number;
+                broadcastingChannel?: number;
             }
         >,
         response: Response
@@ -92,6 +93,8 @@ serverConfigRouter.patch(
             if (body.layoffsChannel) request.serverConfig!.layoffsChannel = body.layoffsChannel;
             if (body.raidsChannel) request.serverConfig!.raidsChannel = body.raidsChannel;
             if (body.warChannel) request.serverConfig!.warChannel = body.warChannel;
+            if (body.broadcastingChannel) request.serverConfig!.broadcastingChannel = body.broadcastingChannel;
+            if (body.listeningChannel) request.serverConfig!.listeningChannel = body.listeningChannel;
             await request.serverConfig!.save();
             response.send(request.serverConfig);
         } catch (error) {
