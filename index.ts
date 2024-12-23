@@ -42,7 +42,7 @@ try {
 const router = Router({ mergeParams: true });
 
 app.use(`/api/${process.env.npm_package_version}/config`, configRouter);
-app.use(`/api/${process.env.npm_package_version}/:guildId`, router);
+app.use(`/api/${process.env.npm_package_version}/:wynnGuildId`, router);
 
 app.all(/\/api\/v[^2]/, (_: Request, response: Response) => {
     response.status(301).send({ error: `please use /api/${process.env.npm_package_version}` });

@@ -10,40 +10,46 @@ const serverConfigRouter = Router({ mergeParams: true });
 
 // Register all middlewares.
 configRouter.use(validateJwtToken);
-configRouter.use("/:serverId", serverConfigRouter);
+configRouter.use("/:discordGuildId", serverConfigRouter);
 
 serverConfigRouter.use(validateJwtToken);
 serverConfigRouter.use(
-    async (request: Request<{ serverId: number }, {}, {}>, response: Response, next: NextFunction) => {
-        const query = ServerConfigModel.findOne({ discordGuildId: request.params.serverId });
+    async (request: Request<{ discordGuildId: number }, {}, {}>, response: Response, next: NextFunction) => {
+        const query = ServerConfigModel.findOne({ discordGuildId: request.params.discordGuildId });
         const server = await query.exec();
         if (!server) {
             response.status(404).send({ error: "Could not find specified server." });
             return;
         }
-        request.serverId = request.params.serverId;
+        request.discordGuildId = request.params.discordGuildId;
         request.serverConfig = server;
         next();
     }
 );
 
-configRouter.post("/", async (request: Request<{}, {}, { serverId: number; guildId: string }>, response: Response) => {
-    try {
-        const server = await ServerConfigModel.findOne()
-            .or([{ discordGuildId: request.body.serverId }, { wynnGuildId: request.body.guildId }])
-            .exec();
-        if (server) {
-            response.status(400).send({ error: "Configuration already set up for specified server or guild." });
-            return;
+configRouter.post(
+    "/",
+    async (request: Request<{}, {}, { discordGuildId: number; wynnGuildId: string }>, response: Response) => {
+        try {
+            const server = await ServerConfigModel.findOne()
+                .or([{ discordGuildId: request.body.discordGuildId }, { wynnGuildId: request.body.wynnGuildId }])
+                .exec();
+            if (server) {
+                response.status(400).send({ error: "Configuration already set up for specified server or guild." });
+                return;
+            }
+            const newServer = new ServerConfigModel({
+                serverId: request.body.discordGuildId,
+                guildId: request.body.wynnGuildId,
+            });
+            await newServer.save();
+            response.send(newServer);
+        } catch (error) {
+            console.error("post config error:", error);
+            response.status(500).send({ error: "Something went wrong processing the request." });
         }
-        const newServer = new ServerConfigModel({ serverId: request.body.serverId, guildId: request.body.guildId });
-        await newServer.save();
-        response.send(newServer);
-    } catch (error) {
-        console.error("post config error:", error);
-        response.status(500).send({ error: "Something went wrong processing the request." });
     }
-});
+);
 
 serverConfigRouter.get("/", async (request: Request, response: Response) => {
     try {
@@ -56,7 +62,7 @@ serverConfigRouter.get("/", async (request: Request, response: Response) => {
 
 serverConfigRouter.delete("/", async (request: Request, response: Response) => {
     try {
-        await ServerConfigModel.findOneAndDelete({ discordGuildId: request.serverId }).exec();
+        await ServerConfigModel.findOneAndDelete({ discordGuildId: request.discordGuildId }).exec();
         response.status(204).send();
     } catch (error) {
         console.error("delete server config error:", error);
