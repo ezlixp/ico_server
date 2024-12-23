@@ -9,7 +9,7 @@ const raidRouter = Router();
 
 raidRouter.get("/", async (request: Request, response: Response) => {
     try {
-        const raids = await guildDatabases[request.guildId!].RaidModel.find({});
+        const raids = await guildDatabases[request.wynnGuildId!].RaidModel.find({});
         response.status(200);
         response.send(raids);
 
@@ -22,7 +22,7 @@ raidRouter.get("/", async (request: Request, response: Response) => {
 
 raidRouter.get("/leaderboard", async (request: Request, response: Response) => {
     try {
-        const topUsers = await guildDatabases[request.guildId!].GuildUserModel.find({ raids: { $gt: 0 } })
+        const topUsers = await guildDatabases[request.wynnGuildId!].GuildUserModel.find({ raids: { $gt: 0 } })
             .sort({ raids: "descending" })
             .limit(10);
         let formattedTopUsers: { username: string; raids: number }[] = [];

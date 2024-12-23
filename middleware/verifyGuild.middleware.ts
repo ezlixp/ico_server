@@ -12,9 +12,9 @@ export default function verifyGuild(
             return;
         }
 
-        checkIfPlayerIsGuildAsync(request.body.username, request.guildId!).then((res) => {
+        checkIfPlayerIsGuildAsync(request.body.username, request.wynnGuildId!).then((res) => {
             // If provided player is in specified guild, continue
-            if (res || request.guildId === "**") next();
+            if (res || request.wynnGuildId === "**") next();
             // Otherwise, return 'Bad Request'
             else response.status(400).send({ error: "User not in the guild." });
         });

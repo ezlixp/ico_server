@@ -3,7 +3,7 @@ import validateJwtToken from "../security/jwtTokenValidator.js";
 import ServerConfigModel from "../models/serverConfigModel.js";
 
 /**
- * Maps all server config related endpoints. request.guildId is NOT defined in these routes, but request.serverId is.
+ * Maps all server config related endpoints. request.wynnGuildId is NOT defined in these routes, but request.discordGuildId is.
  */
 const configRouter = Router();
 const serverConfigRouter = Router({ mergeParams: true });
