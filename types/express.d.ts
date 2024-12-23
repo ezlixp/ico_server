@@ -12,7 +12,7 @@ declare namespace Express {
         //     "findOne",
         //     {}
         // >;
-        discordGuildId?: number;
+        discordGuildId?: string;
         serverConfig?: import("mongoose").Document<unknown, {}, import("../models/serverConfigModel.ts").ISeverConfig> &
             import("../models/serverConfigModel.ts").ISeverConfig;
     }
