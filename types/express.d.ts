@@ -1,6 +1,6 @@
 declare namespace Express {
     export interface Request {
-        guildId?: string;
+        wynnGuildId?: string;
         // serverQuery?: import("mongoose").Query<
         //     | (import("mongoose").Document<unknown, {}, import("../models/serverConfigModel.ts").ISeverConfig> &
         //           import("../models/serverConfigModel.ts").ISeverConfig)
@@ -12,7 +12,7 @@ declare namespace Express {
         //     "findOne",
         //     {}
         // >;
-        serverId?: number;
+        discordGuildId?: number;
         serverConfig?: import("mongoose").Document<unknown, {}, import("../models/serverConfigModel.ts").ISeverConfig> &
             import("../models/serverConfigModel.ts").ISeverConfig;
     }
