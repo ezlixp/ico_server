@@ -7,7 +7,6 @@ declare global {
             JWT_VALIDATION_KEY: string;
             JWT_SECRET_KEY: string;
             JWT_REFRESH_SECRET_KEY: string;
-            npm_package_version: string;
         }
     }
 }
