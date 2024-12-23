@@ -29,7 +29,24 @@ serverConfigRouter.use(
 
 configRouter.post(
     "/",
-    async (request: Request<{}, {}, { discordGuildId: number; wynnGuildId: string }>, response: Response) => {
+    async (
+        request: Request<
+            {},
+            {},
+            {
+                discordGuildId: number;
+                wynnGuildId: string;
+                tomeChannel?: number;
+                layoffsChannel?: number;
+                raidsChannel?: number;
+                warChannel?: number;
+                privilegedRoles?: number[];
+                listeningChannel?: number;
+                broadcastingChannel?: number;
+            }
+        >,
+        response: Response
+    ) => {
         try {
             const server = await ServerConfigModel.findOne()
                 .or([{ discordGuildId: request.body.discordGuildId }, { wynnGuildId: request.body.wynnGuildId }])
@@ -41,7 +58,19 @@ configRouter.post(
             const newServer = new ServerConfigModel({
                 discordGuildId: request.body.discordGuildId,
                 wynnGuildId: request.body.wynnGuildId,
+                tomeChannel: request.body.tomeChannel,
+                layoffsChannel: request.body.layoffsChannel,
+                raidsChannel: request.body.raidsChannel,
+                warChannel: request.body.warChannel,
+                listeningChannel: request.body.listeningChannel,
+                broadcastingChannel: request.body.broadcastingChannel,
             });
+            if (request.body.privilegedRoles)
+                await Promise.all([
+                    request.body.privilegedRoles.forEach((v) => {
+                        newServer.privilegedRoles.push(v);
+                    }),
+                ]);
             await newServer.save();
             response.send(newServer);
         } catch (error) {
@@ -81,6 +110,7 @@ serverConfigRouter.patch(
                 layoffsChannel?: number;
                 raidsChannel?: number;
                 warChannel?: number;
+                privilegedRoles?: number[];
                 listeningChannel?: number;
                 broadcastingChannel?: number;
             }
@@ -95,6 +125,12 @@ serverConfigRouter.patch(
             if (body.warChannel) request.serverConfig!.warChannel = body.warChannel;
             if (body.broadcastingChannel) request.serverConfig!.broadcastingChannel = body.broadcastingChannel;
             if (body.listeningChannel) request.serverConfig!.listeningChannel = body.listeningChannel;
+            if (body.privilegedRoles)
+                await Promise.all([
+                    body.privilegedRoles.forEach((v) => {
+                        request.serverConfig!.privilegedRoles.push(v);
+                    }),
+                ]);
             await request.serverConfig!.save();
             response.send(request.serverConfig);
         } catch (error) {
