@@ -1,25 +1,14 @@
-import { NextFunction, Request, Response } from "express";
-import checkIfPlayerIsGuildAsync from "../net/wynncraftApiClient.js";
+import { NextFunction, Response } from "express";
+import { GuildRequest } from "../types/requestTypes.js";
+import { guildDatabases } from "../models/guildDatabaseModel.js";
 
-export default function verifyGuild(
-    request: Request<{}, {}, { username: string }>,
-    response: Response,
-    next: NextFunction
-) {
-    try {
-        if (!request.body.username) {
-            response.status(400).send({ error: "Username not provided." });
-            return;
-        }
-
-        checkIfPlayerIsGuildAsync(request.body.username, request.wynnGuildId!).then((res) => {
-            // If provided player is in specified guild, continue
-            if (res || request.wynnGuildId === "**") next();
-            // Otherwise, return 'Bad Request'
-            else response.status(400).send({ error: "User not in the guild." });
-        });
-    } catch (error) {
-        response.status(500).send({ error: "Something went wrong processing your request." });
-        console.error("check guild middleware error:", error);
+export default function verifyGuild(request: GuildRequest, response: Response, next: NextFunction) {
+    if (!(request.params.wynnGuildId in guildDatabases) && request.params.wynnGuildId !== "*") {
+        console.log(request.params);
+        response
+            .status(400)
+            .send({ error: "This guild is not configured. In order to configure a guild, contact a developer." });
+        return;
     }
+    next();
 }

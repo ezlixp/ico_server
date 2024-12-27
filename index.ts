@@ -5,19 +5,17 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import "./config";
 import statusRouter from "./routes/status.js";
-import authenticationRouter from "./routes/authentication.js";
-import raidRouter from "./routes/raids.js";
-import aspectRouter from "./routes/aspects.js";
-import tomeRouter from "./routes/tomes.js";
-import waitlistRouter from "./routes/waitlist.js";
+import authenticationRouter from "./routes/guild/authentication.js";
+import raidRouter from "./routes/guild/raids.js";
+import tomeRouter from "./routes/guild/tomes.js";
 import modVersionRouter from "./routes/modVersion.js";
 import "./sockets/discord.js";
-import wynnRouter from "./routes/wynn.js";
 import healthRouter from "./routes/healthCheck.js";
 import userInfoRouter from "./routes/userInfo.js";
-import getGuildId from "./middleware/getGuildId.middleware.js";
 import registerDatabases from "./models/guildDatabaseModel.js";
 import configRouter from "./routes/serverConfig.js";
+import onlineRouter from "./routes/guild/online.js";
+import waitlistRouter from "./routes/guild/waitlist.js";
 
 app.use(express.json());
 app.use(cors());
@@ -39,7 +37,7 @@ try {
     console.error("Failed to connect to database:", error);
 }
 
-const guildRouter = Router();
+const guildRouter = Router({ mergeParams: true });
 const apiVersion = "v2";
 
 app.use("/api/:version*", (request: Request<{ version: string }>, response: Response, next: NextFunction) => {
@@ -50,24 +48,28 @@ app.use("/api/:version*", (request: Request<{ version: string }>, response: Resp
     next();
 });
 
+// Map all endpoints that don't require guild id
+app.use("/", statusRouter);
+
+app.use("/healthz", healthRouter);
+
+app.use(`/api/${apiVersion}/mod`, modVersionRouter);
+
+app.use(`/api/${apiVersion}/user`, userInfoRouter);
+
 app.use(`/api/${apiVersion}/config`, configRouter);
+
 app.use(`/api/${apiVersion}/guilds`, guildRouter);
 
+// Catch all for incorrect routes
 app.all("*", (_: Request, response: Response) => {
     response.status(404).send({ error: "not found" });
 });
 
-// Set guildId property on future requests
-guildRouter.use(getGuildId);
-
-// Map endpoints
+// Map endpoints that require guild id
 guildRouter.use("/auth", authenticationRouter);
-guildRouter.use("/user", userInfoRouter);
-guildRouter.use("/wynn", wynnRouter);
-guildRouter.use("/healthz", healthRouter);
-guildRouter.use("/mod", modVersionRouter);
+guildRouter.use("/online", onlineRouter);
 guildRouter.use("/raids", raidRouter);
-guildRouter.use("/aspects", aspectRouter);
+// guildRouter.use("/aspects", aspectRouter);
 guildRouter.use("/tomes", tomeRouter);
 guildRouter.use("/waitlist", waitlistRouter);
-guildRouter.use(statusRouter);
