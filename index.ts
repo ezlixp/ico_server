@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import app, { server } from "./app.js";
 import { connect } from "mongoose";
 import bodyParser from "body-parser";
@@ -39,30 +39,35 @@ try {
     console.error("Failed to connect to database:", error);
 }
 
-const router = Router({ mergeParams: true });
+const guildRouter = Router();
 const apiVersion = "v2";
 
-app.use(`/api/${apiVersion}/config`, configRouter);
-app.use(`/api/${apiVersion}/:wynnGuildId`, router);
-
-app.all(/\/api\/v[^2]/, (_: Request, response: Response) => {
-    response.status(301).send({ error: `please use /api/${process.env.npm_package_version}` });
+app.use("/api/:version*", (request: Request<{ version: string }>, response: Response, next: NextFunction) => {
+    if (request.params.version !== apiVersion) {
+        response.status(301).send({ error: `please use /api/${apiVersion}` });
+        return;
+    }
+    next();
 });
+
+app.use(`/api/${apiVersion}/config`, configRouter);
+app.use(`/api/${apiVersion}/guilds`, guildRouter);
+
 app.all("*", (_: Request, response: Response) => {
     response.status(404).send({ error: "not found" });
 });
 
 // Set guildId property on future requests
-router.use(getGuildId);
+guildRouter.use(getGuildId);
 
 // Map endpoints
-router.use("/auth", authenticationRouter);
-router.use("/user", userInfoRouter);
-router.use("/wynn", wynnRouter);
-router.use("/healthz", healthRouter);
-router.use("/mod", modVersionRouter);
-router.use("/raids", raidRouter);
-router.use("/aspects", aspectRouter);
-router.use("/tomes", tomeRouter);
-router.use("/waitlist", waitlistRouter);
-router.use(statusRouter);
+guildRouter.use("/auth", authenticationRouter);
+guildRouter.use("/user", userInfoRouter);
+guildRouter.use("/wynn", wynnRouter);
+guildRouter.use("/healthz", healthRouter);
+guildRouter.use("/mod", modVersionRouter);
+guildRouter.use("/raids", raidRouter);
+guildRouter.use("/aspects", aspectRouter);
+guildRouter.use("/tomes", tomeRouter);
+guildRouter.use("/waitlist", waitlistRouter);
+guildRouter.use(statusRouter);
