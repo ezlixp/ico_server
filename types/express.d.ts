@@ -1,6 +1,6 @@
 declare namespace Express {
     export interface Request {
-        wynnGuildId?: string;
+        // wynnGuildId?: string;
         // serverQuery?: import("mongoose").Query<
         //     | (import("mongoose").Document<unknown, {}, import("../models/serverConfigModel.ts").ISeverConfig> &
         //           import("../models/serverConfigModel.ts").ISeverConfig)
