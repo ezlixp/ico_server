@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 import checkIfPlayerIsGuildAsync from "../net/wynncraftApiClient.js";
 import { GuildRequest } from "../types/requestTypes.js";
 
-export default function verifyInGuild(
+export default function verifyGuild(
     request: GuildRequest<{}, {}, { username: string }>,
     response: Response,
     next: NextFunction

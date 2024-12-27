@@ -33,7 +33,7 @@ raidRouter.get("/:wynnGuildId", verifyGuild, async (request: GuildRequest, respo
 raidRouter.get("/rewards/:wynnGuildId", verifyGuild, async (request: GuildRequest, response: Response) => {
     try {
         const users = await guildDatabases[request.params.wynnGuildId].GuildUserModel.find({
-            $or: [{ aspects: { $gte: 1 } }, { emeralds: { $gte: 4096 } }],
+            $or: [{ aspects: { $gte: 1 } }, { emeralds: { $gt: 0 } }],
         }).exec();
         const res: IRaidRewardsResponse[] = [];
         await Promise.all([
@@ -42,7 +42,7 @@ raidRouter.get("/rewards/:wynnGuildId", verifyGuild, async (request: GuildReques
                     username: await uuidToUsername(val.uuid),
                     raids: val.raids,
                     aspects: val.aspects,
-                    emeralds: val.emeralds,
+                    emeralds: val.emeralds / 4096,
                 });
             }),
         ]);
