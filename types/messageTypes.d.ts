@@ -25,14 +25,15 @@ export interface IWynnMessage {
     customHeader?: string;
 }
 
-export interface IDiscordMessage {
+export interface IDiscord2WynnMessage {
     Author: string;
     Content: string;
-    GuildId: string;
+    WynnGuildId: string;
 }
 
 export interface IWynn2DiscordMessage {
     MessageType: number;
     HeaderContent?: string;
     TextContent: string;
+    ListeningChannel: string;
 }
