@@ -63,11 +63,12 @@ raidRouter.post(
         response: Response
     ) => {
         try {
-            const user = await guildDatabases[request.params.wynnGuildId].GuildUserModel.findOne(
+            const user = await guildDatabases[request.params.wynnGuildId].GuildUserModel.findOneAndUpdate(
                 { uuid: await usernameToUuid(request.body.username) },
                 {},
                 { upsert: true, new: true }
             ).exec();
+            console.log(user);
             if (!user) {
                 response.status(400).send({ error: "Could not find specified user." });
                 return;
