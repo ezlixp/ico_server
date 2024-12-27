@@ -61,11 +61,6 @@ app.use(`/api/${apiVersion}/config`, configRouter);
 
 app.use(`/api/${apiVersion}/guilds`, guildRouter);
 
-// Catch all for incorrect routes
-app.all("*", (_: Request, response: Response) => {
-    response.status(404).send({ error: "not found" });
-});
-
 // Map endpoints that require guild id
 guildRouter.use("/auth", authenticationRouter);
 guildRouter.use("/online", onlineRouter);
@@ -73,3 +68,8 @@ guildRouter.use("/raids", raidRouter);
 // guildRouter.use("/aspects", aspectRouter);
 guildRouter.use("/tomes", tomeRouter);
 guildRouter.use("/waitlist", waitlistRouter);
+
+// Catch all for incorrect routes
+app.all("*", (_: Request, response: Response) => {
+    response.status(404).send({ error: "not found" });
+});
