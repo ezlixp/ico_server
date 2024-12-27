@@ -24,42 +24,6 @@ tomeRouter.get("/:wynnGuildId", verifyGuild, async (request: GuildRequest, respo
     }
 });
 
-tomeRouter.get(
-    "/:wynnGuildId/:username",
-    verifyGuild,
-    async (request: GuildRequest<{ username: string }>, response: Response) => {
-        try {
-            // Search for specific user
-            const result = await guildDatabases[request.params.wynnGuildId].TomeModel.findOne({
-                username: request.params.username,
-            }).collation({
-                strength: 2,
-                locale: "en",
-            });
-
-            if (!result) {
-                response.status(404).send({
-                    error: "Specified user could not be found in tome list.",
-                });
-                return;
-            }
-
-            const position =
-                (await guildDatabases[request.params.wynnGuildId].TomeModel.find({
-                    dateAdded: { $lt: result.dateAdded.getTime() },
-                }).countDocuments()) + 1;
-
-            // Return 'OK' if nothing goes wrong
-            response.status(200).send({ username: result.username, position: position });
-            console.log("GET:", result.username, "at position", position);
-        } catch (error) {
-            response.status(500);
-            response.send({ error: "Something went wrong processing the request." });
-            console.error("getTomesSpecificError:", error);
-        }
-    }
-);
-
 tomeRouter.post(
     "/:wynnGuildId",
     verifyGuild,
@@ -95,6 +59,42 @@ tomeRouter.post(
                 error: "Something went wrong processing your request.",
             });
             console.error("postTomeError:", error);
+        }
+    }
+);
+
+tomeRouter.get(
+    "/:wynnGuildId/:username",
+    verifyGuild,
+    async (request: GuildRequest<{ username: string }>, response: Response) => {
+        try {
+            // Search for specific user
+            const result = await guildDatabases[request.params.wynnGuildId].TomeModel.findOne({
+                username: request.params.username,
+            }).collation({
+                strength: 2,
+                locale: "en",
+            });
+
+            if (!result) {
+                response.status(404).send({
+                    error: "Specified user could not be found in tome list.",
+                });
+                return;
+            }
+
+            const position =
+                (await guildDatabases[request.params.wynnGuildId].TomeModel.find({
+                    dateAdded: { $lt: result.dateAdded.getTime() },
+                }).countDocuments()) + 1;
+
+            // Return 'OK' if nothing goes wrong
+            response.status(200).send({ username: result.username, position: position });
+            console.log("GET:", result.username, "at position", position);
+        } catch (error) {
+            response.status(500);
+            response.send({ error: "Something went wrong processing the request." });
+            console.error("getTomesSpecificError:", error);
         }
     }
 );
