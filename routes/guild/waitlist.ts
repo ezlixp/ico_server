@@ -1,6 +1,6 @@
 ﻿import { Response, Router } from "express";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";
-import validateJwtToken from "../../security/jwtTokenValidator.js";
+import validateJwtToken from "../../middleware/jwtTokenValidator.middleware.js";
 import { GuildRequest } from "../../types/requestTypes.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
 

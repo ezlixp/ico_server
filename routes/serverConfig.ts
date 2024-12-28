@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import validateJwtToken from "../security/jwtTokenValidator.js";
+import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
 import ServerConfigModel from "../models/serverConfigModel.js";
 
 /**

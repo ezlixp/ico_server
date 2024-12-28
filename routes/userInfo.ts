@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import validateJwtToken from "../security/jwtTokenValidator.js";
+import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
 import UserModel from "../models/userModel.js";
 
 /**Maps all endpoints related to user information. */

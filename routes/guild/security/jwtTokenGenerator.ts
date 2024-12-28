@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { TokenResponseModel } from "../models/responseModels.js";
 import "../config.ts";
-import ValidationModel from "../models/validationModel.js";
+import { TokenResponseModel } from "../../../models/responseModels.js";
+import ValidationModel from "../../../models/validationModel.js";
 
 const secretKey = process.env.JWT_SECRET_KEY;
 const refreshKey = process.env.JWT_REFRESH_SECRET_KEY || "placeholder";

@@ -5,7 +5,6 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import "./config";
 import statusRouter from "./routes/status.js";
-import authenticationRouter from "./routes/guild/authentication.js";
 import raidRouter from "./routes/guild/raids.js";
 import tomeRouter from "./routes/guild/tomes.js";
 import modVersionRouter from "./routes/modVersion.js";
@@ -16,6 +15,7 @@ import registerDatabases from "./models/guildDatabaseModel.js";
 import configRouter from "./routes/serverConfig.js";
 import onlineRouter from "./routes/guild/online.js";
 import waitlistRouter from "./routes/guild/waitlist.js";
+import authenticationRouter from "./routes/guild/security/authentication.js";
 
 app.use(express.json());
 app.use(cors());
