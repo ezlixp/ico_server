@@ -36,16 +36,14 @@ raidRouter.get("/rewards/:wynnGuildId", verifyGuild, async (request: GuildReques
             $or: [{ aspects: { $gte: 1 } }, { emeralds: { $gt: 0 } }],
         }).exec();
         const res: IRaidRewardsResponse[] = [];
-        await Promise.all([
-            users.forEach(async (val) => {
-                res.push({
-                    username: await uuidToUsername(val.uuid),
-                    raids: val.raids,
-                    aspects: val.aspects,
-                    emeralds: val.emeralds / 4096,
-                });
-            }),
-        ]);
+        for (var i = 0; i < users.length; ++i) {
+            res.push({
+                username: await uuidToUsername(users[i].uuid),
+                raids: users[i].raids,
+                aspects: users[i].aspects,
+                emeralds: users[i].emeralds / 4096,
+            });
+        }
         response.send(res);
     } catch (error) {
         console.error("get rewards error:", error);
@@ -63,6 +61,7 @@ raidRouter.post(
         response: Response
     ) => {
         try {
+            console.log(request.body);
             const user = await guildDatabases[request.params.wynnGuildId].GuildUserModel.findOneAndUpdate(
                 { uuid: await usernameToUuid(request.body.username) },
                 {},
@@ -73,8 +72,8 @@ raidRouter.post(
                 response.status(400).send({ error: "Could not find specified user." });
                 return;
             }
-            if (request.body.aspects) user.aspects += request.body.aspects;
-            if (request.body.emeralds) user.emeralds += request.body.emeralds;
+            if (request.body.aspects) user.aspects -= request.body.aspects;
+            if (request.body.emeralds) user.emeralds -= request.body.emeralds;
 
             await user.save();
             response.send(user);

@@ -29,7 +29,8 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
         socket.data.username = socket.handshake.headers.from || "!bot";
         socket.data.modVersion = socket.handshake.headers["user-agent"];
         const p = payload! as JwtPayload;
-        socket.data.guildId = p.guildId;
+        socket.data.wynnGuildId = p.guildId;
+        console.log(p);
 
         // Goes to next step (function execution)
         return next();
