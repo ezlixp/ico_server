@@ -3,8 +3,8 @@ import { usernameToUuid, uuidToUsername } from "../../net/mojangApiClient.js";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";
 import { GuildRequest } from "../../types/requestTypes.js";
 import verifyInGuild from "../../middleware/verifyInGuild.middleware.js";
-import validateJwtToken from "../../middleware/jwtTokenValidator.middleware.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
+import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middleware.js";
 
 interface IRaidRewardsResponse {
     username: string;
@@ -53,11 +53,10 @@ raidRouter.get("/rewards/:wynnGuildId", verifyGuild, async (request: GuildReques
     }
 });
 
-// TODO: increase security here
 raidRouter.post(
     "/rewards/:wynnGuildId",
     verifyGuild,
-    validateJwtToken,
+    validateAdminJwtToken,
     verifyInGuild,
     async (
         request: GuildRequest<{}, {}, { username: string; aspects?: number; emeralds?: number }>,
