@@ -141,8 +141,9 @@ let botId = "";
 // TODO: make middleware for handling mutes
 io.of("/discord").on("connection", (socket) => {
     console.log(socket.data.username, "connected to discord with version:", socket.data.modVersion);
-    if (socket.data.wynnGuildId == "*") botId = socket.id;
-    else {
+    if (socket.data.wynnGuildId == "*") {
+        botId = socket.id;
+    } else {
         socket.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
         socket.data.hrMessageIndex = hrMessageIndexes[socket.data.wynnGuildId];
         socket.join(socket.data.wynnGuildId);
