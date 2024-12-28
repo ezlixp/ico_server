@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import "../config.ts";
+import "../../../config.js";
 import { TokenResponseModel } from "../../../models/responseModels.js";
 import ValidationModel from "../../../models/validationModel.js";
 
