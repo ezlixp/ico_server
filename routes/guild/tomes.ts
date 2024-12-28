@@ -1,4 +1,4 @@
-﻿import validateJwtToken from "../../security/jwtTokenValidator.js";
+﻿import validateJwtToken from "../../middleware/jwtTokenValidator.middleware.js";
 import { Response, Router } from "express";
 import verifyInGuild from "../../middleware/verifyInGuild.middleware.js";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";

@@ -1,7 +1,7 @@
 ﻿import { Response, Router } from "express";
-import generateJwtToken from "../../security/jwtTokenGenerator.js";
-import { GuildRequest } from "../../types/requestTypes.js";
-import verifyGuild from "../../middleware/verifyGuild.middleware.js";
+import { GuildRequest } from "../../../types/requestTypes.js";
+import generateJwtToken from "./jwtTokenGenerator.js";
+import verifyGuild from "../../../middleware/verifyGuild.middleware.js";
 
 /**
  * Maps all authentication-related endpoints.
