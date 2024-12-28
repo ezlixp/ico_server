@@ -1,5 +1,3 @@
-import "../config.js";
-
 /** Refreshes a JWT token if the refresh token is valid
  * @param {string} refreshToken Refresh token supplied that will be revoked after one use
  */
