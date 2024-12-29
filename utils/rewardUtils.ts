@@ -33,3 +33,9 @@ export async function incrementAspects(username: string, guildId: string): Promi
         console.log(username, "is owed half an aspect");
     });
 }
+
+export async function deleteTome(username: string, guildId: string): Promise<void> {
+    guildDatabases[guildId].TomeModel.findOneAndDelete({ usernam: username }).then(() => {
+        console.log(username, "got a tome");
+    });
+}
