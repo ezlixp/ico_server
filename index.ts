@@ -16,6 +16,7 @@ import configRouter from "./routes/serverConfig.js";
 import onlineRouter from "./routes/guild/online.js";
 import waitlistRouter from "./routes/guild/waitlist.js";
 import authenticationRouter from "./routes/guild/security/authentication.js";
+import { registerMessageIndexes } from "./sockets/discord.js";
 
 app.use(express.json());
 app.use(cors());
@@ -27,6 +28,7 @@ try {
     const dbUrl = process.env.DB_URL;
     connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {
         registerDatabases().then(() => {
+            registerMessageIndexes();
             const PORT = process.env.PORT || 3000;
 
             server.listen(PORT, () => {

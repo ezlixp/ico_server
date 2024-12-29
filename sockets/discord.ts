@@ -134,10 +134,12 @@ const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$");
 const messageIndexes: { [key: string]: number } = {};
 const hrMessageIndexes: { [key: string]: number } = {};
 
-Object.entries(guildNames).forEach((value) => {
-    messageIndexes[value[0]] = 0;
-    hrMessageIndexes[value[0]] = 0;
-});
+export function registerMessageIndexes() {
+    Object.entries(guildNames).forEach((value) => {
+        messageIndexes[value[0]] = 0;
+        hrMessageIndexes[value[0]] = 0;
+    });
+}
 
 let botId = "";
 
