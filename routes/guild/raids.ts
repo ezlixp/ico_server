@@ -2,7 +2,6 @@
 import { usernameToUuid, uuidToUsername } from "../../net/mojangApiClient.js";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";
 import { GuildRequest } from "../../types/requestTypes.js";
-import verifyInGuild from "../../middleware/verifyInGuild.middleware.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
 import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middleware.js";
 import { DefaultResponse } from "../../types/responseTypes.js";
@@ -67,18 +66,15 @@ raidRouter.post(
     "/rewards/:wynnGuildId",
     verifyGuild,
     validateAdminJwtToken,
-    verifyInGuild,
     async (
         request: GuildRequest<{}, {}, { username: string; aspects?: number; emeralds?: number }>,
         response: DefaultResponse<IGuildUser>
     ) => {
         try {
             console.log(request.body);
-            const user = await guildDatabases[request.params.wynnGuildId].GuildUserModel.findOneAndUpdate(
-                { uuid: await usernameToUuid(request.body.username) },
-                {},
-                { upsert: true, new: true }
-            ).exec();
+            const user = await guildDatabases[request.params.wynnGuildId].GuildUserModel.findOneAndUpdate({
+                uuid: await usernameToUuid(request.body.username),
+            }).exec();
             console.log(user);
             if (!user) {
                 response.status(400).send({ error: "Could not find specified user." });
