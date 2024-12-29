@@ -13,7 +13,11 @@ declare namespace Express {
         //     {}
         // >;
         discordGuildId?: string;
-        serverConfig?: import("mongoose").Document<unknown, {}, import("../models/serverConfigModel.ts").ISeverConfig> &
-            import("../models/serverConfigModel.ts").ISeverConfig;
+        serverConfig?: import("mongoose").Document<
+            unknown,
+            {},
+            import("../models/serverConfigModel.ts").IServerConfig
+        > &
+            import("../models/serverConfigModel.ts").IServerConfig;
     }
 }

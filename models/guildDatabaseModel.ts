@@ -14,6 +14,7 @@ interface IGuildDatabases {
     [key: string]: IGuildDatabase;
 }
 
+// TODO: build guildIds based on database to ensure parity
 export const guildIds = {
     "!dev": "**",
 

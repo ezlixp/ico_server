@@ -1,6 +1,6 @@
 import { io } from "../app.js";
 
-interface IOnlineUser {
+export interface IOnlineUser {
     Id: number;
     Username: string;
 }

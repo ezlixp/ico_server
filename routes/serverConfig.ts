@@ -1,6 +1,7 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { NextFunction, Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import ServerConfigModel from "../models/serverConfigModel.js";
+import ServerConfigModel, { IServerConfig } from "../models/serverConfigModel.js";
+import { DefaultResponse } from "../types/responseTypes.js";
 
 /**
  * Maps all server config related endpoints. request.wynnGuildId is NOT defined in these routes, but request.discordGuildId is.
@@ -14,7 +15,7 @@ configRouter.use("/:discordGuildId", serverConfigRouter);
 
 serverConfigRouter.use(validateJwtToken);
 serverConfigRouter.use(
-    async (request: Request<{ discordGuildId: string }, {}, {}>, response: Response, next: NextFunction) => {
+    async (request: Request<{ discordGuildId: string }, {}, {}>, response: DefaultResponse, next: NextFunction) => {
         const query = ServerConfigModel.findOne({ discordGuildId: request.params.discordGuildId });
         const server = await query.exec();
         if (!server) {
@@ -45,7 +46,7 @@ configRouter.post(
                 broadcastingChannel?: string;
             }
         >,
-        response: Response
+        response: DefaultResponse<IServerConfig>
     ) => {
         try {
             const server = await ServerConfigModel.findOne()
@@ -81,7 +82,7 @@ configRouter.post(
     }
 );
 
-serverConfigRouter.get("/", async (request: Request, response: Response) => {
+serverConfigRouter.get("/", async (request: Request, response: DefaultResponse<IServerConfig>) => {
     try {
         response.send(request.serverConfig);
     } catch (error) {
@@ -90,7 +91,7 @@ serverConfigRouter.get("/", async (request: Request, response: Response) => {
     }
 });
 
-serverConfigRouter.delete("/", async (request: Request, response: Response) => {
+serverConfigRouter.delete("/", async (request: Request, response: DefaultResponse) => {
     try {
         await ServerConfigModel.findOneAndDelete({ discordGuildId: request.discordGuildId }).exec();
         response.status(204).send();
@@ -116,7 +117,7 @@ serverConfigRouter.patch(
                 broadcastingChannel?: string;
             }
         >,
-        response: Response
+        response: DefaultResponse<IServerConfig>
     ) => {
         try {
             const body = request.body;
@@ -144,7 +145,7 @@ serverConfigRouter.patch(
 // currently no validation for duplicate roles
 serverConfigRouter.post(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: string }>, response: Response) => {
+    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IServerConfig>) => {
         try {
             request.serverConfig!.privilegedRoles.push(request.body.roleId);
             await request.serverConfig!.save();
@@ -158,7 +159,7 @@ serverConfigRouter.post(
 
 serverConfigRouter.delete(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: string }>, response: Response) => {
+    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IServerConfig>) => {
         try {
             const index = request.serverConfig!.privilegedRoles.indexOf(request.body.roleId);
             if (index === -1) {

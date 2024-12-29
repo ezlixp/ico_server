@@ -1,30 +1,34 @@
-import { Request, Response, Router } from "express";
+import { Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import UserModel from "../models/userModel.js";
+import UserModel, { IUser } from "../models/userModel.js";
+import { DefaultResponse } from "../types/responseTypes.js";
 
 /**Maps all endpoints related to user information. */
 const userInfoRouter = Router();
 userInfoRouter.use(validateJwtToken);
 
 // TODO: validate token for uuid being updated
-userInfoRouter.get("/blocked/:uuid", async (request: Request<{ uuid: string }, {}, {}>, response: Response) => {
-    try {
-        const uuid = request.params.uuid.replaceAll("-", "");
-        const user = await UserModel.findOneAndUpdate(
-            { uuid: uuid },
-            {},
-            { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
-        );
-        response.send(user.blocked);
-    } catch (error) {
-        console.error("get blocked error:", error);
-        response.status(500).send({ error: "something went wrong" });
+userInfoRouter.get(
+    "/blocked/:uuid",
+    async (request: Request<{ uuid: string }, {}, {}>, response: DefaultResponse<IUser>) => {
+        try {
+            const uuid = request.params.uuid.replaceAll("-", "");
+            const user = await UserModel.findOneAndUpdate(
+                { uuid: uuid },
+                {},
+                { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
+            );
+            response.send(user);
+        } catch (error) {
+            console.error("get blocked error:", error);
+            response.status(500).send({ error: "something went wrong" });
+        }
     }
-});
+);
 
 userInfoRouter.post(
     "/blocked/:uuid",
-    async (request: Request<{ uuid: string }, {}, { toBlock: string }>, response: Response) => {
+    async (request: Request<{ uuid: string }, {}, { toBlock: string }>, response: DefaultResponse<IUser>) => {
         try {
             const toBlock = request.body.toBlock;
             const uuid = request.params.uuid.replaceAll("-", "");
@@ -46,7 +50,7 @@ userInfoRouter.post(
                 }
             }
             await user.updateOne({ $addToSet: { blocked: toBlock } });
-            response.send({ error: "" });
+            response.send(user);
         } catch (error) {
             console.error("update blocked error:", error);
             response.status(500).send({ error: "something went wrong" });
@@ -56,7 +60,7 @@ userInfoRouter.post(
 
 userInfoRouter.delete(
     "/blocked/:uuid/:toRemove",
-    async (request: Request<{ uuid: string; toRemove: string }>, response: Response) => {
+    async (request: Request<{ uuid: string; toRemove: string }>, response: DefaultResponse) => {
         try {
             const uuid = request.params.uuid.replaceAll("-", "");
             const toRemove = request.params.toRemove;
@@ -69,7 +73,7 @@ userInfoRouter.delete(
             }
             if (user.blocked.find((blocked) => blocked === toRemove)) {
                 await user.updateOne({ $pull: { blocked: toRemove } });
-                response.send({ error: "" });
+                response.send();
             } else {
                 response.status(404).send({ error: "Blocked user not found." });
             }

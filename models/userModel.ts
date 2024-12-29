@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-interface IUser {
+export interface IUser {
     uuid: string;
     wynnGuildId: string;
     blocked: string[];
