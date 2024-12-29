@@ -37,7 +37,7 @@ export const guildDatabases: IGuildDatabases = {};
  * {@link waitlistSchema}
  */
 export function newDatabase(wynnGuildName: string, wynnGuildId: string) {
-    if (Object.keys(guildIds).indexOf(wynnGuildName) == -1) {
+    if (Object.keys(guildIds).indexOf(wynnGuildName) != -1) {
         console.warn("trying to register already existing database:", wynnGuildName);
         return;
     }
