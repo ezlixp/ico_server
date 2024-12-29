@@ -1,6 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-interface IValidation {
+export interface IValidation {
     validationKey: string;
     wynnGuildId: string;
     wynnGuildName: string;

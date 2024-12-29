@@ -17,6 +17,7 @@ import onlineRouter from "./routes/guild/online.js";
 import waitlistRouter from "./routes/guild/waitlist.js";
 import authenticationRouter from "./routes/guild/security/authentication.js";
 import { registerMessageIndexes } from "./sockets/discord.js";
+import adminRouter from "./routes/admin.js";
 
 app.use(express.json());
 app.use(cors());
@@ -55,6 +56,8 @@ app.use("/api/:version*", (request: Request<{ version: string }>, response: Resp
 app.use("/", statusRouter);
 
 app.use("/healthz", healthRouter);
+
+app.use("/admin", adminRouter);
 
 app.use(`/api/${apiVersion}/mod`, modVersionRouter);
 
