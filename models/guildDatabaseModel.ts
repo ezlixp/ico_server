@@ -3,6 +3,7 @@ import guildUserSchema, { IGuildUser } from "./schemas/guildUserSchema.js";
 import raidSchema, { IRaid } from "./schemas/raidSchema.js";
 import tomeSchema, { ITome } from "./schemas/tomeSchema.js";
 import waitlistSchema, { IWaitlist } from "./schemas/waitlistSchema.js";
+import ValidationModel from "./validationModel.js";
 
 interface IGuildDatabase {
     GuildUserModel: Model<IGuildUser>;
@@ -14,17 +15,15 @@ interface IGuildDatabases {
     [key: string]: IGuildDatabase;
 }
 
-// TODO: build guildIds based on database to ensure parity
-export const guildIds = {
+/*Supported guilds:
+    Idiot Co: b250f587-ab5e-48cd-bf90-71e65d6dc9e7
+*/
+export const guildIds: { [key: string]: string } = {
     "!dev": "**",
-
-    "Idiot+Co": "b250f587-ab5e-48cd-bf90-71e65d6dc9e7",
 };
 
-export const guildNames = {
+export const guildNames: { [key: string]: string } = {
     "**": "!dev",
-
-    "b250f587-ab5e-48cd-bf90-71e65d6dc9e7": "Idiot+Co",
 };
 
 export const guildDatabases: IGuildDatabases = {};
@@ -37,8 +36,17 @@ export const guildDatabases: IGuildDatabases = {};
  * {@link tomeSchema}
  * {@link waitlistSchema}
  */
-export default function registerDatabases() {
+export default async function registerDatabases() {
+    const guilds = await ValidationModel.find().exec();
+    for (let i = 0; i < guilds.length; ++i) {
+        const name = guilds[i].guildName.replaceAll(" ", "+");
+        const guildId = guilds[i].wynnGuildId;
+        guildIds[name] = guildId;
+        guildNames[guildId] = name;
+    }
+    console.log("registered guilds:", JSON.stringify(guildIds, null, 2));
     Object.entries(guildIds).forEach((value) => {
+        console.log(value);
         const dbName = value[0];
         const db = mongoose.connection.useDb(dbName);
         const guildDatabase: IGuildDatabase = {} as IGuildDatabase;

@@ -26,11 +26,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 try {
     const dbUrl = process.env.DB_URL;
     connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {
-        registerDatabases();
-        const PORT = process.env.PORT || 3000;
+        registerDatabases().then(() => {
+            const PORT = process.env.PORT || 3000;
 
-        server.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
+            server.listen(PORT, () => {
+                console.log(`Server is running on port ${PORT}`);
+            });
         });
     });
 } catch (error) {
