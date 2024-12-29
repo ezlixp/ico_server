@@ -5,7 +5,7 @@ import mongoose, { Schema } from "mongoose";
 //     guildId: string;
 // }
 
-export interface ISeverConfig {
+export interface IServerConfig {
     wynnGuildId: string;
     discordGuildId: string;
     tomeChannel: string;
@@ -19,7 +19,7 @@ export interface ISeverConfig {
     broadcastingChannel: string;
 }
 
-const serverConfigSchema: Schema<ISeverConfig> = new Schema({
+const serverConfigSchema: Schema<IServerConfig> = new Schema({
     wynnGuildId: { type: String, required: true },
     discordGuildId: { type: String, required: true },
     tomeChannel: { type: String, required: true, default: "none" },

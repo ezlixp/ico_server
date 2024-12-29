@@ -2,7 +2,7 @@ import { io } from "../app.js";
 import "../config.js";
 import { IDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
-import { decrementAspects, incrementAspects } from "../utils/aspectUtils.js";
+import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardUtils.js";
 import { getOnlineUsers, isOnline } from "../utils/socketUtils.js";
 import { usernameToUuid } from "../net/mojangApiClient.js";
 import { checkVersion } from "../utils/versionUtils.js";
@@ -71,7 +71,10 @@ const wynnMessagePatterns: IWynnMessage[] = [
     {
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
-        customMessage: (matcher) => matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver,
+        customMessage: (matcher, guildId) => {
+            deleteTome(matcher.groups!.receiver, guildId);
+            return matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver;
+        },
         customHeader: "⚠️ Tome",
     },
     {

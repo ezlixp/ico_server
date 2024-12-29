@@ -7,7 +7,7 @@ const versionExtractorPattern = new RegExp(
     "guildapi/(?<major>\\d+).(?<minor>\\d+).(?<revision>\\d+)(-beta.(?<beta>\\d+))?"
 );
 
-interface IModVersionResponse {
+export interface IModVersionResponse {
     versionNumber: string;
     download: string;
 }

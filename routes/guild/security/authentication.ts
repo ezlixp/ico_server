@@ -1,7 +1,9 @@
-﻿import { Response, Router } from "express";
+﻿import { Router } from "express";
 import { GuildRequest } from "../../../types/requestTypes.js";
 import generateJwtToken from "./jwtTokenGenerator.js";
 import verifyGuild from "../../../middleware/verifyGuild.middleware.js";
+import { DefaultResponse } from "../../../types/responseTypes.js";
+import { TokenResponseModel } from "../../../models/responseModels.js";
 
 /**
  * Maps all authentication-related endpoints.
@@ -11,15 +13,15 @@ const authenticationRouter = Router({ mergeParams: true });
 authenticationRouter.post(
     "/get-token/:wynnGuildId",
     verifyGuild,
-    async (request: GuildRequest<{}, {}, { validationKey: string }>, response: Response) => {
+    async (request: GuildRequest<{}, {}, { validationKey: string }>, response: DefaultResponse<TokenResponseModel>) => {
         // Gets a token if correct validationKey is provided
         const validationKey = request.body.validationKey;
         const result = await generateJwtToken(validationKey, request.params.wynnGuildId);
 
         if (result.status) {
-            response.status(200).json(result);
+            response.status(200).send(result);
         } else {
-            response.status(400).json(result);
+            response.status(400).send(result);
         }
     }
 );

@@ -1,16 +1,18 @@
 ﻿import validateJwtToken from "../../middleware/jwtTokenValidator.middleware.js";
-import { Response, Router } from "express";
+import { Router } from "express";
 import verifyInGuild from "../../middleware/verifyInGuild.middleware.js";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";
 import { GuildRequest } from "../../types/requestTypes.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
+import { DefaultResponse } from "../../types/responseTypes.js";
+import { ITome } from "../../models/schemas/tomeSchema.js";
 
 /**
  * Maps all tome-related endpoints
  */
 const tomeRouter = Router();
 
-tomeRouter.get("/:wynnGuildId", verifyGuild, async (request: GuildRequest, response: Response) => {
+tomeRouter.get("/:wynnGuildId", verifyGuild, async (request: GuildRequest, response: DefaultResponse<ITome[]>) => {
     try {
         // Get users ordered by time added
         const tomeList = await guildDatabases[request.params.wynnGuildId].TomeModel.find({}).sort({ dateAdded: 1 });
@@ -29,7 +31,7 @@ tomeRouter.post(
     verifyGuild,
     validateJwtToken,
     verifyInGuild,
-    async (request: GuildRequest<{}, {}, { username: string }>, response: Response) => {
+    async (request: GuildRequest<{}, {}, { username: string }>, response: DefaultResponse<ITome>) => {
         try {
             // Save tome model on database
             const tomeData = request.body;
@@ -66,7 +68,10 @@ tomeRouter.post(
 tomeRouter.get(
     "/:wynnGuildId/:username",
     verifyGuild,
-    async (request: GuildRequest<{ username: string }>, response: Response) => {
+    async (
+        request: GuildRequest<{ username: string }>,
+        response: DefaultResponse<{ username: string; position: number }>
+    ) => {
         try {
             // Search for specific user
             const result = await guildDatabases[request.params.wynnGuildId].TomeModel.findOne({
@@ -103,7 +108,7 @@ tomeRouter.delete(
     "/:wynnGuildId/:username",
     verifyGuild,
     validateJwtToken,
-    async (request: GuildRequest<{ username: string }>, response: Response) => {
+    async (request: GuildRequest<{ username: string }>, response: DefaultResponse) => {
         try {
             // Get username from route
             const username = request.params.username;
@@ -118,9 +123,7 @@ tomeRouter.delete(
 
             // If no entity was found, return 'Not Found'
             if (!result) {
-                response.status(404).send({
-                    error: "User could not be found in tome list.",
-                });
+                response.status(404).send({ error: "User could not be found in tome list." });
                 return;
             }
 
