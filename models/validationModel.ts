@@ -10,7 +10,7 @@ interface IValidation {
 const userSchema: Schema<IValidation> = new Schema({
     validationKey: { type: String, required: true },
     wynnGuildId: { type: String, required: true },
-    guildName: { type: String, required: false },
+    guildName: { type: String, required: true },
 });
 
 const ValidationModel: Model<IValidation> = mongoose.model("ValidationKey", userSchema);
