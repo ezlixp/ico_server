@@ -17,6 +17,14 @@ adminRouter.post(
         response: DefaultResponse<IValidation>
     ) => {
         try {
+            if (
+                await ValidationModel.findOne({
+                    $or: [{ wynnGuildId: request.body.wynnGuildId }, { wynnGuildName: request.body.wynnGuildName }],
+                }).exec()
+            ) {
+                response.status(400).send({ error: "Guild already exists." });
+                return;
+            }
             const newGuild = new ValidationModel({
                 wynnGuildId: request.body.wynnGuildId,
                 wynnGuildName: request.body.wynnGuildName,
