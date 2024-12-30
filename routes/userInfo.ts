@@ -10,7 +10,7 @@ userInfoRouter.use(validateJwtToken);
 // TODO: validate token for uuid being updated
 userInfoRouter.get(
     "/blocked/:uuid",
-    async (request: Request<{ uuid: string }, {}, {}>, response: DefaultResponse<IUser>) => {
+    async (request: Request<{ uuid: string }, {}, {}>, response: DefaultResponse<string[]>) => {
         try {
             const uuid = request.params.uuid.replaceAll("-", "");
             const user = await UserModel.findOneAndUpdate(
@@ -18,7 +18,7 @@ userInfoRouter.get(
                 {},
                 { upsert: true, new: true, collation: { locale: "en", strength: 2 } }
             );
-            response.send(user);
+            response.send(user.blocked);
         } catch (error) {
             console.error("get blocked error:", error);
             response.status(500).send({ error: "something went wrong" });
