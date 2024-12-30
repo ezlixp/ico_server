@@ -22,15 +22,15 @@ export interface IServerConfig {
 const serverConfigSchema: Schema<IServerConfig> = new Schema({
     wynnGuildId: { type: String, required: true },
     discordGuildId: { type: String, required: true },
-    tomeChannel: { type: String, required: true, default: "none" },
-    layoffsChannel: { type: String, required: true, default: "none" },
-    raidsChannel: { type: String, required: true, default: "none" },
-    warChannel: { type: String, required: true, default: "none" },
+    tomeChannel: { type: String, required: true, default: "0" },
+    layoffsChannel: { type: String, required: true, default: "0" },
+    raidsChannel: { type: String, required: true, default: "0" },
+    warChannel: { type: String, required: true, default: "0" },
     privilegedRoles: { type: [{ type: String, required: true }], required: true, default: [] },
     // invites: { type: [{ type: String, required: true }], required: true, default: [] },
     // outgoingInvites: { type: [{ type: String, required: true }] },
-    listeningChannel: { type: String, required: true, default: "none" },
-    broadcastingChannel: { type: String, required: true, default: "none" },
+    listeningChannel: { type: String, required: true, default: "0" },
+    broadcastingChannel: { type: String, required: true, default: "0" },
 });
 
 /**
