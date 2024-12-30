@@ -35,7 +35,8 @@ export async function incrementAspects(username: string, guildId: string): Promi
 }
 
 export async function deleteTome(username: string, guildId: string): Promise<void> {
-    guildDatabases[guildId].TomeModel.findOneAndDelete({ usernam: username }).then(() => {
-        console.log(username, "got a tome");
+    guildDatabases[guildId].TomeModel.findOneAndDelete({ username: username }).then((document) => {
+        if (!document) console.warn("tried to delete tome from non-existant player:", username);
+        else console.log(username, "got a tome");
     });
 }
