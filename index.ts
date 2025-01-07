@@ -18,6 +18,7 @@ import authenticationRouter from "./routes/guild/security/authentication.js";
 import {registerMessageIndexes} from "./sockets/discord.js";
 import adminRouter from "./routes/admin.js";
 import {GuildDatabaseCreator} from "./services/GuildDatabaseCreator.js";
+import {errorHandler} from "./middleware/errorHandler.middleware.js";
 
 app.use(express.json());
 app.use(cors());
@@ -80,3 +81,5 @@ guildRouter.use("/waitlist", waitlistRouter);
 app.all("*", (_: Request, response: Response) => {
     response.status(404).send({error: "not found"});
 });
+
+app.use(errorHandler);
