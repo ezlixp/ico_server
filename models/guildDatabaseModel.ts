@@ -1,16 +1,18 @@
-import mongoose, { Model } from "mongoose";
-import guildUserSchema, { IGuildUser } from "./schemas/guildUserSchema.js";
-import raidSchema, { IRaid } from "./schemas/raidSchema.js";
-import tomeSchema, { ITome } from "./schemas/tomeSchema.js";
-import waitlistSchema, { IWaitlist } from "./schemas/waitlistSchema.js";
+import mongoose, {Model} from "mongoose";
+import guildUserSchema, {IGuildUser} from "./schemas/guildUserSchema.js";
+import raidSchema, {IRaid} from "./schemas/raidSchema.js";
+import tomeSchema, {ITome} from "./schemas/tomeSchema.js";
+import waitlistSchema, {IWaitlist} from "./schemas/waitlistSchema.js";
 import ValidationModel from "./validationModel.js";
+import {GuildDatabaseFactory} from "./factories/GuildDatabaseFactory.js";
 
-interface IGuildDatabase {
+export interface IGuildDatabase {
     GuildUserModel: Model<IGuildUser>;
     RaidModel: Model<IRaid>;
     TomeModel: Model<ITome>;
     WaitlistModel: Model<IWaitlist>;
 }
+
 interface IGuildDatabases {
     [key: string]: IGuildDatabase;
 }
@@ -48,14 +50,12 @@ export function newDatabase(wynnGuildName: string, wynnGuildId: string) {
 
 export function registerDatabase(value: [string, string]) {
     console.log(value);
+
     const dbName = value[0];
     const db = mongoose.connection.useDb(dbName);
-    const guildDatabase: IGuildDatabase = {} as IGuildDatabase;
-    guildDatabase.GuildUserModel = db.model("Guild User", guildUserSchema);
-    guildDatabase.RaidModel = db.model("Raid", raidSchema);
-    guildDatabase.TomeModel = db.model("Tome", tomeSchema);
-    guildDatabase.WaitlistModel = db.model("Waitlist", waitlistSchema);
-    guildDatabases[value[1]] = guildDatabase;
+    const databaseFactory = GuildDatabaseFactory.create(db);
+
+    guildDatabases[value[1]] = databaseFactory.createDatabase();
 }
 
 export default async function registerDatabases() {
