@@ -1,4 +1,4 @@
-﻿import {AppError} from "./base/AppError.js";
+﻿import {AppError} from "../base/AppError.js";
 
 export class DatabaseError extends AppError {
     constructor() {
