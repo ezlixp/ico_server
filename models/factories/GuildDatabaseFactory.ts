@@ -8,15 +8,18 @@ export class GuildDatabaseFactory {
 
     static create(db: Connection): GuildDatabaseFactory {
         const modelFactory = DatabaseModelFactory.create(db);
+
         return new GuildDatabaseFactory(modelFactory);
     }
 
     createDatabase(): IGuildDatabase {
         const guildDatabase: IGuildDatabase = {} as IGuildDatabase;
+
         guildDatabase.GuildUserModel = this.modelFactory.createGuildUserModel();
         guildDatabase.RaidModel = this.modelFactory.createRaidModel()
         guildDatabase.TomeModel = this.modelFactory.createTomeModel()
         guildDatabase.WaitlistModel = this.modelFactory.createWaitlistModel()
+
         return guildDatabase;
     }
 }
