@@ -7,11 +7,11 @@ import {ValidationError} from "../errors/implementations/ValidationError.js";
 
 export class BlockedListService {
     private readonly repository: UserRepository;
-    private readonly validator: UserServiceValidator;
+    private readonly validator: BlockedListServiceValidator;
 
     private constructor() {
         this.repository = new UserRepository();
-        this.validator = new UserServiceValidator();
+        this.validator = new BlockedListServiceValidator();
     }
 
     static create(): BlockedListService {
@@ -50,7 +50,7 @@ export class BlockedListService {
     }
 }
 
-class UserServiceValidator {
+class BlockedListServiceValidator {
     validateGet(user: IUser | null): asserts user is IUser {
         if (!user) {
             throw new NotFoundError(UserErrors.NotFound);
