@@ -1,6 +1,6 @@
 ﻿import {BaseModel} from "../../models/BaseModel.js";
 import {Model} from "mongoose";
-import {DatabaseError} from "../../errors/DatabaseError.js";
+import {DatabaseError} from "../../errors/implementations/DatabaseError.js";
 
 export type FilterOptions = Record<string, unknown>;
 
@@ -11,7 +11,7 @@ export interface IRepository<T> {
 
     create(data: Partial<T>): Promise<void>;
 
-    update(options: FilterOptions, data: Partial<T>): Promise<void>
+    update(options: FilterOptions, data: Partial<T>): Promise<T>
 
     deleteOne(options: FilterOptions): Promise<void>;
 }
@@ -45,9 +45,13 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
         }
     }
 
-    async update(options: FilterOptions, data: Partial<T>): Promise<void> {
+    async update(options: FilterOptions, data: Partial<T>): Promise<T> {
         try {
-            await this.model.findOneAndUpdate(options, data, {new: true}).exec();
+            return await this.model.findOneAndUpdate(options, data, {
+                upsert: true,
+                new: true,
+                collation: {locale: "en", strength: 2}
+            }).exec();
         } catch (err) {
             throw new DatabaseError();
         }
