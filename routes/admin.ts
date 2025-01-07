@@ -1,8 +1,8 @@
-import { Request, Router } from "express";
-import { DefaultResponse } from "../types/responseTypes.js";
+import {Request, Router} from "express";
+import {DefaultResponse} from "../types/responseTypes.js";
 import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
-import ValidationModel, { IValidation } from "../models/validationModel.js";
-import { newDatabase } from "../models/guildDatabaseModel.js";
+import ValidationModel, {IValidation} from "../models/validationModel.js";
+import {GuildDatabaseCreator} from "../services/GuildDatabaseCreator.js";
 
 /**
  * Maps all mod version related endpoints.
@@ -19,10 +19,10 @@ adminRouter.post(
         try {
             if (
                 await ValidationModel.findOne({
-                    $or: [{ wynnGuildId: request.body.wynnGuildId }, { wynnGuildName: request.body.wynnGuildName }],
+                    $or: [{wynnGuildId: request.body.wynnGuildId}, {wynnGuildName: request.body.wynnGuildName}],
                 }).exec()
             ) {
-                response.status(400).send({ error: "Guild already exists." });
+                response.status(400).send({error: "Guild already exists."});
                 return;
             }
             const newGuild = new ValidationModel({
@@ -31,10 +31,11 @@ adminRouter.post(
                 validationKey: request.body.validationKey,
             });
             await newGuild.save();
-            newDatabase(request.body.wynnGuildName, request.body.wynnGuildId);
+            const databaseCreator = new GuildDatabaseCreator();
+            databaseCreator.newDatabase(request.body.wynnGuildName, request.body.wynnGuildId);
             response.send(newGuild);
         } catch (error) {
-            response.status(500).send({ error: "Something went wrong processing the request." });
+            response.status(500).send({error: "Something went wrong processing the request."});
             console.error("new guild error:", error);
         }
     }
