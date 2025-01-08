@@ -1,9 +1,9 @@
-﻿import { UserRepository } from "../repositories/userRepository.js";
-import { FilterOptions } from "../repositories/base/baseRepository.js";
-import { IUser } from "../models/userModel.js";
-import { NotFoundError } from "../errors/implementations/notFoundError.js";
-import { UserErrors } from "../errors/messages/userErrors.js";
-import { ValidationError } from "../errors/implementations/validationError.js";
+﻿import {UserRepository} from "../repositories/userRepository.js";
+import {FilterOptions} from "../repositories/base/baseRepository.js";
+import {IUser} from "../models/userModel.js";
+import {NotFoundError} from "../errors/implementations/notFoundError.js";
+import {UserErrors} from "../errors/messages/userErrors.js";
+import {ValidationError} from "../errors/implementations/validationError.js";
 
 export class BlockedListService {
     private readonly repository: UserRepository;
@@ -30,7 +30,7 @@ export class BlockedListService {
 
         user.blocked.push(toBlock);
 
-        return await this.repository.update({ uuid: user.uuid }, user);
+        return await this.repository.update({uuid: user.uuid}, user);
     }
 
     async removeFromBlockedList(userId: FilterOptions, toRemove: string): Promise<void> {
@@ -39,7 +39,7 @@ export class BlockedListService {
 
         user.blocked = user.blocked.filter((blockedUser) => blockedUser !== toRemove);
 
-        await this.repository.update({ uuid: user.uuid }, user);
+        await this.repository.update({uuid: user.uuid}, user);
     }
 
     private async getUser(options: FilterOptions): Promise<IUser> {

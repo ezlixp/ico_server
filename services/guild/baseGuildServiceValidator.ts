@@ -1,14 +1,14 @@
-import { ValidationError } from "../../errors/implementations/validationError.js";
-import { guildDatabases } from "../../models/guildDatabaseModel.js";
+import {ValidationError} from "../../errors/implementations/validationError.js";
+import {guildDatabases} from "../../models/guildDatabaseModel.js";
+import {GuildErrors} from "../../errors/messages/guildErrors.js";
 
 export abstract class BaseGuildServiceValidator {
-    protected constructor() {}
+    protected constructor() {
+    }
 
     validateGuild(wynnGuildId: string) {
         if (!(wynnGuildId in guildDatabases) && wynnGuildId !== "*") {
-            throw new ValidationError(
-                "This guild is not configured. In order to configure a guild, contact a developer."
-            );
+            throw new ValidationError(GuildErrors.NOT_CONFIGURED);
         }
     }
 }
