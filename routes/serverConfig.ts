@@ -1,7 +1,7 @@
 import { NextFunction, Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
 import ServerConfigModel, { IServerConfig } from "../models/serverConfigModel.js";
-import { DefaultResponse } from "../types/responseTypes.js";
+import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 
 /**
  * Maps all server config related endpoints. request.wynnGuildId is NOT defined in these routes, but request.discordGuildId is.

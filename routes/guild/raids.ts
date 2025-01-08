@@ -1,10 +1,10 @@
 ﻿import { Router } from "express";
 import { usernameToUuid, uuidToUsername } from "../../net/mojangApiClient.js";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";
-import { GuildRequest } from "../../types/requestTypes.js";
+import { GuildRequest } from "../../communication/requests/guildRequest.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
 import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middleware.js";
-import { DefaultResponse } from "../../types/responseTypes.js";
+import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
 import { IRaid } from "../../models/schemas/raidSchema.js";
 import { IGuildUser } from "../../models/schemas/guildUserSchema.js";
 

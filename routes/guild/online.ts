@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { GuildRequest } from "../../types/requestTypes.js";
+import { GuildRequest } from "../../communication/requests/guildRequest.js";
 import { getOnlineUsers, IOnlineUser } from "../../utils/socketUtils.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
-import { DefaultResponse } from "../../types/responseTypes.js";
+import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
 
 /**
  * Maps all wynn related endpoints.

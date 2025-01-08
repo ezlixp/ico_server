@@ -2,9 +2,9 @@
 import { Router } from "express";
 import verifyInGuild from "../../middleware/verifyInGuild.middleware.js";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";
-import { GuildRequest } from "../../types/requestTypes.js";
+import { GuildRequest } from "../../communication/requests/guildRequest.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
-import { DefaultResponse } from "../../types/responseTypes.js";
+import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
 import { ITome } from "../../models/schemas/tomeSchema.js";
 
 /**

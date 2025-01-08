@@ -1,9 +1,9 @@
 ﻿import { Router } from "express";
 import { guildDatabases } from "../../models/guildDatabaseModel.js";
 import validateJwtToken from "../../middleware/jwtTokenValidator.middleware.js";
-import { GuildRequest } from "../../types/requestTypes.js";
+import { GuildRequest } from "../../communication/requests/guildRequest.js";
 import verifyGuild from "../../middleware/verifyGuild.middleware.js";
-import { DefaultResponse } from "../../types/responseTypes.js";
+import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
 import { IWaitlist } from "../../models/schemas/waitlistSchema.js";
 
 /**
