@@ -14,7 +14,7 @@ import userInfoRouter from "./routes/userInfo.js";
 import configRouter from "./routes/serverConfig.js";
 import onlineRouter from "./routes/guild/online.js";
 import waitlistRouter from "./routes/guild/waitlist.js";
-import authenticationRouter from "./routes/guild/security/authentication.js";
+import authenticationRouter from "./routes/authentication.js";
 import { registerMessageIndexes } from "./sockets/discord.js";
 import adminRouter from "./routes/admin.js";
 import { GuildDatabaseCreator } from "./services/guild/guildDatabaseCreator.js";
