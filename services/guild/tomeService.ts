@@ -1,14 +1,15 @@
-import { ValidationError } from "../../errors/implementations/validationError.js";
-import { guildDatabases, IGuildDatabases } from "../../models/guildDatabaseModel.js";
-import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
-import { FilterOptions } from "../../repositories/base/baseRepository.js";
-import { ITome } from "../../models/schemas/tomeSchema.js";
-import { NotFoundError } from "../../errors/implementations/notFoundError.js";
-import { TomeErrors } from "../../errors/messages/tomeErrors.js";
+import {ValidationError} from "../../errors/implementations/validationError.js";
+import {guildDatabases, IGuildDatabases} from "../../models/guildDatabaseModel.js";
+import {BaseGuildServiceValidator} from "./baseGuildServiceValidator.js";
+import {FilterOptions, IRepository} from "../../repositories/base/baseRepository.js";
+import {ITome} from "../../models/schemas/tomeSchema.js";
+import {NotFoundError} from "../../errors/implementations/notFoundError.js";
+import {TomeErrors} from "../../errors/messages/tomeErrors.js";
 
 export class TomeService {
     private readonly databases: IGuildDatabases;
     private readonly validator: TomeServiceValidator;
+
     private constructor() {
         this.databases = guildDatabases;
         this.validator = new TomeServiceValidator();
@@ -20,12 +21,12 @@ export class TomeService {
 
     async getTomeList(wynnGuildId: string): Promise<ITome[]> {
         this.validator.validateGuild(wynnGuildId);
-        return this.databases[wynnGuildId].TomeRepository.find({});
+        return this.getRepository(wynnGuildId).find({});
     }
 
     async addToTomeList(username: FilterOptions, wynnGuildId: string): Promise<ITome> {
         this.validator.validateGuild(wynnGuildId);
-        const repository = this.databases[wynnGuildId].TomeRepository;
+        const repository = this.getRepository(wynnGuildId);
         const tome = await repository.findOne(username);
         this.validator.validateAddToTomeList(tome, username);
 
@@ -37,19 +38,23 @@ export class TomeService {
         wynnGuildId: string
     ): Promise<{ username: string; position: number }> {
         this.validator.validateGuild(wynnGuildId);
-        const repository = this.databases[wynnGuildId].TomeRepository;
+        const repository = this.getRepository(wynnGuildId);
         const tome = await repository.findOne(username);
         this.validator.validateGet(tome);
 
-        const position = (await repository.find({ dateAdded: { $lt: tome.dateAdded.getTime() } })).length + 1;
-        return { username: tome.username, position: position };
+        const position = (await repository.find({dateAdded: {$lt: tome.dateAdded.getTime()}})).length + 1;
+        return {username: tome.username, position: position};
     }
 
-    async deleteFromTomeList(username: FilterOptions, wynnGuildId: string) {
+    async deleteFromTomeList(username: FilterOptions, wynnGuildId: string): Promise<void> {
         this.validator.validateGuild(wynnGuildId);
-        const repository = this.databases[wynnGuildId].TomeRepository;
+        const repository = this.getRepository(wynnGuildId);
         const tome = await repository.deleteOne(username);
         this.validator.validateGet(tome);
+    }
+
+    private getRepository(wynnGuildId: string): IRepository<ITome> {
+        return this.databases[wynnGuildId].TomeRepository;
     }
 }
 
