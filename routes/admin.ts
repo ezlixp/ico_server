@@ -1,5 +1,5 @@
 import {Request, Router} from "express";
-import {DefaultResponse} from "../types/responseTypes.js";
+import {DefaultResponse} from "../communication/responses/defaultResponse.js";
 import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
 import ValidationModel, {IValidation} from "../models/validationModel.js";
 import {GuildDatabaseCreator} from "../services/GuildDatabaseCreator.js";

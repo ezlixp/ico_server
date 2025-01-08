@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { GuildRequest } from "../types/requestTypes.js";
+import { GuildRequest } from "../communication/requests/guildRequest.js";
 import { guildDatabases } from "../models/guildDatabaseModel.js";
 
 export default function verifyGuild(request: GuildRequest, response: Response, next: NextFunction) {

@@ -1,8 +1,8 @@
 ﻿import { Router } from "express";
-import { GuildRequest } from "../../../types/requestTypes.js";
+import { GuildRequest } from "../../../communication/requests/guildRequest.js";
 import generateJwtToken from "./jwtTokenGenerator.js";
 import verifyGuild from "../../../middleware/verifyGuild.middleware.js";
-import { DefaultResponse } from "../../../types/responseTypes.js";
+import { DefaultResponse } from "../../../communication/responses/defaultResponse.js";
 import { TokenResponseModel } from "../../../models/responseModels.js";
 
 /**
