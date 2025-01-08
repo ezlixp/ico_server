@@ -1,4 +1,4 @@
-export function InsertDashes(str: string) {
+export function insertDashes(str: string) {
     str = str.replace("-", "");
     if (str.length != 32) return "";
     return (
