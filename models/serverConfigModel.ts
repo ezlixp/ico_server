@@ -1,11 +1,12 @@
 import mongoose, { Schema } from "mongoose";
+import { BaseModel } from "./baseModel.js";
 
 // interface IListeningChannel {
 //     channelId: number;
 //     guildId: string;
 // }
 
-export interface IServerConfig {
+export interface IServerConfig extends BaseModel {
     wynnGuildId: string;
     discordGuildId: string;
     tomeChannel: string;

@@ -1,9 +1,9 @@
-﻿import {UserRepository} from "../repositories/UserRepository.js";
-import {FilterOptions} from "../repositories/base/BaseRepository.js";
-import {IUser} from "../models/userModel.js";
-import {NotFoundError} from "../errors/implementations/NotFoundError.js";
-import {UserErrors} from "../errors/messages/UserErrors.js";
-import {ValidationError} from "../errors/implementations/ValidationError.js";
+﻿import { UserRepository } from "../repositories/userRepository.js";
+import { FilterOptions } from "../repositories/base/baseRepository.js";
+import { IUser } from "../models/userModel.js";
+import { NotFoundError } from "../errors/implementations/notFoundError.js";
+import { UserErrors } from "../errors/messages/userErrors.js";
+import { ValidationError } from "../errors/implementations/validationError.js";
 
 export class BlockedListService {
     private readonly repository: UserRepository;
@@ -24,22 +24,22 @@ export class BlockedListService {
         return user.blocked;
     }
 
-    async AddToBlockedList(userId: FilterOptions, toBlock: string): Promise<IUser> {
+    async addToBlockedList(userId: FilterOptions, toBlock: string): Promise<IUser> {
         const user = await this.getUser(userId);
         this.validator.validateAddToBlockedList(user, toBlock);
 
         user.blocked.push(toBlock);
 
-        return await this.repository.update({uuid: user.uuid}, user);
+        return await this.repository.update({ uuid: user.uuid }, user);
     }
 
     async removeFromBlockedList(userId: FilterOptions, toRemove: string): Promise<void> {
         const user = await this.getUser(userId);
         this.validator.validateRemoveFromBlockedList(user, toRemove);
 
-        user.blocked = user.blocked.filter(blockedUser => blockedUser !== toRemove);
+        user.blocked = user.blocked.filter((blockedUser) => blockedUser !== toRemove);
 
-        await this.repository.update({uuid: user.uuid}, user);
+        await this.repository.update({ uuid: user.uuid }, user);
     }
 
     private async getUser(options: FilterOptions): Promise<IUser> {
@@ -53,22 +53,22 @@ export class BlockedListService {
 class BlockedListServiceValidator {
     validateGet(user: IUser | null): asserts user is IUser {
         if (!user) {
-            throw new NotFoundError(UserErrors.NotFound);
+            throw new NotFoundError(UserErrors.NOT_FOUND);
         }
     }
 
     validateAddToBlockedList(user: IUser, toBlock: string) {
         if (user.blocked.length >= 60) {
-            throw new ValidationError(UserErrors.FullBlockedList);
+            throw new ValidationError(UserErrors.FULL_BLOCKED_LIST);
         }
         if (user.blocked.includes(toBlock)) {
-            throw new ValidationError(UserErrors.AlreadyInBlockedList);
+            throw new ValidationError(UserErrors.ALREADY_IN_BLOCKED_LIST);
         }
     }
 
     validateRemoveFromBlockedList(user: IUser, toRemove: string) {
         if (!user.blocked.includes(toRemove)) {
-            throw new ValidationError(UserErrors.NotInBlockedList);
+            throw new ValidationError(UserErrors.NOT_IN_BLOCKED_LIST);
         }
     }
 }

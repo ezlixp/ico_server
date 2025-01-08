@@ -1,6 +1,7 @@
 import { Schema } from "mongoose";
+import { BaseModel } from "../baseModel.js";
 
-export interface IRaid {
+export interface IRaid extends BaseModel {
     users: string[];
     raid: string;
     timestamp: number;

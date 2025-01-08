@@ -16,10 +16,14 @@
         "noEmitOnError": true
     },
     "include": [
+        "communication/**/*",
+        "errors/**/*",
+        "services/**/*",
         "middleware/**/*",
         "models/**/*",
         "routes/**/*",
         "security/**/*",
+        "repositories/**/*",
         "sockets/**/*",
         "utils/**/*",
         "types/**/*",

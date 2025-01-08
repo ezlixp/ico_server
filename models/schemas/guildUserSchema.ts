@@ -1,6 +1,7 @@
 import { Schema } from "mongoose";
+import { BaseModel } from "../baseModel.js";
 
-export interface IGuildUser {
+export interface IGuildUser extends BaseModel {
     uuid: string;
     aspects: number;
     emeralds: number;

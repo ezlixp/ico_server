@@ -1,8 +1,8 @@
-import {Request, Router} from "express";
+import { Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import {IUser} from "../models/userModel.js";
-import {DefaultResponse} from "../types/responseTypes.js";
-import {BlockedListService} from "../services/BlockedListService.js";
+import { IUser } from "../models/userModel.js";
+import { DefaultResponse } from "../types/responseTypes.js";
+import { BlockedListService } from "../services/blockedListService.js";
 
 /**Maps all endpoints related to user information. */
 const userInfoRouter = Router();
@@ -15,7 +15,7 @@ userInfoRouter.get(
     "/blocked/:uuid",
     async (request: Request<{ uuid: string }>, response: DefaultResponse<string[]>) => {
         const uuid = request.params.uuid.replaceAll("-", "");
-        const blockedList = await blockedListService.getBlockedList({uuid});
+        const blockedList = await blockedListService.getBlockedList({ uuid });
 
         response.status(200).send(blockedList);
     }
@@ -26,7 +26,7 @@ userInfoRouter.post(
     async (request: Request<{ uuid: string }, {}, { toBlock: string }>, response: DefaultResponse<IUser>) => {
         const toBlock = request.body.toBlock;
         const uuid = request.params.uuid.replaceAll("-", "");
-        const updatedUser = await blockedListService.AddToBlockedList({uuid}, toBlock);
+        const updatedUser = await blockedListService.addToBlockedList({ uuid }, toBlock);
 
         response.status(200).send(updatedUser);
     }
@@ -38,7 +38,7 @@ userInfoRouter.delete(
         const uuid = request.params.uuid.replaceAll("-", "");
         const toRemove = request.params.toRemove;
 
-        await blockedListService.removeFromBlockedList({uuid}, toRemove);
+        await blockedListService.removeFromBlockedList({ uuid }, toRemove);
 
         response.status(204).send();
     }

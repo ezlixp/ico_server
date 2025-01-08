@@ -1,6 +1,7 @@
 import mongoose, { Model, Schema } from "mongoose";
+import { BaseModel } from "./baseModel.js";
 
-export interface IValidation {
+export interface IValidation extends BaseModel {
     validationKey: string;
     wynnGuildId: string;
     wynnGuildName: string;

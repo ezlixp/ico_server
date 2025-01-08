@@ -1,6 +1,7 @@
 ﻿import { Schema } from "mongoose";
+import { BaseModel } from "../baseModel.js";
 
-export interface IWaitlist {
+export interface IWaitlist extends BaseModel {
     username: string;
     dateAdded: Date;
 }

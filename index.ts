@@ -1,6 +1,6 @@
-import express, {NextFunction, Request, Response, Router} from "express";
-import app, {server} from "./app.js";
-import {connect} from "mongoose";
+import express, { NextFunction, Request, Response, Router } from "express";
+import app, { server } from "./app.js";
+import { connect } from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
 import "./config";
@@ -15,20 +15,20 @@ import configRouter from "./routes/serverConfig.js";
 import onlineRouter from "./routes/guild/online.js";
 import waitlistRouter from "./routes/guild/waitlist.js";
 import authenticationRouter from "./routes/guild/security/authentication.js";
-import {registerMessageIndexes} from "./sockets/discord.js";
+import { registerMessageIndexes } from "./sockets/discord.js";
 import adminRouter from "./routes/admin.js";
-import {GuildDatabaseCreator} from "./services/GuildDatabaseCreator.js";
-import {errorHandler} from "./middleware/errorHandler.middleware.js";
+import { GuildDatabaseCreator } from "./services/guild/guildDatabaseCreator.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
 
 app.use(express.json());
 app.use(cors());
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect to database
 try {
     const dbUrl = process.env.DB_URL;
-    connect(dbUrl, {retryWrites: true, writeConcern: {w: "majority"}}).then(() => {
+    connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {
         const databaseCreator = new GuildDatabaseCreator();
         databaseCreator.registerDatabases().then(() => {
             registerMessageIndexes();
@@ -43,12 +43,12 @@ try {
     console.error("Failed to connect to database:", error);
 }
 
-const guildRouter = Router({mergeParams: true});
+const guildRouter = Router({ mergeParams: true });
 const apiVersion = "v2";
 
 app.use("/api/:version*", (request: Request<{ version: string }>, response: Response, next: NextFunction) => {
     if (request.params.version !== apiVersion) {
-        response.status(301).send({error: `please use /api/${apiVersion}`});
+        response.status(301).send({ error: `please use /api/${apiVersion}` });
         return;
     }
     next();
@@ -79,7 +79,7 @@ guildRouter.use("/waitlist", waitlistRouter);
 
 // Catch all for incorrect routes
 app.all("*", (_: Request, response: Response) => {
-    response.status(404).send({error: "not found"});
+    response.status(404).send({ error: "not found" });
 });
 
 app.use(errorHandler);
