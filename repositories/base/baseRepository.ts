@@ -27,7 +27,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
         }
     }
 
-    async find(options: FilterOptions): Promise<T[]> {
+    async find(options: FilterOptions = {}): Promise<T[]> {
         try {
             return await this.model.find(options).exec();
         } catch (err) {

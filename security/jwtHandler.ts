@@ -1,18 +1,21 @@
 import jwt from "jsonwebtoken";
 import "../config.js";
 import {TokenResponse} from "../communication/responses/tokenResponse.js";
-import ValidationModel, {IValidation} from "../models/validationModel.js";
+import {IValidation} from "../models/validationModel.js";
 import {TokenError} from "../errors/implementations/tokenError.js";
+import {ValidationRepository} from "../repositories/validationRepository.js";
 
 export class JwtTokenHandler {
     private readonly secretKey: string;
     private readonly refreshKey: string;
     private readonly options: jwt.SignOptions;
+    private readonly validationRepository: ValidationRepository;
 
     constructor() {
         this.secretKey = process.env.JWT_SECRET_KEY;
         this.refreshKey = process.env.JWT_REFRESH_SECRET_KEY || "placeholder";
         this.options = {expiresIn: "24h"};
+        this.validationRepository = new ValidationRepository();
     }
 
     async generateToken(
@@ -23,15 +26,14 @@ export class JwtTokenHandler {
             return this.signJwtToken("to be implemented", "*");
         }
 
-        // TODO: make repository for ValidationModel to substitute this call
-        const guild: IValidation = await ValidationModel.findOne({validationKey: validationKey}).exec();
+        const guild = await this.validationRepository.findOne({validationKey});
 
         this.validateGeneration(guild, wynnGuildId);
 
         return this.signJwtToken("to be implemented", wynnGuildId);
     }
 
-    private validateGeneration(guild: IValidation, wynnGuildId: string) {
+    private validateGeneration(guild: IValidation | null, wynnGuildId: string): asserts guild is IValidation {
         if (!guild) {
             throw new TokenError();
         }
