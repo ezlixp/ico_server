@@ -9,9 +9,8 @@ async function getPlayersGuildAsync(username: string) {
     return data.guild ?? null;
 }
 
-export default async function checkIfPlayerIsInGuildAsync(username: string, wynnGuildId: string) {
+export default async function checkIfPlayerIsInGuildAsync(username: string, wynnGuildId: string): Promise<boolean> {
     const guild = await getPlayersGuildAsync(username);
 
     return guild != null && guild.uuid == wynnGuildId;
-
 }
