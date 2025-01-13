@@ -1,16 +1,16 @@
 ﻿import {guildDatabases, guildIds, guildNames} from "../../models/guildDatabaseModel.js";
 import {GuildDatabaseFactory} from "../../models/factories/guildDatabaseFactory.js";
 import mongoose from "mongoose";
-import {ValidationRepository} from "../../repositories/validationRepository.js";
+import {GuildRepository} from "../../repositories/guildRepository.js";
 
 export class GuildDatabaseCreator {
-    private readonly validationRepository = new ValidationRepository();
+    private readonly validationRepository = new GuildRepository();
 
     constructor() {
-        this.validationRepository = new ValidationRepository();
+        this.validationRepository = new GuildRepository();
     }
 
-    newDatabase(wynnGuildName: string, wynnGuildId: string) {
+    createNewDatabase(wynnGuildName: string, wynnGuildId: string) {
         if (Object.keys(guildIds).indexOf(wynnGuildName) != -1) {
             console.warn("trying to register already existing database:", wynnGuildName);
             return;
