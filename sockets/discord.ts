@@ -28,20 +28,18 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 const raid = matcher.groups!.raid;
                 const timestamp = Date.now();
 
-                const newRaid = new guildDatabases[guildId].RaidModel({
+                guildDatabases[guildId].RaidRepository.create({
                     users: users,
                     raid,
                     timestamp,
+                }).then((newRaid) => {
+                    // Add users to db and increase aspect counter by 0.5
+                    Promise.all(
+                        newRaid.users.map((username) => {
+                            incrementAspects(username.toString(), guildId);
+                        })
+                    );
                 });
-
-                newRaid.save();
-
-                // Add users to db and increase aspect counter by 0.5
-                Promise.all(
-                    newRaid.users.map((username) => {
-                        incrementAspects(username.toString(), guildId);
-                    })
-                );
             } catch (error) {
                 console.error("postRaidError:", error);
             }
