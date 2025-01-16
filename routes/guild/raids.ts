@@ -1,7 +1,6 @@
 ﻿import { Router } from "express";
 import { usernameToUuid } from "../../net/mojangApiClient.js";
 import { GuildRequest } from "../../communication/requests/guildRequest.js";
-import verifyGuild from "../../middleware/verifyGuild.middleware.js";
 import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middleware.js";
 import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
 import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema.js";
@@ -14,13 +13,12 @@ import { RaidService } from "../../services/guild/raidService.js";
 const raidRouter = Router();
 const raidService = RaidService.create();
 
-raidRouter.get("/:wynnGuildId", verifyGuild, async (request: GuildRequest, response: DefaultResponse<IRaid[]>) => {
+raidRouter.get("/:wynnGuildId", async (request: GuildRequest, response: DefaultResponse<IRaid[]>) => {
     response.send(await raidService.getRaids(request.params.wynnGuildId));
 });
 
 raidRouter.get(
     "/rewards/:wynnGuildId",
-    verifyGuild,
     async (request: GuildRequest, response: DefaultResponse<IRaidRewardsResponse[]>) => {
         response.send(await raidService.getRewards(request.params.wynnGuildId));
     }
@@ -28,7 +26,6 @@ raidRouter.get(
 
 raidRouter.post(
     "/rewards/:wynnGuildId",
-    verifyGuild,
     validateAdminJwtToken,
     async (
         request: GuildRequest<{}, {}, { username: string; aspects?: number; emeralds?: number }>,
@@ -47,7 +44,6 @@ raidRouter.post(
 
 raidRouter.get(
     "/rewards/:wynnGuildId/:username",
-    verifyGuild,
     async (request: GuildRequest<{ username: string }>, response: DefaultResponse<IRaidRewardsResponse>) => {
         response.send(
             await raidService.getUserRewards(
@@ -60,7 +56,6 @@ raidRouter.get(
 
 raidRouter.get(
     "/leaderboard/:wynnGuildId",
-    verifyGuild,
     async (request: GuildRequest, response: DefaultResponse<ILeaderboardUser[]>) => {
         response.send(await raidService.getRaidsLeaderboard(request.params.wynnGuildId));
     }

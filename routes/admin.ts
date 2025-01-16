@@ -1,8 +1,8 @@
 import { Request, Router } from "express";
-import { DefaultResponse } from "../types/responseTypes.js";
 import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
 import ValidationModel, { IValidation } from "../models/validationModel.js";
 import { GuildDatabaseCreator } from "../services/guild/guildDatabaseCreator.js";
+import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 
 /**
  * Maps all mod version related endpoints.
