@@ -6,13 +6,9 @@ import { usernameToUuid } from "../net/mojangApiClient.js";
  * @param guildId The guild id of the user
  */
 export async function decrementAspects(username: string, guildId: string): Promise<void> {
-    guildDatabases[guildId].GuildUserModel.updateOne(
+    guildDatabases[guildId].GuildUserRepository.update(
         { uuid: await usernameToUuid(username) },
-        { username: username, $inc: { aspects: -1 } },
-        {
-            upsert: true,
-            collation: { locale: "en", strength: 2 },
-        }
+        { $inc: { aspects: -1 } }
     ).then(() => {
         console.log(username, "received an aspect");
     });
@@ -22,20 +18,16 @@ export async function decrementAspects(username: string, guildId: string): Promi
  * @param guildId The guild
  */
 export async function incrementAspects(username: string, guildId: string): Promise<void> {
-    guildDatabases[guildId].GuildUserModel.updateOne(
+    guildDatabases[guildId].GuildUserRepository.update(
         { uuid: await usernameToUuid(username) },
-        { username: username, $inc: { aspects: 0.5, raids: 1 } },
-        {
-            upsert: true,
-            collation: { locale: "en", strength: 2 },
-        }
+        { $inc: { aspects: 0.5, raids: 1 } }
     ).then(() => {
         console.log(username, "is owed half an aspect");
     });
 }
 
 export async function deleteTome(username: string, guildId: string): Promise<void> {
-    guildDatabases[guildId].TomeModel.findOneAndDelete({ username: username }).then((document) => {
+    guildDatabases[guildId].TomeRepository.deleteOne({ username: username }).then((document) => {
         if (!document) console.warn("tried to delete tome from non-existant player:", username);
         else console.log(username, "got a tome");
     });

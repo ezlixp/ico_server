@@ -1,5 +1,5 @@
 ﻿import { BaseModel } from "../../models/baseModel.js";
-import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions } from "mongoose";
+import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, UpdateQuery } from "mongoose";
 import { DatabaseError } from "../../errors/implementations/databaseError.js";
 
 export interface IRepository<T> {
@@ -17,7 +17,7 @@ export interface IRepository<T> {
 
     create(data: Partial<T>): Promise<HydratedDocument<T>>;
 
-    update(options: FilterQuery<T>, data: Partial<T>): Promise<HydratedDocument<T>>;
+    update(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>>;
 
     deleteOne(options: FilterQuery<T>): Promise<HydratedDocument<T> | null>;
 }
@@ -58,7 +58,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
         }
     }
 
-    async update(options: FilterQuery<T>, data: Partial<T>): Promise<HydratedDocument<T>> {
+    async update(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>> {
         try {
             return await this.model
                 .findOneAndUpdate(options, data, {
