@@ -1,3 +1,5 @@
+import { NotFoundError } from "../errors/implementations/notFoundError.js";
+
 /** Caches username to UUID conversions from Mojang api.*/
 const usernameUuidMap: { [key: string]: { uuid: string; timestamp: number } } = {};
 
@@ -21,7 +23,7 @@ export async function usernameToUuid(username: string): Promise<string> {
     } catch (error) {
         console.error("username to uuid error:", error);
     }
-    return "";
+    throw new NotFoundError("Could not find minecraft account with provided username.");
 }
 
 export async function uuidToUsername(uuid: string): Promise<string> {
@@ -42,5 +44,5 @@ export async function uuidToUsername(uuid: string): Promise<string> {
     } catch (error) {
         console.error("uuid to username error:", error);
     }
-    return "";
+    throw new NotFoundError("Could not find minecraft account with provided uuid.");
 }

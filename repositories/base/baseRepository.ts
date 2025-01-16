@@ -1,41 +1,55 @@
 ﻿import { BaseModel } from "../../models/baseModel.js";
-import { Model } from "mongoose";
+import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions } from "mongoose";
 import { DatabaseError } from "../../errors/implementations/databaseError.js";
 
-export type FilterOptions = Record<string, unknown>;
-
 export interface IRepository<T> {
-    findOne(options: FilterOptions & { [k in keyof T]?: unknown }): Promise<T | null>;
+    findOne(
+        filter: FilterQuery<T>,
+        projection?: ProjectionType<T>,
+        options?: QueryOptions<T>
+    ): Promise<HydratedDocument<T> | null>;
 
-    find(options: FilterOptions & { [k in keyof T]?: unknown }): Promise<T[]>;
+    find(
+        filter: FilterQuery<T>,
+        projection?: ProjectionType<T>,
+        options?: QueryOptions<T>
+    ): Promise<HydratedDocument<T>[]>;
 
-    create(data: Partial<T>): Promise<T>;
+    create(data: Partial<T>): Promise<HydratedDocument<T>>;
 
-    update(options: FilterOptions & { [k in keyof T]?: unknown }, data: Partial<T>): Promise<T>;
+    update(options: FilterQuery<T>, data: Partial<T>): Promise<HydratedDocument<T>>;
 
-    deleteOne(options: FilterOptions & { [k in keyof T]?: unknown }): Promise<T | null>;
+    deleteOne(options: FilterQuery<T>): Promise<HydratedDocument<T> | null>;
 }
 
 export abstract class BaseRepository<T extends BaseModel> implements IRepository<T> {
     protected constructor(private model: Model<T>) {}
 
-    async findOne(options: FilterOptions): Promise<T | null> {
+    async findOne(
+        filter: FilterQuery<T>,
+        projection?: ProjectionType<T>,
+        options?: QueryOptions<T>
+    ): Promise<HydratedDocument<T> | null> {
         try {
-            return await this.model.findOne(options).exec();
+            return await this.model.findOne(filter, projection, options).exec();
         } catch (err) {
             throw new DatabaseError();
         }
     }
 
-    async find(options: FilterOptions): Promise<T[]> {
+    async find(
+        filter: FilterQuery<T>,
+        projection?: ProjectionType<T>,
+        options?: QueryOptions<T>
+    ): Promise<HydratedDocument<T>[]> {
         try {
-            return await this.model.find(options).exec();
+            return await this.model.find(filter, projection, options).exec();
         } catch (err) {
             throw new DatabaseError();
         }
     }
 
-    async create(data: Partial<T>): Promise<T> {
+    async create(data: Partial<T>): Promise<HydratedDocument<T>> {
         try {
             const createdEntity = new this.model(data);
             return await createdEntity.save();
@@ -44,7 +58,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
         }
     }
 
-    async update(options: FilterOptions, data: Partial<T>): Promise<T> {
+    async update(options: FilterQuery<T>, data: Partial<T>): Promise<HydratedDocument<T>> {
         try {
             return await this.model
                 .findOneAndUpdate(options, data, {
@@ -58,7 +72,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
         }
     }
 
-    async deleteOne(options: FilterOptions): Promise<T | null> {
+    async deleteOne(options: FilterQuery<T>): Promise<HydratedDocument<T> | null> {
         try {
             return await this.model.findOneAndDelete(options).exec();
         } catch (err) {
