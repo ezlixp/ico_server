@@ -1,8 +1,8 @@
 import { Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
 import { IUser } from "../models/userModel.js";
-import { DefaultResponse } from "../types/responseTypes.js";
 import { BlockedListService } from "../services/blockedListService.js";
+import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 
 /**Maps all endpoints related to user information. */
 const userInfoRouter = Router();

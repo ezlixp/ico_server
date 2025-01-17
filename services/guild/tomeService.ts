@@ -1,10 +1,10 @@
-import {ValidationError} from "../../errors/implementations/validationError.js";
-import {guildDatabases, IGuildDatabases} from "../../models/guildDatabaseModel.js";
-import {BaseGuildServiceValidator} from "./baseGuildServiceValidator.js";
-import {FilterOptions, IRepository} from "../../repositories/base/baseRepository.js";
-import {ITome} from "../../models/schemas/tomeSchema.js";
-import {NotFoundError} from "../../errors/implementations/notFoundError.js";
-import {TomeErrors} from "../../errors/messages/tomeErrors.js";
+import { ValidationError } from "../../errors/implementations/validationError.js";
+import { guildDatabases, IGuildDatabases } from "../../models/guildDatabaseModel.js";
+import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
+import { ITome } from "../../models/schemas/tomeSchema.js";
+import { NotFoundError } from "../../errors/implementations/notFoundError.js";
+import { TomeErrors } from "../../errors/messages/tomeErrors.js";
+import { FilterQuery } from "mongoose";
 
 export class TomeService {
     private readonly databases: IGuildDatabases;
@@ -24,7 +24,7 @@ export class TomeService {
         return this.getRepository(wynnGuildId).find({});
     }
 
-    async addToTomeList(username: FilterOptions, wynnGuildId: string): Promise<ITome> {
+    async addToTomeList(username: FilterQuery<ITome>, wynnGuildId: string): Promise<ITome> {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.getRepository(wynnGuildId);
         const tome = await repository.findOne(username);
@@ -34,7 +34,7 @@ export class TomeService {
     }
 
     async getTomeListPosition(
-        username: FilterOptions,
+        username: FilterQuery<ITome>,
         wynnGuildId: string
     ): Promise<{ username: string; position: number }> {
         this.validator.validateGuild(wynnGuildId);
@@ -46,7 +46,7 @@ export class TomeService {
         return {username: tome.username, position: position};
     }
 
-    async deleteFromTomeList(username: FilterOptions, wynnGuildId: string): Promise<void> {
+    async deleteFromTomeList(username: FilterQuery<ITome>, wynnGuildId: string) {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.getRepository(wynnGuildId);
         const tome = await repository.deleteOne(username);
@@ -63,7 +63,7 @@ class TomeServiceValidator extends BaseGuildServiceValidator {
         super();
     }
 
-    validateAddToTomeList(tome: ITome | null, username: FilterOptions): asserts username is { username: string } {
+    validateAddToTomeList(tome: ITome | null, username: FilterQuery<ITome>): asserts username is { username: string } {
         if (tome) {
             throw new ValidationError(TomeErrors.DUPLICATE);
         }

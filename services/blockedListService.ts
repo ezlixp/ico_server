@@ -1,9 +1,9 @@
-﻿import {UserRepository} from "../repositories/userRepository.js";
-import {FilterOptions} from "../repositories/base/baseRepository.js";
-import {IUser} from "../models/userModel.js";
-import {NotFoundError} from "../errors/implementations/notFoundError.js";
-import {UserErrors} from "../errors/messages/userErrors.js";
-import {ValidationError} from "../errors/implementations/validationError.js";
+﻿import { UserRepository } from "../repositories/userRepository.js";
+import { IUser } from "../models/userModel.js";
+import { NotFoundError } from "../errors/implementations/notFoundError.js";
+import { UserErrors } from "../errors/messages/userErrors.js";
+import { ValidationError } from "../errors/implementations/validationError.js";
+import { FilterQuery } from "mongoose";
 
 export class BlockedListService {
     private readonly repository: UserRepository;
@@ -18,13 +18,13 @@ export class BlockedListService {
         return new BlockedListService();
     }
 
-    async getBlockedList(userId: FilterOptions): Promise<string[]> {
+    async getBlockedList(userId: FilterQuery<IUser>): Promise<string[]> {
         const user = await this.getUser(userId);
 
         return user.blocked;
     }
 
-    async addToBlockedList(userId: FilterOptions, toBlock: string): Promise<IUser> {
+    async addToBlockedList(userId: FilterQuery<IUser>, toBlock: string): Promise<IUser> {
         const user = await this.getUser(userId);
         this.validator.validateAddToBlockedList(user, toBlock);
 
@@ -33,7 +33,7 @@ export class BlockedListService {
         return await this.repository.update({uuid: user.uuid}, user);
     }
 
-    async removeFromBlockedList(userId: FilterOptions, toRemove: string): Promise<void> {
+    async removeFromBlockedList(userId: FilterQuery<IUser>, toRemove: string): Promise<void> {
         const user = await this.getUser(userId);
         this.validator.validateRemoveFromBlockedList(user, toRemove);
 
@@ -42,7 +42,7 @@ export class BlockedListService {
         await this.repository.update({uuid: user.uuid}, user);
     }
 
-    private async getUser(options: FilterOptions): Promise<IUser> {
+    private async getUser(options: FilterQuery<IUser>): Promise<IUser> {
         let user = await this.repository.findOne(options);
         this.validator.validateGet(user);
 

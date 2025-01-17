@@ -3,6 +3,7 @@ import { AppError } from "../errors/base/appError.js";
 import { ErrorResponse, HttpErrorResponse } from "../communication/responses/errorResponse.js";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    console.warn("error from route:", req.route);
     if (err instanceof AppError) {
         res.status(err.statusCode).send(ErrorResponse.createWithError(err));
     } else {
