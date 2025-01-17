@@ -5,6 +5,7 @@ import { ITome } from "../../models/schemas/tomeSchema.js";
 import { NotFoundError } from "../../errors/implementations/notFoundError.js";
 import { TomeErrors } from "../../errors/messages/tomeErrors.js";
 import { FilterQuery } from "mongoose";
+import {IRepository} from "../../repositories/base/baseRepository.js";
 
 export class TomeService {
     private readonly databases: IGuildDatabases;

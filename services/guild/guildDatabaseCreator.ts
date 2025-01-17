@@ -4,10 +4,10 @@ import mongoose from "mongoose";
 import {GuildRepository} from "../../repositories/guildRepository.js";
 
 export class GuildDatabaseCreator {
-    private readonly validationRepository = new GuildRepository();
+    private readonly guildRepository = new GuildRepository();
 
     constructor() {
-        this.validationRepository = new GuildRepository();
+        this.guildRepository = new GuildRepository();
     }
 
     createNewDatabase(wynnGuildName: string, wynnGuildId: string) {
@@ -31,13 +31,15 @@ export class GuildDatabaseCreator {
     }
 
     async registerDatabases() {
-        const guilds = await this.validationRepository.find();
+        const guilds = await this.guildRepository.getAll();
+
         for (let i = 0; i < guilds.length; ++i) {
             const name = guilds[i].wynnGuildName.replaceAll(" ", "+");
             const guildId = guilds[i].wynnGuildId;
             guildIds[name] = guildId;
             guildNames[guildId] = name;
         }
+
         console.log("registered guilds:", JSON.stringify(guildIds, null, 2));
         Object.entries(guildIds).forEach((value) => {
             this.registerDatabase(value);

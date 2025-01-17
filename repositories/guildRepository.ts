@@ -1,4 +1,4 @@
-﻿import {BaseRepository, FilterOptions} from "./base/baseRepository.js";
+﻿import {BaseRepository} from "./base/baseRepository.js";
 import GuildModel, {IGuild} from "../models/guildModel.js";
 
 export class GuildRepository extends BaseRepository<IGuild> {
@@ -8,5 +8,9 @@ export class GuildRepository extends BaseRepository<IGuild> {
 
     async guildExists(wynnGuildId: string): Promise<boolean> {
         return await super.findOne({wynnGuildId}) !== null;
+    }
+
+    async getAll(): Promise<IGuild[]> {
+        return await super.find({})
     }
 }
