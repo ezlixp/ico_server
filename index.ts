@@ -19,6 +19,7 @@ import { registerMessageIndexes } from "./sockets/discord.js";
 import adminRouter from "./routes/admin.js";
 import { GuildDatabaseCreator } from "./services/guild/guildDatabaseCreator.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import { NotFoundError } from "./errors/implementations/notFoundError.js";
 
 app.use(express.json());
 app.use(cors());
@@ -46,7 +47,7 @@ try {
 const guildRouter = Router({ mergeParams: true });
 const apiVersion = "v2";
 
-app.use("/api/:version*", (request: Request<{ version: string }>, response: Response, next: NextFunction) => {
+app.use("/api/:version/*extra", (request: Request<{ version: string }>, response: Response, next: NextFunction) => {
     if (request.params.version !== apiVersion) {
         response.status(301).send({ error: `please use /api/${apiVersion}` });
         return;
@@ -78,8 +79,8 @@ guildRouter.use("/tomes", tomeRouter);
 guildRouter.use("/waitlist", waitlistRouter);
 
 // Catch all for incorrect routes
-app.all("*", (_: Request, response: Response) => {
-    response.status(404).send({ error: "not found" });
+app.all("*extra", (_: Request, response: Response) => {
+    throw new NotFoundError("not found");
 });
 
 app.use(errorHandler);

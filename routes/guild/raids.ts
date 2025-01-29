@@ -33,7 +33,7 @@ raidRouter.post(
     ) => {
         response.send(
             await raidService.updateRewards(
-                { username: request.body.username },
+                { uuid: await usernameToUuid(request.body.username) },
                 request.body.aspects || null,
                 request.body.emeralds || null,
                 request.params.wynnGuildId
