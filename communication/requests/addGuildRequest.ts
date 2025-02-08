@@ -6,8 +6,7 @@
     private constructor(validationKey: string, wynnGuildId: string, wynnGuildName: string) {
         this.validationKey = validationKey;
         this.wynnGuildId = wynnGuildId;
-        this.wynnGuildName = wynnGuildName
-        this.wynnGuildName = wynnGuildName
+        this.wynnGuildName = wynnGuildName;
     }
 
     static create(validationKey: string, wynnGuildId: string, wynnGuildName: string) {

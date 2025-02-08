@@ -187,7 +187,9 @@ io.of("/discord").on("connection", (socket) => {
                             rawMessage,
                             messageIndexes[socket.data.wynnGuildId],
                             "emitted by:",
-                            socket.data.username
+                            socket.data.username,
+                            "guild:",
+                            socket.data.wynnGuildId
                         );
 
                         const message = rawMessage
@@ -243,7 +245,9 @@ io.of("/discord").on("connection", (socket) => {
                             rawMessage,
                             hrMessageIndexes[socket.data.wynnGuildId],
                             "emitted by:",
-                            socket.data.username
+                            socket.data.username,
+                            "guild:",
+                            socket.data.wynnGuildId
                         );
                         const message = rawMessage.replace(new RegExp("§.", "g"), "");
                         io.of("/discord").to(botId).emit("wynnMessage", {

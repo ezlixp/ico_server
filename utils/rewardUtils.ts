@@ -18,12 +18,16 @@ export async function decrementAspects(username: string, guildId: string): Promi
  * @param guildId The guild
  */
 export async function incrementAspects(username: string, guildId: string): Promise<void> {
-    guildDatabases[guildId].GuildUserRepository.update(
-        { uuid: await usernameToUuid(username) },
-        { $inc: { aspects: 0.5, raids: 1 } }
-    ).then(() => {
-        console.log(username, "is owed half an aspect");
-    });
+    try {
+        guildDatabases[guildId].GuildUserRepository.update(
+            { uuid: await usernameToUuid(username) },
+            { $inc: { aspects: 0.5, raids: 1 } }
+        ).then(() => {
+            console.log(username, "is owed half an aspect");
+        });
+    } catch (error) {
+        console.error("increment aspects error:", error);
+    }
 }
 
 export async function deleteTome(username: string, guildId: string): Promise<void> {
