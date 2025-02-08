@@ -23,7 +23,7 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
 
     jwt.verify(token, secretKey, (err, payload) => {
         if (err) {
-            console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked`);
+            console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked ${err}`);
             return next(new Error("Invalid token provided"));
         }
         socket.data.username = socket.handshake.headers.from || "!bot";

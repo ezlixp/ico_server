@@ -140,6 +140,21 @@ export function registerMessageIndexes() {
 }
 
 let botId = "";
+const errorHandler = (toHandle: Function) => {
+    const handleError = (error: Error) => {
+        console.error("socket error:", error);
+    };
+    return (...args: any[]) => {
+        try {
+            const ret = toHandle.apply(this, args);
+            if (ret && typeof ret.catch === "function") {
+                ret.catch(handleError);
+            }
+        } catch (e: any) {
+            handleError(e);
+        }
+    };
+};
 
 // TODO: make middleware for handling mutes
 io.of("/discord").on("connection", (socket) => {
@@ -160,186 +175,204 @@ io.of("/discord").on("connection", (socket) => {
     /**
      * Event that gets fired upon a guild message captured by a mod client
      */
-    socket.on("wynnMessage", (message: string) => {
-        if (!checkVersion(socket.data.modVersion)) {
-            console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
-            return;
-        }
-        getChannelFromWynnGuild(socket.data.wynnGuildId).then((channel) => {
-            if (channel === "none") {
-                console.log("no channel set up for:", socket.data.wynnGuildId);
+    socket.on(
+        "wynnMessage",
+        errorHandler((message: string) => {
+            if (!checkVersion(socket.data.modVersion)) {
+                console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
                 return;
             }
-
-            if (socket.data.messageIndex === messageIndexes[socket.data.wynnGuildId]) {
-                ++socket.data.messageIndex;
-                ++messageIndexes[socket.data.wynnGuildId];
-                for (let i = 0; i < wynnMessagePatterns.length; i++) {
-                    const pattern = wynnMessagePatterns[i];
-                    const matcher = pattern.pattern.exec(message);
-                    if (matcher) {
-                        const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                        const rawMessage = pattern.customMessage
-                            ? pattern.customMessage(matcher, socket.data.wynnGuildId)
-                            : matcher.groups!.content;
-                        console.log(
-                            header,
-                            rawMessage,
-                            messageIndexes[socket.data.wynnGuildId],
-                            "emitted by:",
-                            socket.data.username,
-                            "guild:",
-                            socket.data.wynnGuildId
-                        );
-
-                        const message = rawMessage
-                            .replace(new RegExp("§.", "g"), "")
-                            .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
-                        isOnline(header, socket.data.wynnGuildId).then((online) => {
-                            io.of("/discord")
-                                .to(botId)
-                                .emit("wynnMessage", {
-                                    MessageType: pattern.messageType,
-                                    HeaderContent: header + (online ? "*" : ""),
-                                    TextContent: message,
-                                    ListeningChannel: channel,
-                                });
-                        });
-                        break;
-                    }
+            getChannelFromWynnGuild(socket.data.wynnGuildId).then((channel) => {
+                if (channel === "none") {
+                    console.log("no channel set up for:", socket.data.wynnGuildId);
+                    return;
                 }
-            } else {
-                ++socket.data.messageIndex;
-            }
-        });
-    });
+
+                if (socket.data.messageIndex === messageIndexes[socket.data.wynnGuildId]) {
+                    ++socket.data.messageIndex;
+                    ++messageIndexes[socket.data.wynnGuildId];
+                    for (let i = 0; i < wynnMessagePatterns.length; i++) {
+                        const pattern = wynnMessagePatterns[i];
+                        const matcher = pattern.pattern.exec(message);
+                        if (matcher) {
+                            const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                            const rawMessage = pattern.customMessage
+                                ? pattern.customMessage(matcher, socket.data.wynnGuildId)
+                                : matcher.groups!.content;
+                            console.log(
+                                header,
+                                rawMessage,
+                                messageIndexes[socket.data.wynnGuildId],
+                                "emitted by:",
+                                socket.data.username,
+                                "guild:",
+                                socket.data.wynnGuildId
+                            );
+
+                            const message = rawMessage
+                                .replace(new RegExp("§.", "g"), "")
+                                .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
+                            isOnline(header, socket.data.wynnGuildId).then((online) => {
+                                io.of("/discord")
+                                    .to(botId)
+                                    .emit("wynnMessage", {
+                                        MessageType: pattern.messageType,
+                                        HeaderContent: header + (online ? "*" : ""),
+                                        TextContent: message,
+                                        ListeningChannel: channel,
+                                    });
+                            });
+                            break;
+                        }
+                    }
+                } else {
+                    ++socket.data.messageIndex;
+                }
+            });
+        })
+    );
 
     /**
      * Event that gets fired upon an hr message captured by a mod client
      */
-    socket.on("hrMessage", (message: string) => {
-        if (!checkVersion(socket.data.modVersion)) {
-            console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
-            return;
-        }
-        getChannelFromWynnGuild(socket.data.wynnGuildId).then((channel) => {
-            if (channel === "none") {
-                console.log("no channel set up for:", socket.data.wynnGuildId);
+    socket.on(
+        "hrMessage",
+        errorHandler((message: string) => {
+            if (!checkVersion(socket.data.modVersion)) {
+                console.log(`skipping request from outdated mod version: ${socket.data.modVersion}`);
                 return;
             }
-
-            if (socket.data.hrMessageIndex === hrMessageIndexes[socket.data.wynnGuildId]) {
-                ++socket.data.hrMessageIndex;
-                ++hrMessageIndexes[socket.data.wynnGuildId];
-                for (let i = 0; i < hrMessagePatterns.length; i++) {
-                    const pattern = hrMessagePatterns[i];
-                    const matcher = pattern.pattern.exec(message);
-                    if (matcher) {
-                        const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
-                        const rawMessage = pattern.customMessage
-                            ? pattern.customMessage(matcher, socket.data.wynnGuildId)
-                            : matcher.groups!.content;
-                        console.log(
-                            "hr",
-                            header,
-                            rawMessage,
-                            hrMessageIndexes[socket.data.wynnGuildId],
-                            "emitted by:",
-                            socket.data.username,
-                            "guild:",
-                            socket.data.wynnGuildId
-                        );
-                        const message = rawMessage.replace(new RegExp("§.", "g"), "");
-                        io.of("/discord").to(botId).emit("wynnMessage", {
-                            MessageType: pattern.messageType,
-                            HeaderContent: header,
-                            TextContent: message,
-                            ListeningChannel: channel,
-                        });
-                        break;
-                    }
+            getChannelFromWynnGuild(socket.data.wynnGuildId).then((channel) => {
+                if (channel === "none") {
+                    console.log("no channel set up for:", socket.data.wynnGuildId);
+                    return;
                 }
-            } else {
-                ++socket.data.hrMessageIndex;
-            }
-        });
-    });
+
+                if (socket.data.hrMessageIndex === hrMessageIndexes[socket.data.wynnGuildId]) {
+                    ++socket.data.hrMessageIndex;
+                    ++hrMessageIndexes[socket.data.wynnGuildId];
+                    for (let i = 0; i < hrMessagePatterns.length; i++) {
+                        const pattern = hrMessagePatterns[i];
+                        const matcher = pattern.pattern.exec(message);
+                        if (matcher) {
+                            const header = pattern.customHeader ? pattern.customHeader : matcher.groups!.header;
+                            const rawMessage = pattern.customMessage
+                                ? pattern.customMessage(matcher, socket.data.wynnGuildId)
+                                : matcher.groups!.content;
+                            console.log(
+                                "hr",
+                                header,
+                                rawMessage,
+                                hrMessageIndexes[socket.data.wynnGuildId],
+                                "emitted by:",
+                                socket.data.username,
+                                "guild:",
+                                socket.data.wynnGuildId
+                            );
+                            const message = rawMessage.replace(new RegExp("§.", "g"), "");
+                            io.of("/discord").to(botId).emit("wynnMessage", {
+                                MessageType: pattern.messageType,
+                                HeaderContent: header,
+                                TextContent: message,
+                                ListeningChannel: channel,
+                            });
+                            break;
+                        }
+                    }
+                } else {
+                    ++socket.data.hrMessageIndex;
+                }
+            });
+        })
+    );
 
     /**
      * Event that gets fired upon a discord only message being sent from a mod client
      */
-    socket.on("discordOnlyWynnMessage", async (message: string) => {
-        const channel = await getChannelFromWynnGuild(socket.data.wynnGuildId);
-        if (channel === "none") {
-            console.log("no channel set up for:", socket.data.wynnGuildId);
-            return;
-        }
-        const matcher = discordOnlyPattern.exec(message);
-        if (matcher) {
-            const header = matcher.groups!.header;
-            const message = matcher.groups!.content.replace(
-                ENCODED_DATA_PATTERN,
-                (match, _) => `<${decodeItem(match).name}>`
-            );
-            const user = await UserModel.findOne(
-                { uuid: await usernameToUuid(header) },
-                {},
-                { collation: { locale: "en", strength: 2 } }
-            ).exec();
-            if (!user || !user.muted) {
-                console.log(message);
-                io.of("/discord").to(botId).emit("wynnMessage", {
-                    MessageType: 2,
-                    HeaderContent: header,
-                    TextContent: message,
-                    ListeningChannel: channel,
-                });
+    socket.on(
+        "discordOnlyWynnMessage",
+        errorHandler(async (message: string) => {
+            const channel = await getChannelFromWynnGuild(socket.data.wynnGuildId);
+            if (channel === "none") {
+                console.log("no channel set up for:", socket.data.wynnGuildId);
+                return;
             }
-        }
-    });
+            const matcher = discordOnlyPattern.exec(message);
+            if (matcher) {
+                const header = matcher.groups!.header;
+                const message = matcher.groups!.content.replace(
+                    ENCODED_DATA_PATTERN,
+                    (match, _) => `<${decodeItem(match).name}>`
+                );
+                const user = await UserModel.findOne(
+                    { uuid: await usernameToUuid(header) },
+                    {},
+                    { collation: { locale: "en", strength: 2 } }
+                ).exec();
+                if (!user || !user.muted) {
+                    console.log(message);
+                    io.of("/discord").to(botId).emit("wynnMessage", {
+                        MessageType: 2,
+                        HeaderContent: header,
+                        TextContent: message,
+                        ListeningChannel: channel,
+                    });
+                }
+            }
+        })
+    );
 
     /**
      * Event that gets fired upon a message that needs to be sent from discord to wynn (including discord only wynn messages)
      */
-    socket.on("discordMessage", async (message: IDiscord2WynnMessage) => {
-        const user = await UserModel.findOne(
-            { uuid: await usernameToUuid(message.Author) },
-            {},
-            { collation: { locale: "en", strength: 2 } }
-        ).exec();
+    socket.on(
+        "discordMessage",
+        errorHandler(async (message: IDiscord2WynnMessage) => {
+            const user = await UserModel.findOne(
+                { uuid: await usernameToUuid(message.Author) },
+                {},
+                { collation: { locale: "en", strength: 2 } }
+            ).exec();
 
-        if (!user || !user.muted) {
-            console.log(message);
-            io.of("/discord")
-                .to(message.WynnGuildId)
-                .emit("discordMessage", {
-                    ...message,
-                    Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
-                });
-        } else {
-            console.log("muted message:", message);
-            io.of("/discord")
-                .to(socket.id)
-                .emit("discordMessage", { Author: "SYSTEM", Content: "You are muted.", WynnGuildId: "" });
-        }
-    });
+            if (!user || !user.muted) {
+                console.log(message);
+                io.of("/discord")
+                    .to(message.WynnGuildId)
+                    .emit("discordMessage", {
+                        ...message,
+                        Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
+                    });
+            } else {
+                console.log("muted message:", message);
+                io.of("/discord")
+                    .to(socket.id)
+                    .emit("discordMessage", { Author: "SYSTEM", Content: "You are muted.", WynnGuildId: "" });
+            }
+        })
+    );
 
-    socket.on("listOnline", async (callback) => {
-        callback((await getOnlineUsers(socket.data.wynnGuildId)).map((onlineUser) => onlineUser.Username));
-    });
+    socket.on(
+        "listOnline",
+        errorHandler(async (callback: Function) => {
+            callback((await getOnlineUsers(socket.data.wynnGuildId)).map((onlineUser) => onlineUser.Username));
+        })
+    );
 
     socket.on("sync", () => {
         socket.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
     });
 
-    socket.on("disconnect", (reason) => {
-        console.log(socket.data.username, "disconnected with reason:", reason);
-        io.of("/discord")
-            .fetchSockets()
-            .then((sockets) => {
-                sockets.forEach((s) => {
-                    s.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
+    socket.on(
+        "disconnect",
+        errorHandler((reason: string) => {
+            console.log(socket.data.username, "disconnected with reason:", reason);
+            io.of("/discord")
+                .fetchSockets()
+                .then((sockets) => {
+                    sockets.forEach((s) => {
+                        s.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
+                    });
                 });
-            });
-    });
+        })
+    );
 });
