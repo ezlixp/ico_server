@@ -1,4 +1,4 @@
-import express, {NextFunction, Request, Response, Router} from "express";
+import express from "express";
 import app, {server} from "./app.js";
 import {connect} from "mongoose";
 import bodyParser from "body-parser";
@@ -8,7 +8,7 @@ import "./sockets/discord.js";
 import {registerMessageIndexes} from "./sockets/discord.js";
 import {GuildDatabaseCreator} from "./services/guild/guildDatabaseCreator.js";
 import {errorHandler} from "./middleware/errorHandler.middleware.js";
-import {mapEndpoints} from "./services/endpointMapper.js";
+import {mapEndpoints} from "./endpoints.js";
 
 app.use(express.json());
 app.use(cors());
