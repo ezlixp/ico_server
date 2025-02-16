@@ -4,7 +4,7 @@ import { IDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
 import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardUtils.js";
 import { getOnlineUsers, isOnline } from "../utils/socketUtils.js";
-import { usernameToUuid } from "../net/mojangApiClient.js";
+import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js";
 import { checkVersion } from "../utils/versionUtils.js";
 import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel.js";
 import UserModel from "../models/entities/userModel.js";

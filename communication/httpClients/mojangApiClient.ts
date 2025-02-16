@@ -1,4 +1,4 @@
-import { NotFoundError } from "../errors/implementations/notFoundError.js";
+import { NotFoundError } from "../../errors/implementations/notFoundError.js";
 
 /** Caches username to UUID conversions from Mojang api.*/
 const usernameUuidMap: { [key: string]: { uuid: string; timestamp: number } } = {};

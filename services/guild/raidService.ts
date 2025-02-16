@@ -1,7 +1,7 @@
 import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel.js";
 import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
 import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema.js";
-import { uuidToUsername } from "../../net/mojangApiClient.js";
+import { uuidToUsername } from "../../communication/httpClients/mojangApiClient.js";
 import { FilterQuery, HydratedDocument } from "mongoose";
 import { IGuildUser } from "../../models/schemas/guildUserSchema.js";
 import { NotFoundError } from "../../errors/implementations/notFoundError.js";

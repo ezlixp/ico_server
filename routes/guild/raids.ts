@@ -1,5 +1,5 @@
 ﻿import { Router } from "express";
-import { usernameToUuid } from "../../net/mojangApiClient.js";
+import { usernameToUuid } from "../../communication/httpClients/mojangApiClient.js";
 import { GuildRequest } from "../../communication/requests/guildRequest.js";
 import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middleware.js";
 import { DefaultResponse } from "../../communication/responses/defaultResponse.js";

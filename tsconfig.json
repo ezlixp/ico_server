@@ -30,7 +30,7 @@
         "index.ts",
         "config.ts",
         "app.ts",
-        "net/**/*"
+        "communication/httpClients/**/*"
     ],
     "exclude": ["node_modules", "**/*.spec.ts", "test/**/*"]
 }
