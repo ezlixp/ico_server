@@ -1,4 +1,4 @@
-import { guildDatabases } from "../models/guildDatabaseModel.js";
+import { guildDatabases } from "../models/entities/guildDatabaseModel.js";
 import { usernameToUuid } from "../net/mojangApiClient.js";
 
 /** Decrements the number of aspects owed to a user by 1

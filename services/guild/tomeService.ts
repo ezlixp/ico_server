@@ -1,5 +1,5 @@
 import { ValidationError } from "../../errors/implementations/validationError.js";
-import { guildDatabases, IGuildDatabases } from "../../models/guildDatabaseModel.js";
+import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel.js";
 import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
 import { ITome } from "../../models/schemas/tomeSchema.js";
 import { NotFoundError } from "../../errors/implementations/notFoundError.js";

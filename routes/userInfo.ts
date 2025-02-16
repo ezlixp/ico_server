@@ -1,6 +1,6 @@
 import { Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import { IUser } from "../models/userModel.js";
+import { IUser } from "../models/entities/userModel.js";
 import { BlockedListService } from "../services/blockedListService.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 

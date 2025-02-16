@@ -1,6 +1,6 @@
 ﻿import { DatabaseModelFactory } from "./databaseModelFactory.js";
 import { Connection } from "mongoose";
-import { IGuildDatabase } from "../guildDatabaseModel.js";
+import { IGuildDatabase } from "../entities/guildDatabaseModel.js";
 import { GuildUserRepository } from "../../repositories/guild/guildUserRepository.js";
 import { RaidRepository } from "../../repositories/guild/raidRepository.js";
 import { TomeRepository } from "../../repositories/guild/tomeRepository.js";

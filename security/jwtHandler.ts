@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import "../config.js";
 import {TokenResponse} from "../communication/responses/tokenResponse.js";
-import {IGuild} from "../models/guildModel.js";
+import {IGuild} from "../models/entities/guildModel.js";
 import {TokenError} from "../errors/implementations/tokenError.js";
 import {GuildRepository} from "../repositories/guildRepository.js";
 

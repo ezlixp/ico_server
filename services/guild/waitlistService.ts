@@ -1,5 +1,5 @@
 import { HydratedDocument } from "mongoose";
-import { guildDatabases, IGuildDatabases } from "../../models/guildDatabaseModel.js";
+import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel.js";
 import { IWaitlist } from "../../models/schemas/waitlistSchema.js";
 import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
 import { ValidationError } from "../../errors/implementations/validationError.js";

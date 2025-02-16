@@ -1,4 +1,4 @@
-﻿import UserModel, {IUser} from "../models/userModel.js";
+﻿import UserModel, {IUser} from "../models/entities/userModel.js";
 import {BaseRepository} from "./base/baseRepository.js";
 
 export class UserRepository extends BaseRepository<IUser> {

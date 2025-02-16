@@ -16,8 +16,8 @@ declare namespace Express {
         serverConfig?: import("mongoose").Document<
             unknown,
             {},
-            import("../models/serverConfigModel.ts").IServerConfig
+            import("../models/entities/serverConfigModel.ts").IServerConfig
         > &
-            import("../models/serverConfigModel.ts").IServerConfig;
+            import("../models/entities/serverConfigModel.ts").IServerConfig;
     }
 }

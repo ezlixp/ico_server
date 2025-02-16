@@ -1,4 +1,4 @@
-﻿import {guildDatabases, guildIds, guildNames} from "../../models/guildDatabaseModel.js";
+﻿import {guildDatabases, guildIds, guildNames} from "../../models/entities/guildDatabaseModel.js";
 import {GuildDatabaseFactory} from "../../models/factories/guildDatabaseFactory.js";
 import mongoose from "mongoose";
 import {GuildRepository} from "../../repositories/guildRepository.js";

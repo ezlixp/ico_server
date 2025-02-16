@@ -1,8 +1,8 @@
-import { IRepository } from "../repositories/base/baseRepository.js";
-import { IGuildUser } from "./schemas/guildUserSchema.js";
-import { IRaid } from "./schemas/raidSchema.js";
-import { ITome } from "./schemas/tomeSchema.js";
-import { IWaitlist } from "./schemas/waitlistSchema.js";
+import { IRepository } from "../../repositories/base/baseRepository.js";
+import { IGuildUser } from "../schemas/guildUserSchema.js";
+import { IRaid } from "../schemas/raidSchema.js";
+import { ITome } from "../schemas/tomeSchema.js";
+import { IWaitlist } from "../schemas/waitlistSchema.js";
 
 export interface IGuildDatabase {
     GuildUserRepository: IRepository<IGuildUser>;

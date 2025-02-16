@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { BaseModel } from "../baseModel.js";
+import { BaseModel } from "../entities/baseModel.js";
 
 export interface IRaid extends BaseModel {
     users: string[];

@@ -6,8 +6,8 @@ import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardU
 import { getOnlineUsers, isOnline } from "../utils/socketUtils.js";
 import { usernameToUuid } from "../net/mojangApiClient.js";
 import { checkVersion } from "../utils/versionUtils.js";
-import { guildDatabases, guildNames } from "../models/guildDatabaseModel.js";
-import UserModel from "../models/userModel.js";
+import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel.js";
+import UserModel from "../models/entities/userModel.js";
 import { getChannelFromWynnGuild } from "../utils/serverUtils.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;

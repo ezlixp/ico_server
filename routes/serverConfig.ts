@@ -1,6 +1,6 @@
 import { NextFunction, Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import ServerConfigModel, { IServerConfig } from "../models/serverConfigModel.js";
+import ServerConfigModel, { IServerConfig } from "../models/entities/serverConfigModel.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 
 /**

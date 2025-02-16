@@ -1,4 +1,4 @@
-import { guildDatabases, IGuildDatabases } from "../../models/guildDatabaseModel.js";
+import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel.js";
 import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
 import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema.js";
 import { uuidToUsername } from "../../net/mojangApiClient.js";

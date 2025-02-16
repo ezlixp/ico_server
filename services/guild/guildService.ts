@@ -1,6 +1,6 @@
 ﻿import {GuildDatabaseCreator} from "./guildDatabaseCreator.js";
 import {GuildRepository} from "../../repositories/guildRepository.js";
-import {IGuild} from "../../models/guildModel.js";
+import {IGuild} from "../../models/entities/guildModel.js";
 import {ValidationError} from "../../errors/implementations/validationError.js";
 
 export class GuildService {

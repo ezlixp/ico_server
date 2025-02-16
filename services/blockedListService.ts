@@ -1,5 +1,5 @@
 ﻿import { UserRepository } from "../repositories/userRepository.js";
-import { IUser } from "../models/userModel.js";
+import { IUser } from "../models/entities/userModel.js";
 import { NotFoundError } from "../errors/implementations/notFoundError.js";
 import { UserErrors } from "../errors/messages/userErrors.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
