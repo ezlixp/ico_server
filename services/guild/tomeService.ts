@@ -5,7 +5,7 @@ import { ITome } from "../../models/schemas/tomeSchema.js";
 import { NotFoundError } from "../../errors/implementations/notFoundError.js";
 import { TomeErrors } from "../../errors/messages/tomeErrors.js";
 import { FilterQuery } from "mongoose";
-import {IRepository} from "../../repositories/base/baseRepository.js";
+import { IRepository } from "../../repositories/base/baseRepository.js";
 
 export class TomeService {
     private readonly databases: IGuildDatabases;
@@ -43,8 +43,8 @@ export class TomeService {
         const tome = await repository.findOne(username);
         this.validator.validateGet(tome);
 
-        const position = (await repository.find({dateAdded: {$lt: tome.dateAdded.getTime()}})).length + 1;
-        return {username: tome.username, position: position};
+        const position = (await repository.find({ dateAdded: { $lt: tome.dateAdded.getTime() } })).length + 1;
+        return { username: tome.username, position: position };
     }
 
     async deleteFromTomeList(username: FilterQuery<ITome>, wynnGuildId: string) {
