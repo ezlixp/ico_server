@@ -2,6 +2,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { Model } from 'mongoose';
+import { GenericResult } from '../core/result';
 
 @Injectable()
 export class UserService {
@@ -9,7 +10,8 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async getByUuid(uuid: string): Promise<User | null> {
-    return this.userModel.findOne({ uuid });
+  async getByUuid(uuid: string): Promise<GenericResult<User>> {
+    const request = await this.userModel.findOne({ uuid });
+    return GenericResult.from(request);
   }
 }

@@ -1,5 +1,4 @@
 ﻿import { Err } from './error';
-import { Request } from 'express';
 
 export class Result {
   public error: Err;
@@ -25,10 +24,14 @@ export class Result {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-expect-error
+// ESLint complains about the class not correctly implementing the static methods from
+// Result, which is not an issue, as it should only be used for generic types.
 export class GenericResult<TValue> extends Result {
-  private readonly value?: TValue;
+  private readonly value?: TValue | null;
 
-  public constructor(error: Err, value?: TValue) {
+  public constructor(error: Err, value?: TValue | null) {
     super(error);
     this.value = value;
   }
@@ -39,5 +42,19 @@ export class GenericResult<TValue> extends Result {
     }
 
     return this.value!;
+  }
+
+  public static success<TValue>(value: TValue): GenericResult<TValue> {
+    return new GenericResult(Err.None, value);
+  }
+
+  public static failure<TValue>(error: Err): GenericResult<TValue> {
+    return new GenericResult<TValue>(error);
+  }
+
+  public static from<TValue>(value?: TValue | null): GenericResult<TValue> {
+    return value !== null
+      ? this.success(value!)
+      : this.failure(Err.ConditionNotMet);
   }
 }
