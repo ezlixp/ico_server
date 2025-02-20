@@ -1,9 +1,8 @@
 ﻿import { Module } from '@nestjs/common';
 import { HealthController } from './health.controller';
-import { HealthStatus } from './health-status.enum';
 
 @Module({
-  imports: [HealthStatus],
+  imports: [],
   controllers: [HealthController],
   providers: [],
 })

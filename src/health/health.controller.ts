@@ -2,7 +2,7 @@
 import { Response } from 'express';
 import { HealthStatus } from './health-status.enum';
 
-@Controller()
+@Controller('health')
 export class HealthController {
   @Get()
   checkHealth(@Res() res: Response) {
