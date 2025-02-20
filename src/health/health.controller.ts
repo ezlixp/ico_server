@@ -1,12 +1,12 @@
-﻿import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
-import { Response } from 'express';
+﻿import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { HealthStatus } from './health-status';
 import { AppController } from '../core/app.controller';
 
 @Controller('health')
 export class HealthController extends AppController {
   @Get()
-  checkHealth(@Res() res: Response) {
-    res.status(HttpStatus.OK).send({ status: HealthStatus.Healthy });
+  @HttpCode(HttpStatus.OK)
+  checkHealth(): HealthStatus {
+    return HealthStatus.Healthy;
   }
 }
