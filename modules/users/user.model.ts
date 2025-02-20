@@ -1,5 +1,5 @@
-import mongoose, { Model, Schema } from "mongoose";
-import { BaseModel } from "./baseModel.js";
+import mongoose, { Model, Schema } from 'mongoose';
+import { BaseModel } from '../../models/entities/baseModel.js';
 
 export interface IUser extends BaseModel {
     uuid: string;
@@ -16,10 +16,10 @@ const userSchema: Schema<IUser> = new Schema(
         muted: { type: Boolean, required: true, default: false },
     },
     {
-        collation: { locale: "en", strength: 2 },
-    }
+        collation: { locale: 'en', strength: 2 },
+    },
 );
 
-const UserModel: Model<IUser> = mongoose.model("User", userSchema);
+const UserModel: Model<IUser> = mongoose.model('User', userSchema);
 
 export default UserModel;
