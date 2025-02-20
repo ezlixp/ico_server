@@ -1,19 +1,20 @@
 ﻿import { injectable, singleton } from 'tsyringe';
 import { UserService } from './user.service.js';
-import { Request, Router } from 'express';
+import { Request } from 'express';
 import { DefaultResponse } from '../../communication/responses/defaultResponse.js';
 import { IUser } from './user.model.js';
+import {
+    HttpDelete,
+    HttpGet,
+    HttpPost,
+} from '../../decorators/http.methods.js';
 
 @injectable()
 @singleton()
 export class UserController {
-    private readonly router: Router;
+    constructor(private readonly userService: UserService) {}
 
-    constructor(private readonly userService: UserService) {
-        this.router = Router();
-        this.registerRoutes();
-    }
-
+    @HttpGet('/blocked/:uuid')
     async getBlockedList(
         request: Request<{ uuid: string }>,
         response: DefaultResponse<string[]>,
@@ -24,8 +25,9 @@ export class UserController {
         response.status(200).send(blockedList);
     }
 
+    @HttpPost('/blocked/:uuid')
     async addUserToBlockedList(
-        request: Request<{ uuid: string }, {}, { toBlock: string }>,
+        request: Request<{ uuid: string }, unknown, { toBlock: string }>,
         response: DefaultResponse<IUser>,
     ) {
         const toBlock = request.body.toBlock;
@@ -38,6 +40,7 @@ export class UserController {
         response.status(200).send(updatedUser);
     }
 
+    @HttpDelete('/blocked/:uuid/:toRemove')
     async removeUserFromBlockedList(
         request: Request<{ uuid: string; toRemove: string }>,
         response: DefaultResponse,
@@ -48,21 +51,5 @@ export class UserController {
         await this.userService.removeFromBlockedList({ uuid }, toRemove);
 
         response.status(204).send();
-    }
-
-    getRouter(): Router {
-        return this.router;
-    }
-
-    private registerRoutes() {
-        this.router.get('/blocked/:uuid', this.getBlockedList.bind(this));
-        this.router.post(
-            '/blocked/:uuid',
-            this.addUserToBlockedList.bind(this),
-        );
-        this.router.delete(
-            '/blocked/:uuid/:toRemove',
-            this.removeUserFromBlockedList.bind(this),
-        );
     }
 }

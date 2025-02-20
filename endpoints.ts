@@ -13,6 +13,7 @@ import { NotFoundError } from './errors/implementations/notFoundError.js';
 import { API_VERSION } from './config.js';
 import { container } from 'tsyringe';
 import { UserController } from './modules/users/user.controller.js';
+import { createRouter } from './decorators/http.methods.js';
 
 export const mapEndpoints = (app: Express) => {
     const guildRouter = Router({ mergeParams: true });
@@ -45,7 +46,7 @@ export const mapEndpoints = (app: Express) => {
 
     app.use(
         `/api/${API_VERSION}/user`,
-        container.resolve(UserController).getRouter(),
+        createRouter(container.resolve(UserController)),
     );
 
     app.use(`/api/${API_VERSION}/config`, configRouter);
