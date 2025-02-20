@@ -3,7 +3,6 @@ import statusRouter from './routes/status.js';
 import healthRouter from './routes/healthCheck.js';
 import adminRouter from './routes/admin.js';
 import modVersionRouter from './routes/modVersion.js';
-import userInfoRouter from './modules/users/userInfo.js';
 import configRouter from './/routes/serverConfig.js';
 import authenticationRouter from './routes/authentication.js';
 import onlineRouter from './routes/guild/online.js';
