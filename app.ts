@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import validateSocket from "./security/socketValidator.js";
+import validateSocket from "./sockets/security/socketValidator.js";
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./types/socketIOTypes.js";
 
 const app = express();

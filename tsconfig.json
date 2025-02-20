@@ -16,17 +16,21 @@
         "noEmitOnError": true
     },
     "include": [
+        "communication/**/*",
+        "errors/**/*",
+        "services/**/*",
         "middleware/**/*",
         "models/**/*",
         "routes/**/*",
         "security/**/*",
+        "repositories/**/*",
         "sockets/**/*",
         "utils/**/*",
         "types/**/*",
         "index.ts",
         "config.ts",
         "app.ts",
-        "net/**/*"
+        "communication/httpClients/**/*"
     ],
     "exclude": ["node_modules", "**/*.spec.ts", "test/**/*"]
 }

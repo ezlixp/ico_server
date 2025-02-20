@@ -1,39 +1,27 @@
-﻿import { Request, Response, Router } from "express";
-import generateJwtToken from "../security/jwtTokenGenerator.js";
-import refreshJwtToken from "../security/jwtTokenRefresher.js";
+﻿import { Router } from "express";
+import { TokenResponse } from "../communication/responses/tokenResponse.js";
+import verifyInGuild from "../middleware/verifyInGuild.middleware.js";
+import { JwtTokenHandler } from "../security/jwtHandler.js";
+import { GuildRequest } from "../communication/requests/guildRequest.js";
+import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 
 /**
  * Maps all authentication-related endpoints.
  */
-const authenticationRouter = Router();
+const authenticationRouter = Router({ mergeParams: true });
+const tokenHandler = JwtTokenHandler.create();
 
 authenticationRouter.post(
-    "/get-token",
-    async (request: Request<{}, {}, { validationKey: string }>, response: Response) => {
-        // Gets a token if correct validationKey is provided
+    "/get-token/:wynnGuildId",
+    verifyInGuild,
+    async (
+        request: GuildRequest<{}, {}, { validationKey: string; username: string }>,
+        response: DefaultResponse<TokenResponse>
+    ) => {
         const validationKey = request.body.validationKey;
-        const result = generateJwtToken(validationKey);
+        const result = await tokenHandler.generateToken(validationKey, request.params.wynnGuildId);
 
-        if (result.status) {
-            response.status(200).json(result);
-        } else {
-            response.status(400).json(result);
-        }
-    }
-);
-
-authenticationRouter.post(
-    "/refresh-token",
-    async (request: Request<{}, {}, { refreshToken: string }>, response: Response) => {
-        // Gets a token if correct validationKey is provided
-        const refreshToken = request.body.refreshToken;
-        const result = refreshJwtToken(refreshToken);
-
-        if (result.status) {
-            response.status(200).json(result);
-        } else {
-            response.status(400).json(result);
-        }
+        response.status(200).send(result);
     }
 );
 
