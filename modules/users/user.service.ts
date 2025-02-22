@@ -1,8 +1,5 @@
 ﻿import { UserRepository } from './user.repository.js';
 import { IUser } from './user.model.js';
-import { NotFoundError } from '../../errors/implementations/notFoundError.js';
-import { UserErrors } from '../../errors/messages/userErrors.js';
-import { ValidationError } from '../../errors/implementations/validationError.js';
 import { FilterQuery } from 'mongoose';
 import { injectable } from 'tsyringe';
 import { UserValidator } from './user.validator.js';
@@ -47,7 +44,7 @@ export class UserService {
     }
 
     private async getUser(options: FilterQuery<IUser>): Promise<IUser> {
-        let user = await this.repository.findOne(options);
+        const user = await this.repository.findOne(options);
         this.validator.validateGet(user);
 
         return user;

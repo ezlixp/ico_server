@@ -1,6 +1,5 @@
 ﻿import { Express, NextFunction, Request, Response, Router } from 'express';
-import statusRouter from './routes/status.js';
-import healthRouter from './routes/healthCheck.js';
+import statusRouter from './modules/health/status.js';
 import adminRouter from './routes/admin.js';
 import modVersionRouter from './routes/modVersion.js';
 import configRouter from './/routes/serverConfig.js';
@@ -14,6 +13,7 @@ import { API_VERSION } from './config.js';
 import { container } from 'tsyringe';
 import { UserController } from './modules/users/user.controller.js';
 import { createRouter } from './decorators/http.methods.js';
+import { HealthController } from './modules/health/health.controller.js';
 
 export const mapEndpoints = (app: Express) => {
     const guildRouter = Router({ mergeParams: true });
@@ -38,7 +38,7 @@ export const mapEndpoints = (app: Express) => {
     // Map all endpoints that don't require guild id
     app.use('/', statusRouter);
 
-    app.use('/healthz', healthRouter);
+    app.use('/healthz', createRouter(container.resolve(HealthController)));
 
     app.use('/admin', adminRouter);
 
