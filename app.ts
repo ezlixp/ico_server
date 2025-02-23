@@ -12,11 +12,13 @@ import { HealthController } from './modules/health/health.controller.js';
 import { UserController } from './modules/users/user.controller.js';
 import { TsyringeAdapter } from './container.js';
 import { container } from 'tsyringe';
+import path from 'path';
 
 useContainer(new TsyringeAdapter(container));
 const app = createExpressServer({
     controllers: [HealthController, UserController],
-    middlewares: [],
+    middlewares: [path.join(__dirname, '/middlewares/new/*.middleware.js')],
+    defaultErrorHandler: false,
 });
 const server = createServer(app);
 
