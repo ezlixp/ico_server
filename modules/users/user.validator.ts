@@ -1,8 +1,8 @@
-﻿import { injectable } from 'tsyringe';
-import { IUser } from './user.model.js';
+﻿import { IUser } from './user.model.js';
 import { NotFoundError } from '../../errors/implementations/notFoundError.js';
-import { UserErrors } from '../../errors/messages/userErrors.js';
+import { UserErrors } from './user.errors.js';
 import { ValidationError } from '../../errors/implementations/validationError.js';
+import { injectable } from 'tsyringe';
 
 @injectable()
 export class UserValidator {

@@ -10,10 +10,6 @@ import tomeRouter from './routes/guild/tomes.js';
 import waitlistRouter from './routes/guild/waitlist.js';
 import { NotFoundError } from './errors/implementations/notFoundError.js';
 import { API_VERSION } from './config.js';
-import { container } from 'tsyringe';
-import { UserController } from './modules/users/user.controller.js';
-import { createRouter } from './decorators/http.methods.js';
-import { HealthController } from './modules/health/health.controller.js';
 
 export const mapEndpoints = (app: Express) => {
     const guildRouter = Router({ mergeParams: true });
@@ -38,16 +34,9 @@ export const mapEndpoints = (app: Express) => {
     // Map all endpoints that don't require guild id
     app.use('/', statusRouter);
 
-    app.use('/healthz', createRouter(container.resolve(HealthController)));
-
     app.use('/admin', adminRouter);
 
     app.use(`/api/${API_VERSION}/mod`, modVersionRouter);
-
-    app.use(
-        `/api/${API_VERSION}/user`,
-        createRouter(container.resolve(UserController)),
-    );
 
     app.use(`/api/${API_VERSION}/config`, configRouter);
 
