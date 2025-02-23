@@ -8,8 +8,9 @@ import {
     Param,
     Post,
 } from 'routing-controllers';
+import { BASE_API_URI } from '../../config.js';
 
-@JsonController('/user')
+@JsonController(BASE_API_URI + '/user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 

@@ -1,13 +1,12 @@
-﻿import { injectable, singleton } from 'tsyringe';
-import { HttpGet } from '../../decorators/http.methods.js';
-import { Request } from 'express';
+﻿import { Request } from 'express';
 import { DefaultResponse } from '../../communication/responses/defaultResponse.js';
 import { HealthStatus } from './health-status.js';
+import { Get, JsonController } from 'routing-controllers';
+import { BASE_API_URI } from '../../config.js';
 
-@injectable()
-@singleton()
+@JsonController(BASE_API_URI + '/healthz')
 export class HealthController {
-    @HttpGet()
+    @Get()
     getHealthStatus(request: Request, response: DefaultResponse) {
         response.status(200).send(HealthStatus.Healthy);
     }
