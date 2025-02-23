@@ -7,10 +7,13 @@ import {
     ServerToClientEvents,
     SocketData,
 } from './types/socketIOTypes.js';
-import { createExpressServer } from 'routing-controllers';
+import { createExpressServer, useContainer } from 'routing-controllers';
 import { HealthController } from './modules/health/health.controller.js';
 import { UserController } from './modules/users/user.controller.js';
+import { TsyringeAdapter } from './container.js';
+import { container } from 'tsyringe';
 
+useContainer(new TsyringeAdapter(container));
 const app = createExpressServer({
     controllers: [HealthController, UserController],
     middlewares: [],
