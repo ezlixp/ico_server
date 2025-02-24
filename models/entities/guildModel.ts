@@ -7,23 +7,6 @@ export interface IGuild extends BaseModel {
     wynnGuildName: string;
 }
 
-export class GuildImpl implements IGuild {
-    validationKey: string;
-    wynnGuildId: string;
-    wynnGuildName: string;
-
-    constructor(
-        validationKey: string,
-        wynnGuildId: string,
-        wynnGuildName: string,
-    ) {
-        this.validationKey = validationKey;
-        this.wynnGuildId = wynnGuildId;
-        this.wynnGuildName = wynnGuildName;
-        this.wynnGuildName = wynnGuildName;
-    }
-}
-
 const validationSchema: Schema<IGuild> = new Schema({
     validationKey: { type: String, required: true },
     wynnGuildId: { type: String, required: true },

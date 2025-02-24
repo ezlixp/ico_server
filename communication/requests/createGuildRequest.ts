@@ -1,4 +1,4 @@
-﻿export class AddGuildRequest {
+﻿export class CreateGuildRequest {
     validationKey: string;
     wynnGuildId: string;
     wynnGuildName: string;
@@ -10,6 +10,6 @@
     }
 
     static create(validationKey: string, wynnGuildId: string, wynnGuildName: string) {
-        return new AddGuildRequest(validationKey, wynnGuildId, wynnGuildName);
+        return new CreateGuildRequest(validationKey, wynnGuildId, wynnGuildName);
     }
 }

@@ -1,7 +1,5 @@
 ﻿import { Express, NextFunction, Request, Response, Router } from 'express';
 import statusRouter from './modules/health/status.js';
-import adminRouter from './routes/admin.js';
-import modVersionRouter from './routes/modVersion.js';
 import configRouter from './/routes/serverConfig.js';
 import authenticationRouter from './routes/authentication.js';
 import onlineRouter from './routes/guild/online.js';
@@ -34,13 +32,8 @@ export const mapEndpoints = (app: Express) => {
     // Map all endpoints that don't require guild id
     app.use('/', statusRouter);
 
-    app.use('/admin', adminRouter);
-
-    app.use(`/api/${API_VERSION}/mod`, modVersionRouter);
 
     app.use(`/api/${API_VERSION}/config`, configRouter);
-
-    app.use(`/api/${API_VERSION}/guilds`, guildRouter);
 
     // Map endpoints that require guild id
     guildRouter.use('/auth', authenticationRouter);
