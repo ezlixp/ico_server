@@ -2,6 +2,7 @@ import { NextFunction, Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
 import ServerConfigModel, { IServerConfig } from "../models/entities/serverConfigModel.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
+import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
 
 /**
  * Maps all server config related endpoints. request.wynnGuildId is NOT defined in these routes, but request.discordGuildId is.
@@ -10,7 +11,7 @@ const configRouter = Router();
 const serverConfigRouter = Router({ mergeParams: true });
 
 // Register all middlewares.
-configRouter.use(validateJwtToken);
+configRouter.use(validateAdminJwtToken);
 configRouter.use("/:discordGuildId", serverConfigRouter);
 
 serverConfigRouter.use(validateJwtToken);

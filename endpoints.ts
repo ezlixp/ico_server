@@ -1,4 +1,4 @@
-﻿import {Express, NextFunction, Request, Response, Router} from "express";
+﻿import { Express, NextFunction, Request, Response, Router } from "express";
 import statusRouter from "./routes/status.js";
 import healthRouter from "./routes/healthCheck.js";
 import adminRouter from "./routes/admin.js";
@@ -10,22 +10,21 @@ import onlineRouter from "./routes/guild/online.js";
 import raidRouter from "./routes/guild/raids.js";
 import tomeRouter from "./routes/guild/tomes.js";
 import waitlistRouter from "./routes/guild/waitlist.js";
-import {NotFoundError} from "./errors/implementations/notFoundError.js";
-import {API_VERSION} from "./config.js";
+import { NotFoundError } from "./errors/implementations/notFoundError.js";
+import { API_VERSION } from "./config.js";
 
 export const mapEndpoints = (app: Express) => {
-
-    const guildRouter = Router({mergeParams: true});
+    const guildRouter = Router({ mergeParams: true });
 
     app.use("/api/:version/*extra", (request: Request<{ version: string }>, response: Response, next: NextFunction) => {
         if (request.params.version !== API_VERSION) {
-            response.status(301).send({error: `please use /api/${API_VERSION}`});
+            response.status(301).send({ error: `please use /api/${API_VERSION}` });
             return;
         }
         next();
     });
 
-// Map all endpoints that don't require guild id
+    // Map all endpoints that don't require guild id
     app.use("/", statusRouter);
 
     app.use("/healthz", healthRouter);
@@ -40,16 +39,15 @@ export const mapEndpoints = (app: Express) => {
 
     app.use(`/api/${API_VERSION}/guilds`, guildRouter);
 
-// Map endpoints that require guild id
+    // Map endpoints that require guild id
     guildRouter.use("/auth", authenticationRouter);
     guildRouter.use("/online", onlineRouter);
     guildRouter.use("/raids", raidRouter);
-// guildRouter.use("/aspects", aspectRouter);
     guildRouter.use("/tomes", tomeRouter);
     guildRouter.use("/waitlist", waitlistRouter);
 
-// Catch all for incorrect routes
+    // Catch all for incorrect routes
     app.all("*extra", (_: Request) => {
         throw new NotFoundError("not found");
     });
-}
+};
