@@ -1,4 +1,5 @@
-﻿import { Request } from 'express';
+﻿import 'reflect-metadata';
+import { Request } from 'express';
 import { DefaultResponse } from '../../communication/responses/defaultResponse.js';
 import { HealthStatus } from './health-status.js';
 import { Get, JsonController } from 'routing-controllers';

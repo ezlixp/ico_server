@@ -1,10 +1,11 @@
-import { Body, Controller, HttpCode, Post } from 'routing-controllers';
+import 'reflect-metadata';
+import { Body, HttpCode, JsonController, Post } from 'routing-controllers';
 import { BASE_API_URI } from '../../config.js';
 import { CreateGuildRequest } from '../../communication/requests/createGuildRequest.js';
 import { IGuild } from '../../models/entities/guildModel.js';
 import { GuildService } from './guild.service.js';
 
-@Controller(BASE_API_URI + '/guilds')
+@JsonController(BASE_API_URI + '/guilds')
 export class GuildController {
     constructor(private readonly guildService: GuildService) {}
 
@@ -19,6 +20,4 @@ export class GuildController {
 
         return await this.guildService.createNewGuild(guild);
     }
-
-
 }

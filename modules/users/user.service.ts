@@ -1,4 +1,5 @@
-﻿import { UserRepository } from './user.repository.js';
+﻿import 'reflect-metadata';
+import { UserRepository } from './user.repository.js';
 import { IUser } from './user.model.js';
 import { FilterQuery } from 'mongoose';
 import { injectable } from 'tsyringe';

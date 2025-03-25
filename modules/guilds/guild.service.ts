@@ -1,4 +1,5 @@
-﻿import { GuildDatabaseCreator } from '../../services/guild/guildDatabaseCreator.js';
+﻿import 'reflect-metadata';
+import { GuildDatabaseCreator } from '../../services/guild/guildDatabaseCreator.js';
 import { GuildRepository } from '../../repositories/guildRepository.js';
 import { IGuild } from '../../models/entities/guildModel.js';
 import { ValidationError } from '../../errors/implementations/validationError.js';

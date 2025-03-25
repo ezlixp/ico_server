@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import validateSocket from './sockets/security/socketValidator.js';
@@ -12,10 +13,12 @@ import { HealthController } from './modules/health/health.controller.js';
 import { UserController } from './modules/users/user.controller.js';
 import { TsyringeAdapter } from './container.js';
 import { container } from 'tsyringe';
-import path from 'path';
 import { GuildController } from './modules/guilds/guild.controller.js';
 import { VersionController } from './modules/version/version.controller.js';
+import path from 'path';
 
+const __dirname = path.resolve();
+console.log(__dirname);
 useContainer(new TsyringeAdapter(container));
 const app = createExpressServer({
     controllers: [

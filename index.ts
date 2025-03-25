@@ -8,8 +8,6 @@ import './config';
 import './sockets/discord.js';
 import { registerMessageIndexes } from './sockets/discord.js';
 import { GuildDatabaseCreator } from './services/guild/guildDatabaseCreator.js';
-import { errorHandler } from './middleware/errorHandler.middleware.js';
-import { mapEndpoints } from './endpoints.js';
 
 app.use(express.json());
 app.use(cors());
@@ -36,5 +34,5 @@ try {
     console.error('Failed to connect to database:', error);
 }
 
-mapEndpoints(app);
-app.use(errorHandler);
+// mapEndpoints(app);
+// app.use(errorHandler);

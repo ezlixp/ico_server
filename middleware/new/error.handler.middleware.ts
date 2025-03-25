@@ -1,4 +1,5 @@
-﻿import {
+﻿import 'reflect-metadata';
+import {
     ExpressErrorMiddlewareInterface,
     Middleware,
 } from 'routing-controllers';
@@ -16,6 +17,7 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
         response: any,
         next: (err?: any) => any,
     ): void {
+        console.log('in');
         if (response.headersSent) {
             next(error);
         }

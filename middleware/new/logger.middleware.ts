@@ -1,4 +1,5 @@
-﻿import { ExpressMiddlewareInterface, Middleware } from 'routing-controllers';
+﻿import 'reflect-metadata';
+import { ExpressMiddlewareInterface, Middleware } from 'routing-controllers';
 
 @Middleware({ type: 'before' })
 export class LoggerMiddleware implements ExpressMiddlewareInterface {

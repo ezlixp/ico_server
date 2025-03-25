@@ -32,19 +32,20 @@ export const mapEndpoints = (app: Express) => {
     // Map all endpoints that don't require guild id
     app.use('/', statusRouter);
 
-
     app.use(`/api/${API_VERSION}/config`, configRouter);
 
     // Map endpoints that require guild id
     guildRouter.use('/auth', authenticationRouter);
     guildRouter.use('/online', onlineRouter);
     guildRouter.use('/raids', raidRouter);
-    // guildRouter.use("/aspects", aspectRouter);
     guildRouter.use('/tomes', tomeRouter);
     guildRouter.use('/waitlist', waitlistRouter);
 
+    app.use(`/api/${API_VERSION}/guilds`, guildRouter);
+
     // Catch all for incorrect routes
     app.all('*extra', (_: Request) => {
+        console.log('extra');
         throw new NotFoundError('not found');
     });
 };

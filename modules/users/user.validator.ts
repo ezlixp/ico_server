@@ -1,4 +1,5 @@
-﻿import { IUser } from './user.model.js';
+﻿import 'reflect-metadata';
+import { IUser } from './user.model.js';
 import { NotFoundError } from '../../errors/implementations/notFoundError.js';
 import { UserErrors } from './user.errors.js';
 import { ValidationError } from '../../errors/implementations/validationError.js';
