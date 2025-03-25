@@ -328,26 +328,27 @@ io.of("/discord").on("connection", (socket) => {
     socket.on(
         "discordMessage",
         errorHandler(async (message: IDiscord2WynnMessage) => {
-            const user = await UserModel.findOne(
-                { uuid: await usernameToUuid(message.Author) },
-                {},
-                { collation: { locale: "en", strength: 2 } }
-            ).exec();
+            // TODO fix muted
+            // const user = await UserModel.findOne(
+            //     { uuid: await usernameToUuid(message.Author) },
+            //     {},
+            //     { collation: { locale: "en", strength: 2 } }
+            // ).exec();
 
-            if (!user || !user.muted) {
-                console.log(message);
-                io.of("/discord")
-                    .to(message.WynnGuildId)
-                    .emit("discordMessage", {
-                        ...message,
-                        Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
-                    });
-            } else {
-                console.log("muted message:", message);
-                io.of("/discord")
-                    .to(socket.id)
-                    .emit("discordMessage", { Author: "SYSTEM", Content: "You are muted.", WynnGuildId: "" });
-            }
+            // if (!user || !user.muted) {
+            console.log(message);
+            io.of("/discord")
+                .to(message.WynnGuildId)
+                .emit("discordMessage", {
+                    ...message,
+                    Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
+                });
+            // } else {
+            // console.log("muted message:", message);
+            // io.of("/discord")
+            //     .to(socket.id)
+            //     .emit("discordMessage", { Author: "SYSTEM", Content: "You are muted.", WynnGuildId: "" });
+            // }
         })
     );
 

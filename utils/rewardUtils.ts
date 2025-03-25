@@ -21,7 +21,7 @@ export async function incrementAspects(username: string, guildId: string): Promi
     try {
         guildDatabases[guildId].GuildUserRepository.update(
             { uuid: await usernameToUuid(username) },
-            { $inc: { aspects: 0.5, raids: 1 } }
+            { $inc: { aspects: 0.5, raids: 1, emeralds: 512 } }
         ).then(() => {
             console.log(username, "is owed half an aspect");
         });
