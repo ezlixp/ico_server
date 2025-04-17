@@ -45,7 +45,9 @@ authenticationRouter.get(
         if (user.mcUuid === (await usernameToUuid(mcUsername))) {
             user.verified = true;
             user.save();
-            return await tokenHandler.generateToken(discordUser.id, await getPlayersGuildAsync(mcUsername));
+            return response.send(
+                await tokenHandler.generateToken(discordUser.id, await getPlayersGuildAsync(mcUsername))
+            );
         }
 
         // Creates a token that allows access in given username's current guild
