@@ -58,6 +58,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
         }
     }
 
+    // upsert is necessary for rewardUtils.ts
     async update(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>> {
         try {
             return await this.model

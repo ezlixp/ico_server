@@ -2,18 +2,20 @@ import mongoose, { Model, Schema } from "mongoose";
 import { BaseModel } from "./baseModel.js";
 
 export interface IUser extends BaseModel {
-    uuid: string;
-    wynnGuildId: string;
+    mcUuid: string;
+    discordUuid: string;
     blocked: string[];
     muted: boolean;
+    verified: boolean;
 }
 
 const userSchema: Schema<IUser> = new Schema(
     {
-        uuid: { type: String, required: true },
-        wynnGuildId: { type: String, required: true },
+        mcUuid: { type: String, required: true },
+        discordUuid: { type: String, required: true },
         blocked: { type: [String], required: true, default: [] },
         muted: { type: Boolean, required: true, default: false },
+        verified: { type: Boolean, required: true, default: false },
     },
     {
         collation: { locale: "en", strength: 2 },

@@ -3,9 +3,9 @@ import { IUser } from "../models/entities/userModel.js";
 import { NotFoundError } from "../errors/implementations/notFoundError.js";
 import { UserErrors } from "../errors/messages/userErrors.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, HydratedDocument } from "mongoose";
 
-export class BlockedListService {
+export class UserInfoService {
     private readonly repository: UserRepository;
     private readonly validator: BlockedListServiceValidator;
 
@@ -14,8 +14,26 @@ export class BlockedListService {
         this.validator = new BlockedListServiceValidator();
     }
 
-    static create(): BlockedListService {
-        return new BlockedListService();
+    static create(): UserInfoService {
+        return new UserInfoService();
+    }
+
+    async getUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
+        const user = await this.repository.findOne(options);
+        this.validator.validateGet(user);
+
+        return user;
+    }
+
+    async newUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
+        this.validator.validateNewUser(options);
+
+        return this.repository.create(options);
+    }
+
+    async updateUser(options: FilterQuery<IUser>, update: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
+        const _ = await this.getUser(options);
+        return this.repository.update(options, update);
     }
 
     async getBlockedList(userId: FilterQuery<IUser>): Promise<string[]> {
@@ -30,7 +48,7 @@ export class BlockedListService {
 
         user.blocked.push(toBlock);
 
-        return await this.repository.update({uuid: user.uuid}, user);
+        return await this.repository.update({ uuid: user.mcUuid }, user);
     }
 
     async removeFromBlockedList(userId: FilterQuery<IUser>, toRemove: string): Promise<void> {
@@ -39,14 +57,7 @@ export class BlockedListService {
 
         user.blocked = user.blocked.filter((blockedUser) => blockedUser !== toRemove);
 
-        await this.repository.update({uuid: user.uuid}, user);
-    }
-
-    private async getUser(options: FilterQuery<IUser>): Promise<IUser> {
-        let user = await this.repository.findOne(options);
-        this.validator.validateGet(user);
-
-        return user;
+        await this.repository.update({ uuid: user.mcUuid }, user);
     }
 }
 
@@ -54,6 +65,12 @@ class BlockedListServiceValidator {
     validateGet(user: IUser | null): asserts user is IUser {
         if (!user) {
             throw new NotFoundError(UserErrors.NOT_FOUND);
+        }
+    }
+
+    validateNewUser(options: FilterQuery<IUser>): asserts options is IUser {
+        if (!options.discordUuid || !options.mcUuid) {
+            throw new ValidationError(UserErrors.MISSING_PARAMS);
         }
     }
 

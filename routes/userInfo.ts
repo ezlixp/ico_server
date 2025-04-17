@@ -1,46 +1,78 @@
 import { Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
 import { IUser } from "../models/entities/userModel.js";
-import { BlockedListService } from "../services/blockedListService.js";
+import { UserInfoService } from "../services/userInfoService.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
+import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
+import verifyInGuild from "../middleware/verifyInGuild.middleware.js";
+import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js";
+import { GuildRequest } from "../communication/requests/guildRequest.js";
+import { HydratedDocument } from "mongoose";
 
-/**Maps all endpoints related to user information. */
+/**Maps all endpoints related to user information. base/user/*/
 const userInfoRouter = Router();
 userInfoRouter.use(validateJwtToken);
 
-const blockedListService = BlockedListService.create();
+const userInfoService = UserInfoService.create();
 
 // TODO: validate token for uuid being updated
 userInfoRouter.get(
-    "/blocked/:uuid",
-    async (request: Request<{ uuid: string }>, response: DefaultResponse<string[]>) => {
-        const uuid = request.params.uuid.replaceAll("-", "");
-        const blockedList = await blockedListService.getBlockedList({ uuid });
+    "/blocked/:mcUuid",
+    async (request: Request<{ mcUuid: string }>, response: DefaultResponse<string[]>) => {
+        const uuid = request.params.mcUuid.replaceAll("-", "");
+        const blockedList = await userInfoService.getBlockedList({ uuid });
 
         response.status(200).send(blockedList);
     }
 );
 
 userInfoRouter.post(
-    "/blocked/:uuid",
-    async (request: Request<{ uuid: string }, {}, { toBlock: string }>, response: DefaultResponse<IUser>) => {
+    "/blocked/:mcUuid",
+    async (request: Request<{ mcUuid: string }, {}, { toBlock: string }>, response: DefaultResponse<IUser>) => {
         const toBlock = request.body.toBlock;
-        const uuid = request.params.uuid.replaceAll("-", "");
-        const updatedUser = await blockedListService.addToBlockedList({ uuid }, toBlock);
+        const uuid = request.params.mcUuid.replaceAll("-", "");
+        const updatedUser = await userInfoService.addToBlockedList({ uuid }, toBlock);
 
         response.status(200).send(updatedUser);
     }
 );
 
 userInfoRouter.delete(
-    "/blocked/:uuid/:toRemove",
-    async (request: Request<{ uuid: string; toRemove: string }>, response: DefaultResponse) => {
-        const uuid = request.params.uuid.replaceAll("-", "");
+    "/blocked/:mcUuid/:toRemove",
+    async (request: Request<{ mcUuid: string; toRemove: string }>, response: DefaultResponse) => {
+        const uuid = request.params.mcUuid.replaceAll("-", "");
         const toRemove = request.params.toRemove;
 
-        await blockedListService.removeFromBlockedList({ uuid }, toRemove);
+        await userInfoService.removeFromBlockedList({ uuid }, toRemove);
 
         response.status(204).send();
+    }
+);
+
+userInfoRouter.post(
+    "/link/:wynnGuildId",
+    verifyInGuild,
+    validateAdminJwtToken,
+    async (
+        request: GuildRequest<{}, {}, { username: string; discordUuid: string }>,
+        response: DefaultResponse<HydratedDocument<IUser>>
+    ) => {
+        response.status(200).send(
+            await userInfoService.newUser({
+                discordUuid: request.body.discordUuid,
+                mcUuid: await usernameToUuid(request.body.username),
+            })
+        );
+    }
+);
+
+userInfoRouter.delete(
+    "/link/:discordUuid",
+    validateAdminJwtToken,
+    async (request: Request<{ discordUuid: string }>, response: DefaultResponse) => {
+        response
+            .status(204)
+            .send(await userInfoService.updateUser({ discordUuid: request.params.discordUuid }, { mcUuid: "" }));
     }
 );
 
