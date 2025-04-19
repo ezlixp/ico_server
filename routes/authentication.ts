@@ -68,13 +68,12 @@ const authorizationCode = async (
     const discordToken = await getToken(code);
     if (!discordToken) throw new ValidationError("error validating discord account");
 
-    // Checks database to see if mc username is properly linked with logged in discord account
     const discordUser = await getUser(discordToken.access_token);
 
     if (!discordUser) throw new ValidationError("could not validate discord account");
 
+    // Checks database to see if mc username is properly linked with logged in discord account
     const user = await userInfoService.getUser({ discordUuid: discordUser.id });
-    console.log(user);
     if (user.mcUuid === (await usernameToUuid(mcUsername))) {
         user.verified = true;
         const tokenRes = await tokenHandler.generateToken(discordUser.id, await getPlayersGuildAsync(mcUsername));
@@ -83,7 +82,6 @@ const authorizationCode = async (
         return response.send(tokenRes);
     }
 
-    // Creates a token that allows access in given username's current guild
     throw new TokenError();
 };
 
