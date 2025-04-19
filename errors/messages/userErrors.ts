@@ -4,5 +4,6 @@
     static ALREADY_IN_BLOCKED_LIST = "The provided user is already present on the blocked list.";
     static NOT_IN_BLOCKED_LIST = "The provided user is not present on the blocked list.";
     static MISSING_PARAMS = "Not enough information to link a user.";
-    static ALREADY_LINKED = "Provided minecraft account already linked.";
+    static MC_ALREADY_LINKED = "Provided minecraft account already linked.";
+    static DC_ALREADY_LINKED = "Provided discord account already linked.";
 }

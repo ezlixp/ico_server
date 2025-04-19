@@ -9,7 +9,7 @@ import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js"
 import { GuildRequest } from "../communication/requests/guildRequest.js";
 import { HydratedDocument } from "mongoose";
 
-/**Maps all endpoints related to user information. base/user/*/
+/**Maps all endpoints related to user information. endpoint: .../user/*/
 const userInfoRouter = Router();
 userInfoRouter.use(validateJwtToken);
 
@@ -70,9 +70,7 @@ userInfoRouter.delete(
     "/link/:discordUuid",
     validateAdminJwtToken,
     async (request: Request<{ discordUuid: string }>, response: DefaultResponse) => {
-        response
-            .status(204)
-            .send(await userInfoService.updateUser({ discordUuid: request.params.discordUuid }, { mcUuid: "" }));
+        response.send(await userInfoService.updateUser({ discordUuid: request.params.discordUuid }, { mcUuid: "" }));
     }
 );
 

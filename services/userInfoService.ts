@@ -31,6 +31,9 @@ export class UserInfoService {
         const user = await this.repository.findOne({ mcUuid: options.mcUuid });
         this.validator.validateGetEmpty(user);
 
+        const get = await this.repository.findOne({ discordUuid: options.discordUuid });
+        this.validator.validateNewLink(get);
+
         return this.repository.update({ discordUuid: options.discordUuid }, options);
     }
 
@@ -73,8 +76,14 @@ class BlockedListServiceValidator {
 
     validateGetEmpty(user: IUser | null): asserts user is null {
         if (user) {
-            throw new ValidationError(UserErrors.ALREADY_LINKED);
+            throw new ValidationError(UserErrors.MC_ALREADY_LINKED);
         }
+    }
+
+    validateNewLink(
+        user: HydratedDocument<IUser> | null
+    ): asserts user is null | (HydratedDocument<IUser> & { mcUuid: "" }) {
+        if (user !== null && user.mcUuid !== "") throw new ValidationError(UserErrors.DC_ALREADY_LINKED);
     }
 
     validateLinkUser(options: FilterQuery<IUser>): asserts options is IUser {

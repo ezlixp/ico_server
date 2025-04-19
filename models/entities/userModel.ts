@@ -6,7 +6,9 @@ export interface IUser extends BaseModel {
     discordUuid: string;
     blocked: string[];
     muted: boolean;
+    banned: boolean;
     verified: boolean;
+    refreshToken: string;
 }
 
 const userSchema: Schema<IUser> = new Schema(
@@ -15,7 +17,9 @@ const userSchema: Schema<IUser> = new Schema(
         discordUuid: { type: String, required: true },
         blocked: { type: [String], required: true, default: [] },
         muted: { type: Boolean, required: true, default: false },
+        banned: { type: Boolean, required: true, default: false },
         verified: { type: Boolean, required: true, default: false },
+        refreshToken: { type: String, required: true, default: "" },
     },
     {
         collation: { locale: "en", strength: 2 },
