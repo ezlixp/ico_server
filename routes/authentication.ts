@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+﻿import { Request, Router } from "express";
 import { TokenResponse } from "../communication/responses/tokenResponse.js";
 import { JwtTokenHandler } from "../security/jwtHandler.js";
 import { GuildRequest } from "../communication/requests/guildRequest.js";
@@ -22,17 +22,22 @@ authenticationRouter.get(
     async (
         request: GuildRequest<{ mcUsername: string }, {}, {}, { code?: string; state?: string }>,
         response: DefaultResponse<TokenResponse>
-    ) => {
-        const code = request.query.code;
-        const state = request.query.state;
-        if (!code || !state) throw new TokenError();
-        let data;
-        try {
-            data = JSON.parse(Buffer.from(state, "base64").toString("utf8"));
-        } catch (error) {
-            throw new TokenError();
+    ) => {}
+);
+
+authenticationRouter.post(
+    "/get-token",
+    async (request: Request<{}, {}, { code: string; mcUsername?: string }>, response: DefaultResponse) => {
+        const code = request.body.code;
+        if (!code) throw new ValidationError("No code provided.");
+
+        if (code === process.env.JWT_VALIDATION_KEY) {
+            return response.send(tokenHandler.generateAdminToken());
         }
-        const mcUsername = data.mcUsername;
+
+        const mcUsername = request.body.mcUsername;
+        if (!mcUsername) throw new ValidationError("No minecraft account provided");
+
         const discordToken = await getToken(code);
         if (!discordToken) throw new ValidationError("error validating discord account");
 

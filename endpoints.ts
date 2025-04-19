@@ -31,6 +31,8 @@ export const mapEndpoints = (app: Express) => {
 
     app.use("/admin", adminRouter);
 
+    app.use(`/api/${API_VERSION}/auth`, authenticationRouter);
+
     app.use(`/api/${API_VERSION}/mod`, modVersionRouter);
 
     app.use(`/api/${API_VERSION}/user`, userInfoRouter);
@@ -40,7 +42,6 @@ export const mapEndpoints = (app: Express) => {
     app.use(`/api/${API_VERSION}/guilds`, guildRouter);
 
     // Map endpoints that require guild id
-    guildRouter.use("/auth", authenticationRouter);
     guildRouter.use("/online", onlineRouter);
     guildRouter.use("/raids", raidRouter);
     guildRouter.use("/tomes", tomeRouter);

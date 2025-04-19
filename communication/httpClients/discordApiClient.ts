@@ -29,7 +29,7 @@ export async function getToken(code: string): Promise<IDiscordTokenResponse | nu
     const data = {
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: "http://localhost:3000/api/v3/guilds/auth/get-token",
+        redirect_uri: "http://localhost:2424/callback/",
     };
     const CLIENT_ID = process.env.BOT_CLIENT_ID;
     const CLIENT_SECRET = process.env.BOT_CLIENT_SECRET;

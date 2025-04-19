@@ -1,4 +1,4 @@
-import {Response} from "express";
+import { Response } from "express";
 
-export interface DefaultResponse<ResBody = {}> extends Response<{ error: string } | ResBody> {
-}
+export interface DefaultResponse<ResBody = {}>
+    extends Response<{ status: number; title: string; errorMessage: string } | ResBody> {}

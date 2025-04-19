@@ -36,11 +36,11 @@ export class JwtTokenHandler {
         if (!wynnGuildId) throw new TokenError();
     }
 
-    private signJwtToken(username: string, guildId: string): TokenResponse {
+    private signJwtToken(discordUuid: string, guildId: string): TokenResponse {
         let response: TokenResponse;
 
-        const jwtToken = jwt.sign({ username: username, guildId: guildId }, this.secretKey, this.options);
-        const refreshToken = jwt.sign({ username: username, guildId: guildId }, this.refreshKey, {
+        const jwtToken = jwt.sign({ discordUuid: discordUuid, guildId: guildId }, this.secretKey, this.options);
+        const refreshToken = jwt.sign({ discordUuid: discordUuid }, this.refreshKey, {
             expiresIn: "7d",
         });
 

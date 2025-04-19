@@ -58,7 +58,7 @@ userInfoRouter.post(
         response: DefaultResponse<HydratedDocument<IUser>>
     ) => {
         response.status(200).send(
-            await userInfoService.newUser({
+            await userInfoService.linkUser({
                 discordUuid: request.body.discordUuid,
                 mcUuid: await usernameToUuid(request.body.username),
             })

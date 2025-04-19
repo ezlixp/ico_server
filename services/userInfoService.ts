@@ -25,15 +25,18 @@ export class UserInfoService {
         return user;
     }
 
-    async newUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
-        this.validator.validateNewUser(options);
+    async linkUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
+        this.validator.validateLinkUser(options);
 
-        return this.repository.create(options);
+        const user = await this.repository.findOne({ mcUuid: options.mcUuid });
+        this.validator.validateGetEmpty(user);
+
+        return this.repository.update({ discordUuid: options.discordUuid }, options);
     }
 
     async updateUser(options: FilterQuery<IUser>, update: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
         const _ = await this.getUser(options);
-        return this.repository.update(options, update);
+        return await this.repository.update(options, update);
     }
 
     async getBlockedList(userId: FilterQuery<IUser>): Promise<string[]> {
@@ -68,7 +71,13 @@ class BlockedListServiceValidator {
         }
     }
 
-    validateNewUser(options: FilterQuery<IUser>): asserts options is IUser {
+    validateGetEmpty(user: IUser | null): asserts user is null {
+        if (user) {
+            throw new ValidationError(UserErrors.ALREADY_LINKED);
+        }
+    }
+
+    validateLinkUser(options: FilterQuery<IUser>): asserts options is IUser {
         if (!options.discordUuid || !options.mcUuid) {
             throw new ValidationError(UserErrors.MISSING_PARAMS);
         }
