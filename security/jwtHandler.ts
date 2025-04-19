@@ -28,23 +28,25 @@ export class JwtTokenHandler {
     }
 
     async refreshToken(refreshToken: string): Promise<TokenResponse> {
-        return new Promise<TokenResponse>((resolve, reject) => {
-            jwt.verify(refreshToken, this.refreshKey, async (err, payload) => {
-                if (err) throw new ValidationError("Invalid refresh token.");
-
-                const p = payload! as JwtPayload;
-                if (!p.discordUuid) throw new ValidationError("Invalid refresh token.");
-
-                const user = await this.refreshValidationRepository.findOne({ discordUuid: p.discordUuid });
-                if (!user) throw new ValidationError("Invalid refresh token.");
-
-                if (user.refreshToken !== refreshToken) {
-                    throw new ValidationError("Invalid refresh token.");
-                }
-
-                resolve(await this.generateToken(user.discordUuid, await getPlayersGuildAsync(user.mcUuid)));
-            });
+        let err;
+        let payload;
+        jwt.verify(refreshToken, this.refreshKey, (e, p) => {
+            err = e;
+            payload = p;
         });
+        if (err) throw new ValidationError("Invalid refresh token.");
+
+        const p = payload! as JwtPayload;
+        if (!p.discordUuid) throw new ValidationError("Invalid refresh token.");
+
+        const user = await this.refreshValidationRepository.findOne({ discordUuid: p.discordUuid });
+        if (!user) throw new ValidationError("Invalid refresh token.");
+
+        if (user.refreshToken !== refreshToken) {
+            throw new ValidationError("Invalid refresh token.");
+        }
+
+        return await this.generateToken(user.discordUuid, await getPlayersGuildAsync(user.mcUuid));
     }
 
     async generateToken(discordUuid: string, wynnGuildId: IWynnGuild | null): Promise<TokenResponse> {
