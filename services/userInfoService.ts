@@ -7,11 +7,11 @@ import { FilterQuery, HydratedDocument } from "mongoose";
 
 export class UserInfoService {
     private readonly repository: UserRepository;
-    private readonly validator: BlockedListServiceValidator;
+    private readonly validator: UserInfoServiceValidator;
 
     private constructor() {
         this.repository = new UserRepository();
-        this.validator = new BlockedListServiceValidator();
+        this.validator = new UserInfoServiceValidator();
     }
 
     static create(): UserInfoService {
@@ -67,7 +67,7 @@ export class UserInfoService {
     }
 }
 
-class BlockedListServiceValidator {
+class UserInfoServiceValidator {
     validateGet(user: IUser | null): asserts user is IUser {
         if (!user) {
             throw new NotFoundError(UserErrors.NOT_FOUND);
