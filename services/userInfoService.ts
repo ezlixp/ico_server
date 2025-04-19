@@ -54,7 +54,7 @@ export class UserInfoService {
 
         user.blocked.push(toBlock);
 
-        return await this.repository.update({ uuid: user.mcUuid }, user);
+        return await this.repository.update({ mcUuid: user.mcUuid }, user);
     }
 
     async removeFromBlockedList(userId: FilterQuery<IUser>, toRemove: string): Promise<void> {
@@ -63,7 +63,7 @@ export class UserInfoService {
 
         user.blocked = user.blocked.filter((blockedUser) => blockedUser !== toRemove);
 
-        await this.repository.update({ uuid: user.mcUuid }, user);
+        await this.repository.update({ mcUuid: user.mcUuid }, user);
     }
 }
 

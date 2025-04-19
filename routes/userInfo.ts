@@ -20,7 +20,7 @@ userInfoRouter.get(
     "/blocked/:mcUuid",
     async (request: Request<{ mcUuid: string }>, response: DefaultResponse<string[]>) => {
         const uuid = request.params.mcUuid.replaceAll("-", "");
-        const blockedList = await userInfoService.getBlockedList({ uuid });
+        const blockedList = await userInfoService.getBlockedList({ mcUuid: uuid });
 
         response.status(200).send(blockedList);
     }
@@ -31,7 +31,7 @@ userInfoRouter.post(
     async (request: Request<{ mcUuid: string }, {}, { toBlock: string }>, response: DefaultResponse<IUser>) => {
         const toBlock = request.body.toBlock;
         const uuid = request.params.mcUuid.replaceAll("-", "");
-        const updatedUser = await userInfoService.addToBlockedList({ uuid }, toBlock);
+        const updatedUser = await userInfoService.addToBlockedList({ mcUuid: uuid }, toBlock);
 
         response.status(200).send(updatedUser);
     }
@@ -43,7 +43,7 @@ userInfoRouter.delete(
         const uuid = request.params.mcUuid.replaceAll("-", "");
         const toRemove = request.params.toRemove;
 
-        await userInfoService.removeFromBlockedList({ uuid }, toRemove);
+        await userInfoService.removeFromBlockedList({ mcUuid: uuid }, toRemove);
 
         response.status(204).send();
     }
