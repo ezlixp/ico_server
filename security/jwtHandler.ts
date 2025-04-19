@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import "../config.js";
 import { TokenResponse } from "../communication/responses/tokenResponse.js";
 import { TokenError } from "../errors/implementations/tokenError.js";
-import { getPlayersGuildAsync, IWynnGuild } from "../communication/httpClients/wynncraftApiClient.js";
+import { getUuidGuildAsync, IWynnGuild } from "../communication/httpClients/wynncraftApiClient.js";
 import { UserRepository } from "../repositories/userRepository.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
 
@@ -46,7 +46,7 @@ export class JwtTokenHandler {
             throw new ValidationError("Invalid refresh token.");
         }
 
-        return await this.generateToken(user.discordUuid, await getPlayersGuildAsync(user.mcUuid));
+        return await this.generateToken(user.discordUuid, await getUuidGuildAsync(user.mcUuid));
     }
 
     async generateToken(discordUuid: string, wynnGuildId: IWynnGuild | null): Promise<TokenResponse> {
