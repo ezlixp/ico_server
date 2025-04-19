@@ -1,13 +1,13 @@
 ﻿import { Request, Router } from "express";
 import { JwtTokenHandler } from "../security/jwtHandler.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
-import { TokenError } from "../errors/implementations/tokenError.js";
 import { getToken, getUser } from "../communication/httpClients/discordApiClient.js";
 import { UserInfoService } from "../services/userInfoService.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
 import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js";
 import { getPlayersGuildAsync } from "../communication/httpClients/wynncraftApiClient.js";
 import { TokenResponse } from "../communication/responses/tokenResponse.js";
+import { UserErrors } from "../errors/messages/userErrors.js";
 
 /**
  * Maps all authentication-related endpoints. endpoint: .../auth/
@@ -73,16 +73,18 @@ const authorizationCode = async (
     if (!discordUser) throw new ValidationError("could not validate discord account");
 
     // Checks database to see if mc username is properly linked with logged in discord account
-    const user = await userInfoService.getUser({ discordUuid: discordUser.id });
-    if (user.mcUuid === (await usernameToUuid(mcUsername))) {
-        user.verified = true;
-        const tokenRes = await tokenHandler.generateToken(discordUser.id, await getPlayersGuildAsync(mcUsername));
-        user.refreshToken = tokenRes.refreshToken!;
-        user.save();
-        return response.send(tokenRes);
+    try {
+        const user = await userInfoService.getUser({ discordUuid: discordUser.id });
+        if (user.mcUuid === (await usernameToUuid(mcUsername))) {
+            user.verified = true;
+            const tokenRes = await tokenHandler.generateToken(discordUser.id, await getPlayersGuildAsync(mcUsername));
+            user.refreshToken = tokenRes.refreshToken!;
+            user.save();
+            return response.send(tokenRes);
+        } else throw new ValidationError(UserErrors.NOT_LINKED);
+    } catch (error) {
+        throw new ValidationError(UserErrors.NOT_LINKED);
     }
-
-    throw new TokenError();
 };
 
 const refreshToken = async (request: Request<{}, {}, IRefreshRequest>, response: DefaultResponse<TokenResponse>) => {
