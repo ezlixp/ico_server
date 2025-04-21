@@ -363,6 +363,7 @@ io.of("/discord").on("connection", (socket) => {
         socket.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
     });
 
+    // this is hillariously broken
     socket.on(
         "disconnect",
         errorHandler((reason: string) => {
