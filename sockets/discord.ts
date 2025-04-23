@@ -371,7 +371,8 @@ io.of("/discord").on("connection", (socket) => {
                 .fetchSockets()
                 .then((sockets) => {
                     sockets.forEach((s) => {
-                        s.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
+                        if (s.data.wynnGuildId === socket.data.wynnGuildId)
+                            s.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
                     });
                 });
         })
