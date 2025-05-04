@@ -144,7 +144,7 @@ const errorHandler = (toHandle: Function) => {
     const handleError = (error: Error) => {
         console.error("socket error:", error);
     };
-    return (...args: any[]) => {
+    return (...args: unknown[]) => {
         try {
             const ret = toHandle.apply(this, args);
             if (ret && typeof ret.catch === "function") {
@@ -359,11 +359,11 @@ io.of("/discord").on("connection", (socket) => {
         })
     );
 
-    socket.on("sync", () => {
+    socket.on("sync", (ack) => {
         socket.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
+        ack();
     });
 
-    // this is hillariously broken
     socket.on(
         "disconnect",
         errorHandler((reason: string) => {

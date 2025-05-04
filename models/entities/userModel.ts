@@ -18,7 +18,6 @@ const userSchema: Schema<IUser> = new Schema(
         blocked: { type: [String], required: true, default: [] },
         muted: { type: Boolean, required: true, default: false },
         banned: { type: Boolean, required: true, default: false },
-        verified: { type: Boolean, required: true, default: false },
         refreshToken: { type: String, required: true, default: "" },
     },
     {

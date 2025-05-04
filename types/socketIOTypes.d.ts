@@ -11,7 +11,7 @@ export interface ClientToServerEvents {
     discordOnlyWynnMessage: (message: string) => void;
     discordMessage: (message: IDiscord2WynnMessage) => void;
     listOnline: (callback: (users: string[]) => void) => void;
-    sync: () => void;
+    sync: (ack: () => void) => void;
 }
 
 export interface InterServerEvents {

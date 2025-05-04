@@ -5,6 +5,9 @@ import { TokenError } from "../errors/implementations/tokenError.js";
 import { getUuidGuildAsync, IWynnGuild } from "../communication/httpClients/wynncraftApiClient.js";
 import { UserRepository } from "../repositories/userRepository.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
+import { UserErrors } from "../errors/messages/userErrors.js";
+import { HydratedDocument } from "mongoose";
+import { IUser } from "../models/entities/userModel.js";
 
 export class JwtTokenHandler {
     private readonly secretKey: string;
@@ -28,6 +31,7 @@ export class JwtTokenHandler {
     }
 
     async refreshToken(refreshToken: string): Promise<TokenResponse> {
+        console.log(refreshToken);
         let err;
         let payload;
         jwt.verify(refreshToken, this.refreshKey, (e, p) => {
@@ -49,14 +53,26 @@ export class JwtTokenHandler {
         return await this.generateToken(user.discordUuid, await getUuidGuildAsync(user.mcUuid));
     }
 
-    async generateToken(discordUuid: string, wynnGuildId: IWynnGuild | null): Promise<TokenResponse> {
-        this.validateGeneration(wynnGuildId);
+    async generateToken(discordUuid: string, wynnGuildId: IWynnGuild | null, mcUuid?: string): Promise<TokenResponse> {
+        const user = await this.refreshValidationRepository.findOne({ discordUuid: discordUuid });
 
-        return this.signJwtToken(discordUuid, wynnGuildId.uuid);
+        this.validateGuild(wynnGuildId);
+        this.validateAccount(user, mcUuid);
+        const tokenRes = this.signJwtToken(discordUuid, wynnGuildId.uuid);
+        user.refreshToken = tokenRes.refreshToken!;
+        user.save();
+        return tokenRes;
     }
 
-    private validateGeneration(wynnGuildId: IWynnGuild | null): asserts wynnGuildId is IWynnGuild {
+    private validateGuild(wynnGuildId: IWynnGuild | null): asserts wynnGuildId is IWynnGuild {
         if (!wynnGuildId) throw new TokenError();
+    }
+    private validateAccount(
+        user: HydratedDocument<IUser> | null,
+        mcUuid?: string
+    ): asserts user is HydratedDocument<IUser> {
+        if (!user) throw new ValidationError(UserErrors.NOT_FOUND);
+        if (mcUuid && mcUuid !== user.mcUuid) throw new ValidationError(UserErrors.NOT_LINKED);
     }
 
     private signJwtToken(discordUuid: string, guildId: string): TokenResponse {
