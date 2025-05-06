@@ -191,6 +191,7 @@ io.of("/discord").on("connection", (socket) => {
                 if (socket.data.messageIndex === messageIndexes[socket.data.wynnGuildId]) {
                     ++socket.data.messageIndex;
                     ++messageIndexes[socket.data.wynnGuildId];
+                    io.of("/discord").to(socket.data.wynnGuildId).emit("wynnMirror", message);
                     for (let i = 0; i < wynnMessagePatterns.length; i++) {
                         const pattern = wynnMessagePatterns[i];
                         const matcher = pattern.pattern.exec(message);
