@@ -213,11 +213,12 @@ io.of("/discord").on("connection", (socket) => {
                                 .replace(new RegExp("§.", "g"), "")
                                 .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
                             isOnline(header, socket.data.wynnGuildId).then((online) => {
+                                // checks if person who sent the message is connected to this chat server and adds a star to their name if they are
                                 io.of("/discord")
                                     .to(botId)
                                     .emit("wynnMessage", {
                                         MessageType: pattern.messageType,
-                                        HeaderContent: header + (online ? "*" : ""),
+                                        HeaderContent: header + (online ? "\\*" : ""),
                                         TextContent: message,
                                         ListeningChannel: channel,
                                     });
