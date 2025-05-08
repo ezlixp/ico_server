@@ -66,7 +66,7 @@ class TomeServiceValidator extends BaseGuildServiceValidator {
 
     validateAddToTomeList(tome: ITome | null, username: FilterQuery<ITome>): asserts username is { username: string } {
         if (tome) {
-            throw new ValidationError(TomeErrors.DUPLICATE);
+            throw new ValidationError(TomeErrors.TOME_DUPLICATE);
         }
         if (!username.username) {
             throw new ValidationError(TomeErrors.USERNAME_MISSING);
@@ -75,7 +75,7 @@ class TomeServiceValidator extends BaseGuildServiceValidator {
 
     validateGet(tome: ITome | null): asserts tome is ITome {
         if (!tome) {
-            throw new NotFoundError(TomeErrors.NOT_FOUND);
+            throw new NotFoundError(TomeErrors.TOME_NOT_FOUND);
         }
     }
 }

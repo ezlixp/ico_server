@@ -105,13 +105,13 @@ class RaidServiceValidator extends BaseGuildServiceValidator {
         toUpdate: HydratedDocument<IGuildUser> | null
     ): asserts toUpdate is HydratedDocument<IGuildUser> {
         if (!toUpdate) {
-            throw new NotFoundError(RaidErrors.NOT_FOUND);
+            throw new NotFoundError(RaidErrors.NOT_IN_RAID_LIST);
         }
     }
 
     validateGetUserRewards(user: HydratedDocument<IGuildUser> | null): asserts user is HydratedDocument<IGuildUser> {
         if (!user) {
-            throw new NotFoundError(RaidErrors.NOT_FOUND);
+            throw new NotFoundError(RaidErrors.NOT_IN_RAID_LIST);
         }
     }
 }
