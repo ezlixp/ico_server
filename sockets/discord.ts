@@ -206,6 +206,8 @@ io.of("/discord").on("connection", (socket) => {
                                 messageIndexes[socket.data.wynnGuildId],
                                 "emitted by:",
                                 socket.data.username,
+                                "discord:",
+                                socket.data.discordUuid,
                                 "guild:",
                                 socket.data.wynnGuildId
                             );
@@ -267,6 +269,8 @@ io.of("/discord").on("connection", (socket) => {
                                 hrMessageIndexes[socket.data.wynnGuildId],
                                 "emitted by:",
                                 socket.data.username,
+                                "discord:",
+                                socket.data.discordUuid,
                                 "guild:",
                                 socket.data.wynnGuildId
                             );

@@ -30,6 +30,7 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
         socket.data.modVersion = socket.handshake.headers["user-agent"];
         const p = payload! as JwtPayload;
         socket.data.wynnGuildId = p.guildId;
+        socket.data.discordUuid = p.discordUuid;
 
         // Goes to next step (function execution)
         return next();

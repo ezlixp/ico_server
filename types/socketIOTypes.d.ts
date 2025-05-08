@@ -23,6 +23,7 @@ export interface SocketData {
     messageIndex: number;
     hrMessageIndex: number;
     wynnGuildId: string;
-    username?: string;
-    modVersion?: string;
+    username: string;
+    modVersion: string;
+    discordUuid: string;
 }
