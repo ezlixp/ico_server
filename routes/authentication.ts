@@ -6,6 +6,7 @@ import { UserInfoService } from "../services/userInfoService.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
 import { getPlayersGuildAsync } from "../communication/httpClients/wynncraftApiClient.js";
 import { TokenResponse } from "../communication/responses/tokenResponse.js";
+import { TokenErrors } from "../errors/messages/tokenErrors.js";
 
 /**
  * Maps all authentication-related endpoints. endpoint: .../auth/
@@ -27,17 +28,17 @@ const authCodeRequestValidator: (request: Request<unknown>) => asserts request i
     request
 ) => {
     if (typeof request !== "object" || request.body === null) {
-        throw new ValidationError("Invalid body");
+        throw new ValidationError("Invalid body.");
     }
 
     const maybe = request.body as Record<string, unknown>;
 
     if (typeof maybe.code !== "string") {
-        throw new ValidationError("No code provided");
+        throw new ValidationError("No code provided.");
     }
 
     if (typeof maybe.mcUsername !== "string") {
-        throw new ValidationError("No minecraft account provided");
+        throw new ValidationError("No minecraft account provided.");
     }
 };
 
@@ -45,13 +46,13 @@ const refreshRequestValidator: (request: Request<unknown>) => asserts request is
     request
 ) => {
     if (typeof request !== "object" || request.body === null) {
-        throw new ValidationError("Invalid body");
+        throw new ValidationError("Invalid body.");
     }
 
     const maybe = request.body as Record<string, unknown>;
 
     if (typeof maybe.refreshToken !== "string") {
-        throw new ValidationError("No code provided");
+        throw new ValidationError(TokenErrors.NO_REFRESH);
     }
 };
 
