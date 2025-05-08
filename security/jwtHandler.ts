@@ -8,6 +8,7 @@ import { ValidationError } from "../errors/implementations/validationError.js";
 import { UserErrors } from "../errors/messages/userErrors.js";
 import { HydratedDocument } from "mongoose";
 import { IUser } from "../models/entities/userModel.js";
+import { TokenErrors } from "../errors/messages/tokenErrors.js";
 
 export class JwtTokenHandler {
     private readonly secretKey: string;
@@ -38,16 +39,16 @@ export class JwtTokenHandler {
             err = e;
             payload = p;
         });
-        if (err) throw new ValidationError("Invalid refresh token.");
+        if (err) throw new ValidationError(TokenErrors.INVALID_REFRESH);
 
         const p = payload! as JwtPayload;
-        if (!p.discordUuid) throw new ValidationError("Invalid refresh token.");
+        if (!p.discordUuid) throw new ValidationError(TokenErrors.INVALID_REFRESH);
 
         const user = await this.refreshValidationRepository.findOne({ discordUuid: p.discordUuid });
-        if (!user) throw new ValidationError("Invalid refresh token.");
+        if (!user) throw new ValidationError(TokenErrors.INVALID_REFRESH);
 
         if (user.refreshToken !== refreshToken) {
-            throw new ValidationError("Invalid refresh token.");
+            throw new ValidationError(TokenErrors.INVALID_REFRESH);
         }
 
         return await this.generateToken(user.discordUuid, await getUuidGuildAsync(user.mcUuid));

@@ -2,6 +2,7 @@
 import "../config.js";
 import { Response, NextFunction, Request } from "express";
 import { ValidationError } from "../errors/implementations/validationError.js";
+import { TokenErrors } from "../errors/messages/tokenErrors.js";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
 const secretKey = process.env.JWT_SECRET_KEY as string;
@@ -15,7 +16,7 @@ function validateJwtToken(request: Request<{ wynnGuildId?: string }>, response: 
     const authorizationHeader = request.headers["authorization"] as string | undefined;
 
     if (!authorizationHeader) {
-        throw new ValidationError("No token provided.");
+        throw new ValidationError(TokenErrors.NO_TOKEN);
     }
 
     // Get authorization headers and extract token from "Bearer <token>"
@@ -23,15 +24,15 @@ function validateJwtToken(request: Request<{ wynnGuildId?: string }>, response: 
 
     jwt.verify(token, secretKey, (err, payload) => {
         if (err) {
-            throw new ValidationError("Invalid token provided.");
+            throw new ValidationError(TokenErrors.INVALID_TOKEN);
         }
 
         const p = payload! as JwtPayload;
         if (!p.guildId) {
-            throw new ValidationError("Invalid token provided.");
+            throw new ValidationError(TokenErrors.INVALID_TOKEN);
         }
         if (p.guildId !== "*" && request.params.wynnGuildId && p.guildId !== request.params.wynnGuildId) {
-            throw new ValidationError("Token does not have access to selected resource.");
+            throw new ValidationError(TokenErrors.UNPRIVILEGED_TOKEN);
         }
 
         next(); // Goes to next step (function execution)
