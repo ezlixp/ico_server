@@ -1,6 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import "../config.js";
 import { Response, NextFunction, Request } from "express";
+import { ValidationError } from "../errors/implementations/validationError.js";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
 const secretKey = process.env.JWT_SECRET_KEY as string;
@@ -14,7 +15,7 @@ function validateAdminJwtToken(request: Request, response: Response, next: NextF
     const authorizationHeader = request.headers["authorization"] as string | undefined;
 
     if (!authorizationHeader) {
-        return response.status(401).send({ error: "No token provided." });
+        throw new ValidationError("No token provided.");
     }
 
     // Get authorization headers and extract token from "Bearer <token>"
@@ -22,15 +23,15 @@ function validateAdminJwtToken(request: Request, response: Response, next: NextF
 
     jwt.verify(token, secretKey, (err, payload) => {
         if (err) {
-            return response.status(401).send({ error: "Invalid token provided." });
+            throw new ValidationError("Invalid token provided.");
         }
 
         const p = payload! as JwtPayload;
         if (!p.guildId) {
-            return response.status(401).json({ error: "Invalid token provided." });
+            throw new ValidationError("Invalid token provided.");
         }
         if (p.guildId !== "*") {
-            return response.status(401).json({ error: "Invalid token provided." });
+            throw new ValidationError("Invalid token provided.");
         }
 
         next(); // Goes to next step (function execution)
