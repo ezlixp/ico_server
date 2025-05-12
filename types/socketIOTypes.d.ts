@@ -2,6 +2,7 @@ import { IDiscord2WynnMessage, IWynn2DiscordMessage } from "./messageTypes.js";
 
 export interface ServerToClientEvents {
     wynnMessage: (message: IWynn2DiscordMessage) => void;
+    wynnMirror: (message: string) => void;
     discordMessage: (message: IDiscord2WynnMessage) => void;
 }
 

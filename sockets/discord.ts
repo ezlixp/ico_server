@@ -191,6 +191,7 @@ io.of("/discord").on("connection", (socket) => {
                 if (socket.data.messageIndex === messageIndexes[socket.data.wynnGuildId]) {
                     ++socket.data.messageIndex;
                     ++messageIndexes[socket.data.wynnGuildId];
+                    io.of("/discord").to(socket.data.wynnGuildId).emit("wynnMirror", message);
                     for (let i = 0; i < wynnMessagePatterns.length; i++) {
                         const pattern = wynnMessagePatterns[i];
                         const matcher = pattern.pattern.exec(message);
@@ -213,11 +214,12 @@ io.of("/discord").on("connection", (socket) => {
                                 .replace(new RegExp("§.", "g"), "")
                                 .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
                             isOnline(header, socket.data.wynnGuildId).then((online) => {
+                                // checks if person who sent the message is connected to this chat server and adds a star to their name if they are
                                 io.of("/discord")
                                     .to(botId)
                                     .emit("wynnMessage", {
                                         MessageType: pattern.messageType,
-                                        HeaderContent: header + (online ? "*" : ""),
+                                        HeaderContent: header + (online ? "\\*" : ""),
                                         TextContent: message,
                                         ListeningChannel: channel,
                                     });
@@ -371,7 +373,8 @@ io.of("/discord").on("connection", (socket) => {
                 .fetchSockets()
                 .then((sockets) => {
                     sockets.forEach((s) => {
-                        s.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
+                        if (s.data.wynnGuildId === socket.data.wynnGuildId)
+                            s.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
                     });
                 });
         })
