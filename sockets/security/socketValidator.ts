@@ -28,7 +28,10 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
         }
         socket.data.username = socket.handshake.headers.from || "!bot";
         socket.data.modVersion = socket.handshake.headers["user-agent"];
-        const p = payload! as JwtPayload;
+        if (!payload) {
+            return next(new Error("Invalid token provided."));
+        }
+        const p = payload as JwtPayload;
         socket.data.wynnGuildId = p.guildId;
         socket.data.discordUuid = p.discordUuid;
 
