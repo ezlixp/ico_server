@@ -7,6 +7,7 @@ import { ValidationError } from "../errors/implementations/validationError.js";
 import { getPlayersGuildAsync } from "../communication/httpClients/wynncraftApiClient.js";
 import { TokenResponse } from "../communication/responses/tokenResponse.js";
 import { TokenErrors } from "../errors/messages/tokenErrors.js";
+import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js";
 
 /**
  * Maps all authentication-related endpoints. endpoint: .../auth/
@@ -60,6 +61,7 @@ const authorizationCode = async (
     request: Request<{}, {}, IAuthCodeRequest>,
     response: DefaultResponse<TokenResponse>
 ) => {
+    console.log(request.body);
     const code = request.body.code;
     if (code === process.env.JWT_VALIDATION_KEY) return response.send(await tokenHandler.generateAdminToken());
 
@@ -72,7 +74,13 @@ const authorizationCode = async (
     if (!discordUser) throw new ValidationError("could not validate discord account");
 
     // Checks database to see if mc username is properly linked with logged in discord account
-    return response.send(await tokenHandler.generateToken(discordUser.id, await getPlayersGuildAsync(mcUsername)));
+    return response.send(
+        await tokenHandler.generateToken(
+            discordUser.id,
+            await getPlayersGuildAsync(mcUsername),
+            await usernameToUuid(mcUsername)
+        )
+    );
 };
 
 const refreshToken = async (request: Request<{}, {}, IRefreshRequest>, response: DefaultResponse<TokenResponse>) => {
