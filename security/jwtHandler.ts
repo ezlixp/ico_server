@@ -19,7 +19,7 @@ export class JwtTokenHandler {
     private constructor() {
         this.secretKey = process.env.JWT_SECRET_KEY;
         this.refreshKey = process.env.JWT_REFRESH_SECRET_KEY;
-        this.options = { expiresIn: "24h" };
+        this.options = { expiresIn: "15m" };
         this.refreshValidationRepository = new UserRepository();
     }
 
@@ -32,7 +32,7 @@ export class JwtTokenHandler {
     }
 
     async refreshToken(refreshToken: string): Promise<TokenResponse> {
-        console.log(refreshToken);
+        console.log("refreshing");
         let err;
         let payload;
         jwt.verify(refreshToken, this.refreshKey, (e, p) => {
