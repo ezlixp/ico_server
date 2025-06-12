@@ -1,5 +1,4 @@
-import {NotFoundError} from "../../errors/implementations/notFoundError.js";
-import {HttpClientError} from "../../errors/implementations/httpClientError.js";
+import { HttpClientError } from "../../errors/implementations/httpClientError.js";
 
 /** Caches username to UUID conversions from Mojang api.*/
 const usernameUuidMap: { [key: string]: { uuid: string; timestamp: number } } = {};
@@ -12,21 +11,21 @@ export async function usernameToUuid(username: string): Promise<string> {
         return usernameUuidMap[username].uuid;
     }
 
-    const url = `https://api.mojang.com/users/profiles/minecraft/${username}`;
+    const url = `https://api.minecraftservices.com/minecraft/profile/lookup/name/${username}`;
     const apiResponse = await fetch(url);
 
     if (!apiResponse.body) {
         throw new HttpClientError("empty mojang username to uuid response");
     }
 
-    const responseBody: { id: string, errorMessage: string } = await apiResponse.json();
+    const responseBody: { id: string; errorMessage: string } = await apiResponse.json();
 
     if (responseBody.errorMessage) {
         throw new HttpClientError(responseBody.errorMessage);
     }
 
-    uuidUsernameMap[responseBody.id] = {username: username, timestamp: Date.now()};
-    usernameUuidMap[username] = {uuid: responseBody.id, timestamp: Date.now()};
+    uuidUsernameMap[responseBody.id] = { username: username, timestamp: Date.now() };
+    usernameUuidMap[username] = { uuid: responseBody.id, timestamp: Date.now() };
     return responseBody.id;
 }
 
@@ -36,20 +35,20 @@ export async function uuidToUsername(uuid: string): Promise<string> {
         return uuidUsernameMap[uuid].username;
     }
 
-    const url = `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`;
+    const url = `https://api.minecraftservices.com/minecraft/profile/lookup/${uuid}`;
     const apiResponse = await fetch(url);
 
     if (!apiResponse.body) {
         throw new HttpClientError("empty mojang uuid to username response");
     }
 
-    const responseBody: { name: string, errorMessage: string } = await apiResponse.json();
+    const responseBody: { name: string; errorMessage: string } = await apiResponse.json();
 
     if (responseBody.errorMessage) {
         throw new HttpClientError(responseBody.errorMessage);
     }
 
-    uuidUsernameMap[uuid] = {username: responseBody.name, timestamp: Date.now()};
-    usernameUuidMap[responseBody.name] = {uuid: uuid, timestamp: Date.now()};
+    uuidUsernameMap[uuid] = { username: responseBody.name, timestamp: Date.now() };
+    usernameUuidMap[responseBody.name] = { uuid: uuid, timestamp: Date.now() };
     return responseBody.name;
 }
