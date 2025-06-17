@@ -3,6 +3,9 @@ import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
 import ServerConfigModel, { IServerConfig } from "../models/entities/serverConfigModel.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
+import { ValidationError } from "../errors/implementations/validationError.js";
+import { DatabaseError } from "../errors/implementations/databaseError.js";
+import { NotFoundError } from "../errors/implementations/notFoundError.js";
 
 /**
  * Maps all server config related endpoints. request.wynnGuildId is NOT defined in these routes, but request.discordGuildId is.
@@ -20,8 +23,7 @@ serverConfigRouter.use(
         const query = ServerConfigModel.findOne({ discordGuildId: request.params.discordGuildId });
         const server = await query.exec();
         if (!server) {
-            response.status(404).send({ error: "Could not find specified server." });
-            return;
+            throw new NotFoundError("Could not find specified server.");
         }
         request.discordGuildId = request.params.discordGuildId;
         request.serverConfig = server;
@@ -49,57 +51,41 @@ configRouter.post(
         >,
         response: DefaultResponse<IServerConfig>
     ) => {
-        try {
-            const server = await ServerConfigModel.findOne()
-                .or([{ discordGuildId: request.body.discordGuildId }, { wynnGuildId: request.body.wynnGuildId }])
-                .exec();
-            if (server) {
-                response.status(400).send({ error: "Configuration already set up for specified server or guild." });
-                return;
-            }
-            const body = request.body;
-            const newServer = new ServerConfigModel({
-                discordGuildId: body.discordGuildId,
-                wynnGuildId: body.wynnGuildId,
-            });
-            if (body.tomeChannel) newServer.tomeChannel = body.tomeChannel;
-            if (body.layoffsChannel) newServer.layoffsChannel = body.layoffsChannel;
-            if (body.raidsChannel) newServer.raidsChannel = body.raidsChannel;
-            if (body.warChannel) newServer.warChannel = body.warChannel;
-            if (body.broadcastingChannel) newServer.broadcastingChannel = body.broadcastingChannel;
-            if (body.listeningChannel) newServer.listeningChannel = body.listeningChannel;
-            if (body.privilegedRoles)
-                await Promise.all([
-                    body.privilegedRoles.forEach((v) => {
-                        newServer.privilegedRoles.push(v);
-                    }),
-                ]);
-            await newServer.save();
-            response.send(newServer);
-        } catch (error) {
-            console.error("post config error:", error);
-            response.status(500).send({ error: "Something went wrong processing the request." });
+        const server = await ServerConfigModel.findOne()
+            .or([{ discordGuildId: request.body.discordGuildId }, { wynnGuildId: request.body.wynnGuildId }])
+            .exec();
+        if (server) {
+            throw new ValidationError("Configuration already set up for specified server or guild.");
         }
+        const body = request.body;
+        const newServer = new ServerConfigModel({
+            discordGuildId: body.discordGuildId,
+            wynnGuildId: body.wynnGuildId,
+        });
+        if (body.tomeChannel) newServer.tomeChannel = body.tomeChannel;
+        if (body.layoffsChannel) newServer.layoffsChannel = body.layoffsChannel;
+        if (body.raidsChannel) newServer.raidsChannel = body.raidsChannel;
+        if (body.warChannel) newServer.warChannel = body.warChannel;
+        if (body.broadcastingChannel) newServer.broadcastingChannel = body.broadcastingChannel;
+        if (body.listeningChannel) newServer.listeningChannel = body.listeningChannel;
+        if (body.privilegedRoles)
+            await Promise.all([
+                body.privilegedRoles.forEach((v) => {
+                    newServer.privilegedRoles.push(v);
+                }),
+            ]);
+        await newServer.save();
+        response.send(newServer);
     }
 );
 
 serverConfigRouter.get("/", async (request: Request, response: DefaultResponse<IServerConfig>) => {
-    try {
-        response.send(request.serverConfig);
-    } catch (error) {
-        console.error("get server config error:", error);
-        response.status(500).send({ error: "Something went wrong processing the request." });
-    }
+    response.send(request.serverConfig);
 });
 
 serverConfigRouter.delete("/", async (request: Request, response: DefaultResponse) => {
-    try {
-        await ServerConfigModel.findOneAndDelete({ discordGuildId: request.discordGuildId }).exec();
-        response.status(204).send();
-    } catch (error) {
-        console.error("delete server config error:", error);
-        response.status(500).send({ error: "Something went wrong processing the request." });
-    }
+    await ServerConfigModel.findOneAndDelete({ discordGuildId: request.discordGuildId }).exec();
+    response.status(204).send();
 });
 
 serverConfigRouter.patch(
@@ -138,7 +124,7 @@ serverConfigRouter.patch(
             response.send(request.serverConfig);
         } catch (error) {
             console.error("patch server config error:", error);
-            response.status(500).send({ error: "Something went wrong processing the request." });
+            throw new DatabaseError();
         }
     }
 );
@@ -153,7 +139,7 @@ serverConfigRouter.post(
             response.send(request.serverConfig);
         } catch (error) {
             console.error("privileged role post error:", error);
-            response.status(500).send({ error: "Something went wrong processing the request." });
+            throw new DatabaseError();
         }
     }
 );
@@ -164,15 +150,14 @@ serverConfigRouter.delete(
         try {
             const index = request.serverConfig!.privilegedRoles.indexOf(request.body.roleId);
             if (index === -1) {
-                response.status(404).send({ error: "Role was not privileged." });
-                return;
+                throw new ValidationError("Requested role was not privileged");
             }
             request.serverConfig!.privilegedRoles.splice(index, 1);
             await request.serverConfig?.save();
             response.send(request.serverConfig);
         } catch (error) {
             console.error("privileged role delete error:", error);
-            response.status(500).send({ error: "Something went wrong processing the request." });
+            throw new DatabaseError();
         }
     }
 );
