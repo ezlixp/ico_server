@@ -18,6 +18,7 @@ guildRouter.get("/:wynnGuildId", async (request: GuildRequest, response: Default
     throw new NotFoundError("Guild not found.");
 });
 
+// map extras
 guildRouter.use("/online", onlineRouter);
 guildRouter.use("/raids", raidRouter);
 guildRouter.use("/tomes", tomeRouter);
