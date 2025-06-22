@@ -13,7 +13,7 @@ const guildRouter = Router({ mergeParams: true });
 guildRouter.get("/:wynnGuildId", async (request: GuildRequest, response: DefaultResponse) => {
     const wynnGuildId = request.params.wynnGuildId;
     if (wynnGuildId in guildNames) {
-        response.send(guildNames[wynnGuildId]);
+        response.send({ guildName: guildNames[wynnGuildId], guildId: wynnGuildId });
         return;
     }
     throw new NotFoundError("Guild not found.");
