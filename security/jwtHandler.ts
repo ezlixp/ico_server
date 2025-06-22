@@ -32,7 +32,6 @@ export class JwtTokenHandler {
     }
 
     async refreshToken(refreshToken: string): Promise<TokenResponse> {
-        console.log("refreshing");
         let err;
         let payload;
         jwt.verify(refreshToken, this.refreshKey, (e, p) => {
