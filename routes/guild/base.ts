@@ -14,6 +14,7 @@ guildRouter.get("/:wynnGuildId", async (request: GuildRequest, response: Default
     const wynnGuildId = request.params.wynnGuildId;
     if (wynnGuildId in guildNames) {
         response.send(guildNames[wynnGuildId]);
+        return;
     }
     throw new NotFoundError("Guild not found.");
 });
