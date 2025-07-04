@@ -23,6 +23,10 @@ export class UserInfoService {
         return user;
     }
 
+    async getUserByDiscord(discordUuid: string): Promise<HydratedDocument<IUser>> {
+        return await this.getUser({ discordUuid: discordUuid });
+    }
+
     async linkUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
         this.validator.validateLinkUser(options);
 

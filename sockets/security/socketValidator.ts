@@ -1,6 +1,13 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { ExtendedError, Socket } from "socket.io";
 import "../../config.js";
+import Services from "../../services/services.js";
+import {
+    ClientToServerEvents,
+    InterServerEvents,
+    ServerToClientEvents,
+    SocketData,
+} from "../../types/socketIOTypes.js";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
 const secretKey = process.env.JWT_SECRET_KEY;
@@ -10,7 +17,10 @@ const secretKey = process.env.JWT_SECRET_KEY;
  * If token is invalid, return an error which will fire the "connection_error"
  * event on the socket client.
  */
-function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
+function validateSocket(
+    socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
+    next: (err?: ExtendedError) => void
+) {
     const authorizationHeader = socket.handshake.headers.authorization as string;
 
     if (!authorizationHeader) {
@@ -20,22 +30,23 @@ function validateSocket(socket: Socket, next: (err?: ExtendedError) => void) {
 
     // Get authorization headers and extract token from "Bearer <token>"
     const token = authorizationHeader.split(" ")[1];
-
-    jwt.verify(token, secretKey, (err, payload) => {
+    jwt.verify(token, secretKey, async (err, payload) => {
         if (err) {
             console.log(`A websocket connection from ${socket.handshake.headers.from} was blocked ${err}`);
             return next(new Error("Invalid token provided."));
         }
         socket.data.username = socket.handshake.headers.from || "!bot";
-        socket.data.modVersion = socket.handshake.headers["user-agent"];
+        socket.data.modVersion = socket.handshake.headers["user-agent"]!;
         if (!payload) {
             return next(new Error("Invalid token provided."));
         }
         const p = payload as JwtPayload;
         socket.data.wynnGuildId = p.guildId;
         socket.data.discordUuid = p.discordUuid;
-
-        // Goes to next step (function execution)
+        socket.data.user = await Services.user.getUserByDiscord(p.discordUuid);
+        if (socket.data.user.banned) {
+            return next(new Error("You are banned."));
+        }
         return next();
     });
 }
