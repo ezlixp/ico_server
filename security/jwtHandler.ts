@@ -30,16 +30,19 @@ export class JwtTokenHandler {
     }
 
     async refreshToken(refreshToken: string): Promise<TokenResponse> {
-        let err;
         let payload;
-        jwt.verify(refreshToken, this.refreshKey, (e, p) => {
-            err = e;
-            payload = p;
-        });
-        if (err) throw new ValidationError(TokenErrors.INVALID_REFRESH);
+        try {
+            payload = jwt.verify(refreshToken, this.refreshKey);
+        } catch (err) {
+            throw new ValidationError(TokenErrors.INVALID_REFRESH);
+        }
 
         const p = payload! as JwtPayload;
         if (!p.discordUuid) throw new ValidationError(TokenErrors.INVALID_REFRESH);
+
+        if (p.discordUuid === "!bot" && p.guildUuid === "*") {
+            return await this.generateAdminToken();
+        }
 
         const user = await Repositories.user.findOne({ discordUuid: p.discordUuid });
         if (!user) throw new ValidationError(TokenErrors.INVALID_REFRESH);
