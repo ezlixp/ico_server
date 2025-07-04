@@ -70,6 +70,7 @@ export class JwtTokenHandler {
         mcUuid?: string
     ): asserts user is HydratedDocument<IUser> {
         if (!user) throw new ValidationError(UserErrors.NOT_FOUND);
+        if (user.banned) throw new ValidationError(UserErrors.BANNED);
         if (mcUuid && mcUuid !== user.mcUuid) throw new ValidationError(UserErrors.NOT_LINKED);
     }
 

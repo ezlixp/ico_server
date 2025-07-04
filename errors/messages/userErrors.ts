@@ -7,4 +7,5 @@
     static MISSING_PARAMS = "Not enough information to link a user.";
     static MC_ALREADY_LINKED = "Provided minecraft account already linked.";
     static DC_ALREADY_LINKED = "Provided discord account already linked.";
+    static BANNED = "You have been banned from accessing this resource.";
 }
