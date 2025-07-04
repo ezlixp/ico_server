@@ -2,7 +2,6 @@
 import { JwtTokenHandler } from "../security/jwtHandler.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 import { getToken, getUser } from "../communication/httpClients/discordApiClient.js";
-import { UserInfoService } from "../services/userInfoService.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
 import { getPlayersGuildAsync } from "../communication/httpClients/wynncraftApiClient.js";
 import { TokenResponse } from "../communication/responses/tokenResponse.js";
@@ -14,7 +13,6 @@ import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js"
  */
 const authenticationRouter = Router({ mergeParams: true });
 const tokenHandler = JwtTokenHandler.create();
-const userInfoService = UserInfoService.create();
 
 interface IAuthCodeRequest {
     code: string;

@@ -3,24 +3,22 @@ import "../config.js";
 import { TokenResponse } from "../communication/responses/tokenResponse.js";
 import { TokenError } from "../errors/implementations/tokenError.js";
 import { getUuidGuildAsync, IWynnGuild } from "../communication/httpClients/wynncraftApiClient.js";
-import { UserRepository } from "../repositories/userRepository.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
 import { UserErrors } from "../errors/messages/userErrors.js";
 import { HydratedDocument } from "mongoose";
 import { IUser } from "../models/entities/userModel.js";
 import { TokenErrors } from "../errors/messages/tokenErrors.js";
+import Repositories from "../repositories/repositories.js";
 
 export class JwtTokenHandler {
     private readonly secretKey: string;
     private readonly refreshKey: string;
     private readonly options: jwt.SignOptions;
-    private readonly refreshValidationRepository: UserRepository;
 
     private constructor() {
         this.secretKey = process.env.JWT_SECRET_KEY;
         this.refreshKey = process.env.JWT_REFRESH_SECRET_KEY;
         this.options = { expiresIn: "15m" };
-        this.refreshValidationRepository = new UserRepository();
     }
 
     static create() {
@@ -43,7 +41,7 @@ export class JwtTokenHandler {
         const p = payload! as JwtPayload;
         if (!p.discordUuid) throw new ValidationError(TokenErrors.INVALID_REFRESH);
 
-        const user = await this.refreshValidationRepository.findOne({ discordUuid: p.discordUuid });
+        const user = await Repositories.user.findOne({ discordUuid: p.discordUuid });
         if (!user) throw new ValidationError(TokenErrors.INVALID_REFRESH);
 
         if (user.refreshToken !== refreshToken) {
@@ -54,7 +52,7 @@ export class JwtTokenHandler {
     }
 
     async generateToken(discordUuid: string, wynnGuildId: IWynnGuild | null, mcUuid?: string): Promise<TokenResponse> {
-        const user = await this.refreshValidationRepository.findOne({ discordUuid: discordUuid });
+        const user = await Repositories.user.findOne({ discordUuid: discordUuid });
 
         this.validateGuild(wynnGuildId);
         this.validateAccount(user, mcUuid);

@@ -1,15 +1,9 @@
-﻿import {guildDatabases, guildIds, guildNames} from "../../models/entities/guildDatabaseModel.js";
-import {GuildDatabaseFactory} from "../../models/factories/guildDatabaseFactory.js";
+﻿import { guildDatabases, guildIds, guildNames } from "../../models/entities/guildDatabaseModel.js";
+import { GuildDatabaseFactory } from "../../models/factories/guildDatabaseFactory.js";
 import mongoose from "mongoose";
-import {GuildRepository} from "../../repositories/guildRepository.js";
+import Repositories from "../../repositories/repositories.js";
 
 export class GuildDatabaseCreator {
-    private readonly guildRepository = new GuildRepository();
-
-    constructor() {
-        this.guildRepository = new GuildRepository();
-    }
-
     createNewDatabase(wynnGuildName: string, wynnGuildId: string) {
         if (Object.keys(guildIds).indexOf(wynnGuildName) != -1) {
             console.warn("trying to register already existing database:", wynnGuildName);
@@ -31,7 +25,7 @@ export class GuildDatabaseCreator {
     }
 
     async registerDatabases() {
-        const guilds = await this.guildRepository.getAll();
+        const guilds = await Repositories.guild.getAll();
 
         for (let i = 0; i < guilds.length; ++i) {
             const name = guilds[i].wynnGuildName.replaceAll(" ", "+");

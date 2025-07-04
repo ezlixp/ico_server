@@ -1,14 +1,12 @@
-﻿import {GuildDatabaseCreator} from "./guildDatabaseCreator.js";
-import {GuildRepository} from "../../repositories/guildRepository.js";
-import {IGuild} from "../../models/entities/guildModel.js";
-import {ValidationError} from "../../errors/implementations/validationError.js";
+﻿import { GuildDatabaseCreator } from "./guildDatabaseCreator.js";
+import { IGuild } from "../../models/entities/guildModel.js";
+import { ValidationError } from "../../errors/implementations/validationError.js";
+import Repositories from "../../repositories/repositories.js";
 
 export class GuildService {
-    private readonly guildRepository: GuildRepository;
     private readonly guildDatabaseCreator: GuildDatabaseCreator;
 
     private constructor() {
-        this.guildRepository = new GuildRepository();
         this.guildDatabaseCreator = new GuildDatabaseCreator();
     }
 
@@ -19,14 +17,14 @@ export class GuildService {
     async createNewGuild(guildRequest: IGuild): Promise<IGuild> {
         await this.validationNewGuildCreation(guildRequest.wynnGuildId);
 
-        const newGuild = await this.guildRepository.create(guildRequest);
+        const newGuild = await Repositories.guild.create(guildRequest);
         this.guildDatabaseCreator.createNewDatabase(newGuild.wynnGuildName, newGuild.wynnGuildId);
 
         return newGuild;
     }
 
     private async validationNewGuildCreation(wynnGuildId: string) {
-        if (await this.guildRepository.guildExists(wynnGuildId)) {
+        if (await Repositories.guild.guildExists(wynnGuildId)) {
             throw new ValidationError("A guild with the same Id is already registered.");
         }
     }
