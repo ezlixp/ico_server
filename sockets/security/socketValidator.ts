@@ -47,6 +47,8 @@ function validateSocket(
         if (socket.data.user.banned) {
             return next(new Error("You are banned."));
         }
+
+        // Goes to next step (function execution)
         return next();
     });
 }
