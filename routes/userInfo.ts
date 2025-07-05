@@ -75,24 +75,20 @@ userInfoRouter.delete(
 userInfoRouter.post(
     "/ban/:discordUuid",
     validateAdminJwtToken,
-    async (request: Request<{ discordUuid: string }>, response: DefaultResponse) => {
-        response.send(await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { banned: true }));
+    async (request: Request<{ discordUuid: string }, {}, { banned: boolean }>, response: DefaultResponse) => {
+        response.send(
+            await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { banned: request.body.banned })
+        );
     }
 );
 
 userInfoRouter.post(
-    "/unban/:discordUuid",
+    "/mute/:discordUuid",
     validateAdminJwtToken,
-    async (request: Request<{ discordUuid: string }>, response: DefaultResponse) => {
-        response.send(await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { banned: false }));
-    }
-);
-
-userInfoRouter.post(
-    "/unmute/:discordUuid",
-    validateAdminJwtToken,
-    async (request: Request<{ discordUuid: string }>, response: DefaultResponse) => {
-        response.send(await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { muted: false }));
+    async (request: Request<{ discordUuid: string }, {}, { muted: boolean }>, response: DefaultResponse) => {
+        response.send(
+            await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { muted: request.body.muted })
+        );
     }
 );
 
