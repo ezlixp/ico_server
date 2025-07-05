@@ -2,13 +2,13 @@
 import { BaseModel } from "../entities/baseModel.js";
 
 export interface IWaitlist extends BaseModel {
-    username: string;
+    mcUsername: string;
     dateAdded: Date;
 }
 
 const waitlistSchema: Schema<IWaitlist> = new Schema(
     {
-        username: { type: String, required: true },
+        mcUsername: { type: String, required: true },
         dateAdded: { type: Date, required: true, default: Date.now },
     },
     { collation: { locale: "en", strength: 2 } }

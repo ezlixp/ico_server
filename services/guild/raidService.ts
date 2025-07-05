@@ -33,7 +33,7 @@ export class RaidService {
         const res: IRaidRewardsResponse[] = [];
         for (var i = 0; i < users.length; ++i) {
             res.push({
-                username: await uuidToUsername(users[i].uuid),
+                mcUsername: await uuidToUsername(users[i].uuid),
                 raids: users[i].raids,
                 aspects: users[i].aspects,
                 liquidEmeralds: users[i].emeralds / 4096,
@@ -68,7 +68,7 @@ export class RaidService {
         const user = await this.databases[wynnGuildId].GuildUserRepository.findOne(filter);
         this.validator.validateGetUserRewards(user);
         const res: IRaidRewardsResponse = {
-            username: await uuidToUsername(user.uuid),
+            mcUsername: await uuidToUsername(user.uuid),
             raids: user.raids,
             aspects: user.aspects,
             liquidEmeralds: user.emeralds / 4096,
@@ -88,7 +88,7 @@ export class RaidService {
         // TODO implement mojang api bulk uuid to username call
         for (let i = 0; i < users.length; i++) {
             formattedTopUsers.push({
-                username: await uuidToUsername(users[i].uuid),
+                mcUsername: await uuidToUsername(users[i].uuid),
                 raids: users[i].raids,
             });
         }

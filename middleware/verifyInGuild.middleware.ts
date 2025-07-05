@@ -4,16 +4,16 @@ import { GuildVerificationError } from "../errors/implementations/guildVerificat
 import checkIfPlayerIsInGuildAsync from "../communication/httpClients/wynncraftApiClient.js";
 
 export default async function verifyInGuild(
-    request: GuildRequest<{}, {}, { username: string }>,
+    request: GuildRequest<{}, {}, { mcUsername: string }>,
     response: Response,
     next: NextFunction
 ) {
     if (request.params.wynnGuildId === "**" || request.params.wynnGuildId === "*") return next();
-    if (!request.body.username) throw new GuildVerificationError("Username not provided.");
+    if (!request.body.mcUsername) throw new GuildVerificationError("Username not provided.");
 
-    const username = request.body.username;
+    const mcUsername = request.body.mcUsername;
     const wynnGuildId = request.params.wynnGuildId;
 
-    if (await checkIfPlayerIsInGuildAsync(username, wynnGuildId)) next();
+    if (await checkIfPlayerIsInGuildAsync(mcUsername, wynnGuildId)) next();
     else throw new GuildVerificationError("User not in the guild.");
 }

@@ -8,14 +8,14 @@ export interface IRaid extends BaseModel {
 }
 
 export interface IRaidRewardsResponse {
-    username: string;
+    mcUsername: string;
     raids: number;
     aspects: number;
     liquidEmeralds: number;
 }
 
 export interface ILeaderboardUser {
-    username: string;
+    mcUsername: string;
     raids: number;
 }
 

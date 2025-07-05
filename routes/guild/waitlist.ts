@@ -18,16 +18,16 @@ waitlistRouter.get("/:wynnGuildId", async (request: GuildRequest, response: Defa
 waitlistRouter.post(
     "/:wynnGuildId",
     validateJwtToken,
-    async (request: GuildRequest<{}, {}, { username: string }>, response: DefaultResponse<IWaitlist>) => {
-        response.send(await waitlistService.addToWaitlist(request.body.username, request.params.wynnGuildId));
+    async (request: GuildRequest<{}, {}, { mcUsername: string }>, response: DefaultResponse<IWaitlist>) => {
+        response.send(await waitlistService.addToWaitlist(request.body.mcUsername, request.params.wynnGuildId));
     }
 );
 
 waitlistRouter.delete(
-    "/:wynnGuildId/:username",
+    "/:wynnGuildId/:mcUsername",
     validateJwtToken,
-    async (request: GuildRequest<{ username: string }>, response: DefaultResponse) => {
-        await waitlistService.removeFromWaitlist(request.params.username, request.params.wynnGuildId);
+    async (request: GuildRequest<{ mcUsername: string }>, response: DefaultResponse) => {
+        await waitlistService.removeFromWaitlist(request.params.mcUsername, request.params.wynnGuildId);
         response.send();
     }
 );

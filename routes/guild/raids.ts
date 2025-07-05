@@ -28,12 +28,12 @@ raidRouter.post(
     "/rewards/:wynnGuildId",
     validateAdminJwtToken,
     async (
-        request: GuildRequest<{}, {}, { username: string; aspects?: number; emeralds?: number }>,
+        request: GuildRequest<{}, {}, { mcUsername: string; aspects?: number; emeralds?: number }>,
         response: DefaultResponse<IGuildUser>
     ) => {
         response.send(
             await raidService.updateRewards(
-                { uuid: await usernameToUuid(request.body.username) },
+                { uuid: await usernameToUuid(request.body.mcUsername) },
                 request.body.aspects || null,
                 request.body.emeralds || null,
                 request.params.wynnGuildId
@@ -43,11 +43,11 @@ raidRouter.post(
 );
 
 raidRouter.get(
-    "/rewards/:wynnGuildId/:username",
-    async (request: GuildRequest<{ username: string }>, response: DefaultResponse<IRaidRewardsResponse>) => {
+    "/rewards/:wynnGuildId/:mcUsername",
+    async (request: GuildRequest<{ mcUsername: string }>, response: DefaultResponse<IRaidRewardsResponse>) => {
         response.send(
             await raidService.getUserRewards(
-                { uuid: await usernameToUuid(request.params.username) },
+                { uuid: await usernameToUuid(request.params.mcUsername) },
                 request.params.wynnGuildId
             )
         );

@@ -24,17 +24,17 @@ export class WaitlistService {
         return waitlist;
     }
 
-    async addToWaitlist(username: string, wynnGuildId: string): Promise<IWaitlist> {
+    async addToWaitlist(mcUsername: string, wynnGuildId: string): Promise<IWaitlist> {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.databases[wynnGuildId].WaitlistRepository;
-        const user = await repository.findOne({ username: username });
+        const user = await repository.findOne({ mcUsername: mcUsername });
         this.validator.validateAddToWaitlist(user);
 
-        return await repository.create({ username: username });
+        return await repository.create({ mcUsername: mcUsername });
     }
 
-    async removeFromWaitlist(username: string, wynnGuildId: string) {
-        const user = await this.databases[wynnGuildId].WaitlistRepository.deleteOne({ username: username });
+    async removeFromWaitlist(mcUsername: string, wynnGuildId: string) {
+        const user = await this.databases[wynnGuildId].WaitlistRepository.deleteOne({ mcUsername: mcUsername });
         this.validator.validateRemoveFromWaitlist(user);
     }
 }

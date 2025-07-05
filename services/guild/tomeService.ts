@@ -25,32 +25,32 @@ export class TomeService {
         return this.getRepository(wynnGuildId).find({});
     }
 
-    async addToTomeList(username: FilterQuery<ITome>, wynnGuildId: string): Promise<ITome> {
+    async addToTomeList(mcUsername: FilterQuery<ITome>, wynnGuildId: string): Promise<ITome> {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.getRepository(wynnGuildId);
-        const tome = await repository.findOne(username);
-        this.validator.validateAddToTomeList(tome, username);
+        const tome = await repository.findOne(mcUsername);
+        this.validator.validateAddToTomeList(tome, mcUsername);
 
-        return repository.create(username);
+        return repository.create(mcUsername);
     }
 
     async getTomeListPosition(
-        username: FilterQuery<ITome>,
+        mcUsername: FilterQuery<ITome>,
         wynnGuildId: string
-    ): Promise<{ username: string; position: number }> {
+    ): Promise<{ mcUsername: string; position: number }> {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.getRepository(wynnGuildId);
-        const tome = await repository.findOne(username);
+        const tome = await repository.findOne(mcUsername);
         this.validator.validateGet(tome);
 
         const position = (await repository.find({ dateAdded: { $lt: tome.dateAdded.getTime() } })).length + 1;
-        return { username: tome.username, position: position };
+        return { mcUsername: tome.mcUsername, position: position };
     }
 
-    async deleteFromTomeList(username: FilterQuery<ITome>, wynnGuildId: string) {
+    async deleteFromTomeList(mcUsername: FilterQuery<ITome>, wynnGuildId: string) {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.getRepository(wynnGuildId);
-        const tome = await repository.deleteOne(username);
+        const tome = await repository.deleteOne(mcUsername);
         this.validator.validateGet(tome);
     }
 
@@ -64,11 +64,14 @@ class TomeServiceValidator extends BaseGuildServiceValidator {
         super();
     }
 
-    validateAddToTomeList(tome: ITome | null, username: FilterQuery<ITome>): asserts username is { username: string } {
+    validateAddToTomeList(
+        tome: ITome | null,
+        mcUsername: FilterQuery<ITome>
+    ): asserts mcUsername is { mcUsername: string } {
         if (tome) {
             throw new ValidationError(TomeErrors.TOME_DUPLICATE);
         }
-        if (!username.username) {
+        if (!mcUsername.mcUsername) {
             throw new ValidationError(TomeErrors.USERNAME_MISSING);
         }
     }

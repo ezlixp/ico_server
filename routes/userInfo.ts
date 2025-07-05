@@ -52,13 +52,13 @@ userInfoRouter.post(
     verifyInGuild,
     validateAdminJwtToken,
     async (
-        request: GuildRequest<{}, {}, { username: string; discordUuid: string }>,
+        request: GuildRequest<{}, {}, { mcUsername: string; discordUuid: string }>,
         response: DefaultResponse<HydratedDocument<IUser>>
     ) => {
         response.status(200).send(
             await Services.user.linkUser({
                 discordUuid: request.body.discordUuid,
-                mcUuid: await usernameToUuid(request.body.username),
+                mcUuid: await usernameToUuid(request.body.mcUsername),
             })
         );
     }
