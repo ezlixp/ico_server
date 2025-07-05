@@ -88,10 +88,10 @@ const refreshToken = async (request: Request<{}, {}, IRefreshRequest>, response:
 authenticationRouter.post(
     "/get-token",
     async (
-        request: Request<{}, {}, { grant_type: string } & (IAuthCodeRequest | IRefreshRequest)>,
+        request: Request<{}, {}, { grantType: string } & (IAuthCodeRequest | IRefreshRequest)>,
         response: DefaultResponse
     ) => {
-        const grant_type = request.body.grant_type;
+        const grant_type = request.body.grantType;
         if (grant_type === "authorization_code") {
             authCodeRequestValidator(request);
             return authorizationCode(request, response);

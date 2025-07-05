@@ -13,7 +13,9 @@ export interface IUser extends BaseModel {
 
 const userSchema: Schema<IUser> = new Schema(
     {
+        // insecure
         mcUuid: { type: String, required: true },
+        // secure
         discordUuid: { type: String, required: true },
         blocked: { type: [String], required: true, default: [] },
         muted: { type: Boolean, required: true, default: false },
