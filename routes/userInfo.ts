@@ -58,17 +58,9 @@ userInfoRouter.post(
         response.status(200).send(
             await Services.user.linkUser({
                 discordUuid: request.body.discordUuid,
-                mcUuid: await usernameToUuid(request.body.mcUsername),
+                mcUuid: request.body.mcUsername ? "" : await usernameToUuid(request.body.mcUsername),
             })
         );
-    }
-);
-
-userInfoRouter.delete(
-    "/link/:discordUuid",
-    validateAdminJwtToken,
-    async (request: Request<{ discordUuid: string }>, response: DefaultResponse) => {
-        response.send(await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { mcUuid: "" }));
     }
 );
 
