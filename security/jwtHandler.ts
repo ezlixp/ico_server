@@ -8,7 +8,7 @@ import { UserErrors } from "../errors/messages/userErrors.js";
 import { HydratedDocument } from "mongoose";
 import { IUser } from "../models/entities/userModel.js";
 import { TokenErrors } from "../errors/messages/tokenErrors.js";
-import Repositories from "../repositories/repositories.js";
+import Services from "../services/services.js";
 
 export class JwtTokenHandler {
     private readonly secretKey: string;
@@ -44,7 +44,7 @@ export class JwtTokenHandler {
             return await this.generateAdminToken();
         }
 
-        const user = await Repositories.user.findOne({ discordUuid: p.discordUuid });
+        const user = await Services.user.getUser({ discordUuid: p.discordUuid });
         if (!user) throw new ValidationError(TokenErrors.INVALID_REFRESH);
 
         if (user.refreshToken !== refreshToken) {
@@ -55,7 +55,7 @@ export class JwtTokenHandler {
     }
 
     async generateToken(discordUuid: string, wynnGuildId: IWynnGuild | null, mcUuid?: string): Promise<TokenResponse> {
-        const user = await Repositories.user.findOne({ discordUuid: discordUuid });
+        const user = await Services.user.getUser({ discordUuid: discordUuid });
 
         this.validateGuild(wynnGuildId);
         this.validateAccount(user, mcUuid);

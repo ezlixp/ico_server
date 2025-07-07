@@ -1,7 +1,7 @@
 ﻿import { guildDatabases, guildIds, guildNames } from "../../models/entities/guildDatabaseModel.js";
 import { GuildDatabaseFactory } from "../../models/factories/guildDatabaseFactory.js";
 import mongoose from "mongoose";
-import Repositories from "../../repositories/repositories.js";
+import Services from "../services.js";
 
 export class GuildDatabaseCreator {
     createNewDatabase(wynnGuildName: string, wynnGuildId: string) {
@@ -25,7 +25,7 @@ export class GuildDatabaseCreator {
     }
 
     async registerDatabases() {
-        const guilds = await Repositories.guild.getAll();
+        const guilds = await Services.guild.getAll();
 
         for (let i = 0; i < guilds.length; ++i) {
             const name = guilds[i].wynnGuildName.replaceAll(" ", "+");

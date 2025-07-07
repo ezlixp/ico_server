@@ -3,13 +3,15 @@ import { NotFoundError } from "../errors/implementations/notFoundError.js";
 import { UserErrors } from "../errors/messages/userErrors.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
 import { FilterQuery, HydratedDocument } from "mongoose";
-import Repositories from "../repositories/repositories.js";
+import { UserRepository } from "../repositories/userRepository.js";
 
 export class UserInfoService {
     private readonly validator: UserInfoServiceValidator;
+    private readonly repository: UserRepository;
 
     private constructor() {
         this.validator = new UserInfoServiceValidator();
+        this.repository = new UserRepository();
     }
 
     static create(): UserInfoService {
@@ -17,7 +19,7 @@ export class UserInfoService {
     }
 
     async getUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
-        const user = await Repositories.user.findOne(options);
+        const user = await this.repository.findOne(options);
         this.validator.validateGet(user);
 
         return user;
@@ -30,18 +32,18 @@ export class UserInfoService {
     async linkUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
         this.validator.validateLinkUser(options);
 
-        const user = await Repositories.user.findOne({ mcUuid: options.mcUuid });
+        const user = await this.repository.findOne({ mcUuid: options.mcUuid });
         this.validator.validateGetEmpty(user);
 
-        const get = await Repositories.user.findOne({ discordUuid: options.discordUuid });
+        const get = await this.repository.findOne({ discordUuid: options.discordUuid });
         this.validator.validateNewLink(get);
 
-        return Repositories.user.update({ discordUuid: options.discordUuid }, options);
+        return this.repository.update({ discordUuid: options.discordUuid }, options);
     }
 
     async updateUser(options: FilterQuery<IUser>, update: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
         const _ = await this.getUser(options);
-        return await Repositories.user.update(options, update);
+        return await this.repository.update(options, update);
     }
 
     async getBlockedList(userId: FilterQuery<IUser>): Promise<string[]> {
@@ -56,7 +58,7 @@ export class UserInfoService {
 
         user.blocked.push(toBlock);
 
-        return await Repositories.user.update({ mcUuid: user.mcUuid }, user);
+        return await this.repository.update({ mcUuid: user.mcUuid }, user);
     }
 
     async removeFromBlockedList(userId: FilterQuery<IUser>, toRemove: string): Promise<void> {
@@ -65,7 +67,7 @@ export class UserInfoService {
 
         user.blocked = user.blocked.filter((blockedUser) => blockedUser !== toRemove);
 
-        await Repositories.user.update({ mcUuid: user.mcUuid }, user);
+        await this.repository.update({ mcUuid: user.mcUuid }, user);
     }
 }
 

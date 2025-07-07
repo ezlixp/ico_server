@@ -314,15 +314,13 @@ io.of("/discord").on("connection", (socket) => {
                     {},
                     { collation: { locale: "en", strength: 2 } }
                 ).exec();
-                if (!user || !user.muted) {
-                    console.log(message);
-                    io.of("/discord").to(botId).emit("wynnMessage", {
-                        MessageType: 2,
-                        HeaderContent: header,
-                        TextContent: message,
-                        ListeningChannel: channel,
-                    });
-                }
+                console.log(message);
+                io.of("/discord").to(botId).emit("wynnMessage", {
+                    MessageType: 2,
+                    HeaderContent: header,
+                    TextContent: message,
+                    ListeningChannel: channel,
+                });
             }
         })
     );

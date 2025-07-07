@@ -16,6 +16,7 @@ export interface IServerConfig extends BaseModel {
     privilegedRoles: string[];
     // invites: string[];
     // outgoingInvites: string[];
+    mutedUuids: string[];
     listeningChannel: string;
     broadcastingChannel: string;
 }
@@ -30,6 +31,7 @@ const serverConfigSchema: Schema<IServerConfig> = new Schema({
     privilegedRoles: { type: [{ type: String, required: true }], required: true, default: [] },
     // invites: { type: [{ type: String, required: true }], required: true, default: [] },
     // outgoingInvites: { type: [{ type: String, required: true }] },
+    mutedUuids: { type: [{ type: String, required: true }], required: true, default: [] },
     listeningChannel: { type: String, required: true, default: "0" },
     broadcastingChannel: { type: String, required: true, default: "0" },
 });
@@ -42,6 +44,7 @@ const serverConfigSchema: Schema<IServerConfig> = new Schema({
  * @property {string} raidsChannel        - The channel id for raids, or -1 if not specified.
  * @property {string} warChannel          - The channel id for wars, or -1 if not specified.
  * @property {string[]} privilegedRoles   - The roles in the discord server with additional permissions.
+ * @property {string[]} mutedUuids        - The uuids of discord users muted in chat bridging.
  * @property {string} listeningChannel    - The channel ids that are listening for messages.
  * @property {string} broadcastingChannel - The channel ids to broadcast bridge messages to, not necessarily in the same server.
  */
