@@ -44,9 +44,13 @@ function validateSocket(
         socket.data.wynnGuildId = p.guildId;
         socket.data.discordUuid = p.discordUuid;
         if (p.discordUuid !== "!bot") {
-            socket.data.user = await Services.user.getUserByDiscord(p.discordUuid);
-            if (socket.data.user.banned) {
-                return next(new Error("You are banned."));
+            try {
+                socket.data.user = await Services.user.getUserByDiscord(p.discordUuid);
+                if (socket.data.user.banned) {
+                    return next(new Error("You are banned."));
+                }
+            } catch (err) {
+                return next(new Error("Something went wrong."));
             }
         }
 
