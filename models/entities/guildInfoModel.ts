@@ -1,28 +1,67 @@
 import mongoose, { Schema } from "mongoose";
 import { BaseModel } from "./baseModel.js";
 
-// interface IListeningChannel {
-//     channelId: number;
-//     guildId: string;
-// }
-
-export interface IServerConfig extends BaseModel {
-    wynnGuildId: string;
-    discordGuildId: string;
+export interface IGuildInfoOptionals extends BaseModel {
     tomeChannel: string;
     layoffsChannel: string;
     raidsChannel: string;
     warChannel: string;
     privilegedRoles: string[];
-    // invites: string[];
-    // outgoingInvites: string[];
     mutedUuids: string[];
     listeningChannel: string;
     broadcastingChannel: string;
 }
 
-const serverConfigSchema: Schema<IServerConfig> = new Schema({
+export interface IGuildInfo extends IGuildInfoOptionals {
+    wynnGuildId: string;
+    wynnGuildName: string;
+    discordGuildId: string;
+}
+
+export class GuildInfoImpl implements IGuildInfo {
+    public wynnGuildId: string;
+    public wynnGuildName: string;
+    public discordGuildId: string;
+    public tomeChannel: string;
+    public layoffsChannel: string;
+    public raidsChannel: string;
+    public warChannel: string;
+    public privilegedRoles: string[];
+    public mutedUuids: string[];
+    public listeningChannel: string;
+    public broadcastingChannel: string;
+    public constructor(
+        wynnGuildId: string,
+        wynnGuildName: string,
+        discordGuildId: string,
+        {
+            tomeChannel = "0",
+            layoffsChannel = "0",
+            raidsChannel = "0",
+            warChannel = "0",
+            privilegedRoles = [],
+            mutedUuids = [],
+            listeningChannel = "0",
+            broadcastingChannel = "0",
+        }: Partial<IGuildInfoOptionals> = {}
+    ) {
+        this.wynnGuildId = wynnGuildId;
+        this.wynnGuildName = wynnGuildName;
+        this.discordGuildId = discordGuildId;
+        this.tomeChannel = tomeChannel;
+        this.layoffsChannel = layoffsChannel;
+        this.raidsChannel = raidsChannel;
+        this.warChannel = warChannel;
+        this.privilegedRoles = privilegedRoles;
+        this.mutedUuids = mutedUuids;
+        this.listeningChannel = listeningChannel;
+        this.broadcastingChannel = broadcastingChannel;
+    }
+}
+
+const guildInfoSchema: Schema<IGuildInfo> = new Schema({
     wynnGuildId: { type: String, required: true },
+    wynnGuildName: { type: String, required: true },
     discordGuildId: { type: String, required: true },
     tomeChannel: { type: String, required: true, default: "0" },
     layoffsChannel: { type: String, required: true, default: "0" },
@@ -38,6 +77,7 @@ const serverConfigSchema: Schema<IServerConfig> = new Schema({
 
 /**
  * @property {string} wynnGuildId         - The guild id a server is connected to.
+ * @property {string} wynnGuildName       - The guild name a server is connected to.
  * @property {string} discordGuildId      - The server id a guild is connected to.
  * @property {string} tomeChannel         - The channel id for tomes, or -1 if not specified.
  * @property {string} layoffsChannel      - The channel id for layoffs, or -1 if not specified.
@@ -48,6 +88,6 @@ const serverConfigSchema: Schema<IServerConfig> = new Schema({
  * @property {string} listeningChannel    - The channel ids that are listening for messages.
  * @property {string} broadcastingChannel - The channel ids to broadcast bridge messages to, not necessarily in the same server.
  */
-const ServerConfigModel = mongoose.model("Server Config", serverConfigSchema);
+const GuildInfoModel = mongoose.model("Gulid Info", guildInfoSchema);
 
-export default ServerConfigModel;
+export default GuildInfoModel;

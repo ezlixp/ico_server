@@ -4,7 +4,7 @@ import healthRouter from "./routes/healthCheck.js";
 import adminRouter from "./routes/admin.js";
 import modVersionRouter from "./routes/modVersion.js";
 import userInfoRouter from "./routes/userInfo.js";
-import configRouter from ".//routes/serverConfig.js";
+import infoRouter from "./routes/guildInfo.js";
 import authenticationRouter from "./routes/authentication.js";
 import { NotFoundError } from "./errors/implementations/notFoundError.js";
 import { API_VERSION } from "./config.js";
@@ -32,7 +32,7 @@ export const mapEndpoints = (app: Express) => {
 
     app.use(`/api/${API_VERSION}/user`, userInfoRouter);
 
-    app.use(`/api/${API_VERSION}/config`, configRouter);
+    app.use(`/api/${API_VERSION}/config`, infoRouter);
 
     app.use(`/api/${API_VERSION}/guilds`, guildRouter);
 

@@ -25,7 +25,7 @@ export class GuildDatabaseCreator {
     }
 
     async registerDatabases() {
-        const guilds = await Services.guild.getAll();
+        const guilds = await Services.guildInfo.getAll();
 
         for (let i = 0; i < guilds.length; ++i) {
             const name = guilds[i].wynnGuildName.replaceAll(" ", "+");

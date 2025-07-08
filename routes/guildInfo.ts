@@ -1,26 +1,27 @@
 import { NextFunction, Request, Router } from "express";
 import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import ServerConfigModel, { IServerConfig } from "../models/entities/serverConfigModel.js";
+import GuildInfoModel, { GuildInfoImpl, IGuildInfo, IGuildInfoOptionals } from "../models/entities/guildInfoModel.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
 import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
 import { ValidationError } from "../errors/implementations/validationError.js";
 import { DatabaseError } from "../errors/implementations/databaseError.js";
 import { NotFoundError } from "../errors/implementations/notFoundError.js";
+import Services from "../services/services.js";
 
 /**
  * Maps all server config related endpoints. request.wynnGuildId is NOT defined in these routes, but request.discordGuildId is.
  */
-const configRouter = Router();
-const serverConfigRouter = Router({ mergeParams: true });
+const infoRouter = Router();
+const guildInfoRouter = Router({ mergeParams: true });
 
 // Register all middlewares.
-configRouter.use(validateAdminJwtToken);
-configRouter.use("/:discordGuildId", serverConfigRouter);
+infoRouter.use(validateAdminJwtToken);
+infoRouter.use("/:discordGuildId", guildInfoRouter);
 
-serverConfigRouter.use(validateJwtToken);
-serverConfigRouter.use(
+guildInfoRouter.use(validateJwtToken);
+guildInfoRouter.use(
     async (request: Request<{ discordGuildId: string }, {}, {}>, response: DefaultResponse, next: NextFunction) => {
-        const query = ServerConfigModel.findOne({ discordGuildId: request.params.discordGuildId });
+        const query = GuildInfoModel.findOne({ discordGuildId: request.params.discordGuildId });
         const server = await query.exec();
         if (!server) {
             throw new NotFoundError("Could not find specified server.");
@@ -31,110 +32,37 @@ serverConfigRouter.use(
     }
 );
 
-configRouter.post(
-    "/",
-    async (
-        request: Request<
-            {},
-            {},
-            {
-                discordGuildId: string;
-                wynnGuildId: string;
-                tomeChannel?: string;
-                layoffsChannel?: string;
-                raidsChannel?: string;
-                warChannel?: string;
-                privilegedRoles?: string[];
-                listeningChannel?: string;
-                broadcastingChannel?: string;
-            }
-        >,
-        response: DefaultResponse<IServerConfig>
-    ) => {
-        const server = await ServerConfigModel.findOne()
-            .or([{ discordGuildId: request.body.discordGuildId }, { wynnGuildId: request.body.wynnGuildId }])
-            .exec();
-        if (server) {
-            throw new ValidationError("Configuration already set up for specified server or guild.");
-        }
-        const body = request.body;
-        const newServer = new ServerConfigModel({
-            discordGuildId: body.discordGuildId,
-            wynnGuildId: body.wynnGuildId,
-        });
-        if (body.tomeChannel) newServer.tomeChannel = body.tomeChannel;
-        if (body.layoffsChannel) newServer.layoffsChannel = body.layoffsChannel;
-        if (body.raidsChannel) newServer.raidsChannel = body.raidsChannel;
-        if (body.warChannel) newServer.warChannel = body.warChannel;
-        if (body.broadcastingChannel) newServer.broadcastingChannel = body.broadcastingChannel;
-        if (body.listeningChannel) newServer.listeningChannel = body.listeningChannel;
-        if (body.privilegedRoles)
-            await Promise.all([
-                body.privilegedRoles.forEach((v) => {
-                    newServer.privilegedRoles.push(v);
-                }),
-            ]);
-        await newServer.save();
-        response.send(newServer);
-    }
-);
+infoRouter.post("/", async (request: Request<{}, {}, IGuildInfo>, response: DefaultResponse<IGuildInfo>) => {
+    Services.guildInfo.validateNewGuildCreation(request.body.discordGuildId, request.body.wynnGuildId);
+    const body = request.body;
+    const newServer = new GuildInfoImpl(body.wynnGuildId, body.wynnGuildName, body.discordGuildId, body);
+    const newServerModel = new GuildInfoModel(newServer);
+    await newServerModel.save();
+    response.send(newServerModel);
+});
 
-serverConfigRouter.get("/", async (request: Request, response: DefaultResponse<IServerConfig>) => {
+guildInfoRouter.get("/", async (request: Request, response: DefaultResponse<IGuildInfo>) => {
     response.send(request.serverConfig);
 });
 
-serverConfigRouter.delete("/", async (request: Request, response: DefaultResponse) => {
-    await ServerConfigModel.findOneAndDelete({ discordGuildId: request.discordGuildId }).exec();
+guildInfoRouter.delete("/", async (request: Request, response: DefaultResponse) => {
+    await GuildInfoModel.findOneAndDelete({ discordGuildId: request.discordGuildId }).exec();
     response.status(204).send();
 });
 
-serverConfigRouter.patch(
+guildInfoRouter.patch(
     "/",
-    async (
-        request: Request<
-            {},
-            {},
-            {
-                tomeChannel?: string;
-                layoffsChannel?: string;
-                raidsChannel?: string;
-                warChannel?: string;
-                privilegedRoles?: string[];
-                listeningChannel?: string;
-                broadcastingChannel?: string;
-            }
-        >,
-        response: DefaultResponse<IServerConfig>
-    ) => {
-        try {
-            const body = request.body;
-            if (body.tomeChannel) request.serverConfig!.tomeChannel = body.tomeChannel;
-            if (body.layoffsChannel) request.serverConfig!.layoffsChannel = body.layoffsChannel;
-            if (body.raidsChannel) request.serverConfig!.raidsChannel = body.raidsChannel;
-            if (body.warChannel) request.serverConfig!.warChannel = body.warChannel;
-            if (body.broadcastingChannel) request.serverConfig!.broadcastingChannel = body.broadcastingChannel;
-            if (body.listeningChannel) request.serverConfig!.listeningChannel = body.listeningChannel;
-            if (body.privilegedRoles)
-                await Promise.all([
-                    body.privilegedRoles.forEach((v) => {
-                        request.serverConfig!.privilegedRoles.push(v);
-                    }),
-                ]);
-            await request.serverConfig!.save();
-            response.send(request.serverConfig);
-        } catch (error) {
-            console.error("patch server config error:", error);
-            throw new DatabaseError();
-        }
+    async (request: Request<{}, {}, IGuildInfoOptionals>, response: DefaultResponse<IGuildInfo>) => {
+        response.send(await Services.guildInfo.upsertGuildInfo(request.serverConfig!, request.body));
     }
 );
 
 // currently no validation for duplicate roles
-serverConfigRouter.post(
+guildInfoRouter.post(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IServerConfig>) => {
+    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IGuildInfo>) => {
         try {
-            request.serverConfig!.privilegedRoles.push(request.body.roleId);
+            request.serverConfig!.privilegedRoles!.push(request.body.roleId);
             await request.serverConfig!.save();
             response.send(request.serverConfig);
         } catch (error) {
@@ -144,15 +72,15 @@ serverConfigRouter.post(
     }
 );
 
-serverConfigRouter.delete(
+guildInfoRouter.delete(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IServerConfig>) => {
+    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IGuildInfo>) => {
         try {
-            const index = request.serverConfig!.privilegedRoles.indexOf(request.body.roleId);
+            const index = request.serverConfig!.privilegedRoles!.indexOf(request.body.roleId);
             if (index === -1) {
                 throw new ValidationError("Requested role was not privileged");
             }
-            request.serverConfig!.privilegedRoles.splice(index, 1);
+            request.serverConfig!.privilegedRoles!.splice(index, 1);
             await request.serverConfig?.save();
             response.send(request.serverConfig);
         } catch (error) {
@@ -294,4 +222,4 @@ serverConfigRouter.delete(
 
 // TODO: add route for unlinking channels
 
-export default configRouter;
+export default infoRouter;
