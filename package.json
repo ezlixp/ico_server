@@ -1,6 +1,6 @@
 {
     "name": "ico_server",
-    "version": "v2",
+    "version": "v3",
     "description": "",
     "main": "index.ts",
     "type": "module",
@@ -9,7 +9,7 @@
         "dev": "set NODE_ENV=development&&tsx --watch index.ts"
     },
     "author": "",
-    "license": "ISC",
+    "license": "LGPL-3.0-only",
     "devDependencies": {
         "@types/body-parser": "^1.19.5",
         "@types/cors": "^2.8.17",
