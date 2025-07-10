@@ -7,4 +7,3 @@ node_modules
 dump
 dist
 test.*
-test/*

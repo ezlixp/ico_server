@@ -1,8 +1,8 @@
 ﻿{
     "compilerOptions": {
+        "module": "nodenext",
         "target": "ESNext",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "moduleResolution": "nodenext",
         "rootDir": "./",
         "outDir": "./dist",
         "sourceMap": true,
@@ -11,11 +11,11 @@
         "strict": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
-        "typeRoots": ["./node_modules/@types"],
-        "noEmitOnError": true
+        "noEmitOnError": true,
+        "isolatedModules": true
     },
     "include": [
+        "test/**/*",
         "communication/**/*",
         "errors/**/*",
         "services/**/*",
