@@ -1,17 +1,17 @@
 import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import validateSocket from "./sockets/security/socketValidator.js";
-import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./types/socketIOTypes.js";
+import cors from "cors";
+import bodyParser from "body-parser";
+import { mapEndpoints } from "./endpoints.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
 
 const app = express();
-const server = createServer(app);
 
-const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
+app.use(express.json());
+app.use(cors());
 
-io.on("new_namespace", (namespace) => {
-    namespace.use(validateSocket);
-});
+app.use(bodyParser.urlencoded({ extended: true }));
 
-export { io, server };
+mapEndpoints(app);
+app.use(errorHandler);
+
 export default app;

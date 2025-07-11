@@ -1,4 +1,3 @@
-import { io } from "../app.js";
 import "../config.js";
 import { IDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes.js";
 import { decodeItem } from "../utils/wynntilsItemEncoding.js";
@@ -9,6 +8,7 @@ import { checkVersion } from "../utils/versionUtils.js";
 import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel.js";
 import UserModel from "../models/entities/userModel.js";
 import { getChannelFromWynnGuild } from "../utils/serverUtils.js";
+import { io } from "../socket.js";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const wynnMessagePatterns: IWynnMessage[] = [
