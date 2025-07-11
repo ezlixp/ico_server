@@ -6,7 +6,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if (res.headersSent) next(err);
     console.warn("error from route:", req.originalUrl, "method:", req.method);
     if (err instanceof AppError) {
-        console.error(err.statusCode, err.message, err.stack);
+        console.error(err.statusCode, err.message);
 
         res.status(err.statusCode).send(ErrorResponse.createWithError(err));
     } else {
