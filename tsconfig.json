@@ -3,7 +3,7 @@
         "module": "nodenext",
         "target": "ESNext",
         "moduleResolution": "nodenext",
-        "rootDir": "./",
+        "rootDir": "./src",
         "outDir": "./dist",
         "sourceMap": true,
         "esModuleInterop": true,
@@ -14,23 +14,6 @@
         "noEmitOnError": true,
         "isolatedModules": true
     },
-    "include": [
-        "test/**/*",
-        "communication/**/*",
-        "errors/**/*",
-        "services/**/*",
-        "middleware/**/*",
-        "models/**/*",
-        "routes/**/*",
-        "security/**/*",
-        "repositories/**/*",
-        "sockets/**/*",
-        "utils/**/*",
-        "types/**/*",
-        "index.ts",
-        "config.ts",
-        "app.ts",
-        "communication/httpClients/**/*"
-    ],
-    "exclude": ["node_modules", "**/*.spec.ts", "test/**/*"]
+    "include": ["test/**/*", "src/**/*"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }

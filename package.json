@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "test": "set NODE_ENV=test&&mocha --check-leaks --loader=ts-node/esm --no-warnings \"test/**/*.spec.ts\"",
-        "dev": "set NODE_ENV=development&&tsx --watch index.ts"
+        "dev": "set NODE_ENV=development&&tsx --watch src/index.ts"
     },
     "author": "",
     "license": "LGPL-3.0-only",

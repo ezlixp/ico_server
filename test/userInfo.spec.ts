@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import app from "../app.js";
+import app from "../src/app.js";
 import supertest from "supertest";
 
 let mongoServer: MongoMemoryServer;
