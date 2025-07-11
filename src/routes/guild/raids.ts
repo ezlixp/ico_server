@@ -1,11 +1,11 @@
 ﻿import { Router } from "express";
-import { usernameToUuid } from "../../communication/httpClients/mojangApiClient.js";
-import { GuildRequest } from "../../communication/requests/guildRequest.js";
-import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middleware.js";
-import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
-import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema.js";
-import { IGuildUser } from "../../models/schemas/guildUserSchema.js";
-import { RaidService } from "../../services/guild/raidService.js";
+import { usernameToUuid } from "../../communication/httpClients/mojangApiClient";
+import { GuildRequest } from "../../communication/requests/guildRequest";
+import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middleware";
+import { DefaultResponse } from "../../communication/responses/defaultResponse";
+import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema";
+import { IGuildUser } from "../../models/schemas/guildUserSchema";
+import { RaidService } from "../../services/guild/raidService";
 
 /**
  * Maps all raid-related endpoints base route: /raids.

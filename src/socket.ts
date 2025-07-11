@@ -1,7 +1,7 @@
 import { createServer } from "http";
-import app from "./app.js";
-import validateSocket from "./sockets/security/socketValidator.js";
-import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "./types/socketIOTypes.js";
+import app from "./app";
+import validateSocket from "./sockets/security/socketValidator";
+import { ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData } from "./types/socketIOTypes";
 import { Server } from "socket.io";
 
 const server = createServer(app);

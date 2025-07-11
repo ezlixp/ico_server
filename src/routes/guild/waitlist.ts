@@ -1,9 +1,9 @@
 ﻿import { Router } from "express";
-import validateJwtToken from "../../middleware/jwtTokenValidator.middleware.js";
-import { GuildRequest } from "../../communication/requests/guildRequest.js";
-import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
-import { IWaitlist } from "../../models/schemas/waitlistSchema.js";
-import { WaitlistService } from "../../services/guild/waitlistService.js";
+import validateJwtToken from "../../middleware/jwtTokenValidator.middleware";
+import { GuildRequest } from "../../communication/requests/guildRequest";
+import { DefaultResponse } from "../../communication/responses/defaultResponse";
+import { IWaitlist } from "../../models/schemas/waitlistSchema";
+import { WaitlistService } from "../../services/guild/waitlistService";
 
 /**
  * Maps all tome-related endpoints

@@ -1,7 +1,7 @@
-﻿import { guildDatabases, guildIds, guildNames } from "../../models/entities/guildDatabaseModel.js";
-import { GuildDatabaseFactory } from "../../models/factories/guildDatabaseFactory.js";
+﻿import { guildDatabases, guildIds, guildNames } from "../../models/entities/guildDatabaseModel";
+import { GuildDatabaseFactory } from "../../models/factories/guildDatabaseFactory";
 import mongoose from "mongoose";
-import Services from "../services.js";
+import Services from "../services";
 
 export class GuildDatabaseCreator {
     createNewDatabase(wynnGuildName: string, wynnGuildId: string) {

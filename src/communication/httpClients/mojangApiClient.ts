@@ -1,4 +1,4 @@
-import { HttpClientError } from "../../errors/implementations/httpClientError.js";
+import { HttpClientError } from "../../errors/implementations/httpClientError";
 
 /** Caches username to UUID conversions from Mojang api.*/
 const usernameUuidMap: { [key: string]: { uuid: string; timestamp: number } } = {};

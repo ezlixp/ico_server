@@ -1,5 +1,5 @@
-import { usernameToUuid } from "./mojangApiClient.js";
-import { insertDashes } from "../../utils/uuidUtils.js";
+import { usernameToUuid } from "./mojangApiClient";
+import { insertDashes } from "../../utils/uuidUtils";
 
 export interface IWynnGuild {
     uuid: string;

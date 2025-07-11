@@ -1,7 +1,7 @@
 import { Request, Router } from "express";
-import { getLatestVersion, IModVersionResponse } from "../utils/versionUtils.js";
-import { DefaultResponse } from "../communication/responses/defaultResponse.js";
-import { DatabaseError } from "../errors/implementations/databaseError.js";
+import { getLatestVersion, IModVersionResponse } from "../utils/versionUtils";
+import { DefaultResponse } from "../communication/responses/defaultResponse";
+import { DatabaseError } from "../errors/implementations/databaseError";
 
 /**
  * Maps all mod version related endpoints.

@@ -1,5 +1,5 @@
-import { IRaid } from "../../models/schemas/raidSchema.js";
-import { BaseRepository } from "../base/baseRepository.js";
+import { IRaid } from "../../models/schemas/raidSchema";
+import { BaseRepository } from "../base/baseRepository";
 
 import { Model } from "mongoose";
 

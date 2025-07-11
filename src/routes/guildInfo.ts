@@ -1,12 +1,12 @@
 import { NextFunction, Request, Router } from "express";
-import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import GuildInfoModel, { GuildInfoImpl, IGuildInfo, IGuildInfoOptionals } from "../models/entities/guildInfoModel.js";
-import { DefaultResponse } from "../communication/responses/defaultResponse.js";
-import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
-import { ValidationError } from "../errors/implementations/validationError.js";
-import { DatabaseError } from "../errors/implementations/databaseError.js";
-import { NotFoundError } from "../errors/implementations/notFoundError.js";
-import Services from "../services/services.js";
+import validateJwtToken from "../middleware/jwtTokenValidator.middleware";
+import GuildInfoModel, { GuildInfoImpl, IGuildInfo, IGuildInfoOptionals } from "../models/entities/guildInfoModel";
+import { DefaultResponse } from "../communication/responses/defaultResponse";
+import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware";
+import { ValidationError } from "../errors/implementations/validationError";
+import { DatabaseError } from "../errors/implementations/databaseError";
+import { NotFoundError } from "../errors/implementations/notFoundError";
+import Services from "../services/services";
 import { HydratedDocument } from "mongoose";
 
 interface InfoRequest<Params = Record<string, any>, ResBody = any, ReqBody = any, ReqQuery = any>

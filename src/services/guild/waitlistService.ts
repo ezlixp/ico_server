@@ -1,10 +1,10 @@
 import { HydratedDocument } from "mongoose";
-import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel.js";
-import { IWaitlist } from "../../models/schemas/waitlistSchema.js";
-import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
-import { ValidationError } from "../../errors/implementations/validationError.js";
-import { WaitlistErrors } from "../../errors/messages/waitlistErrors.js";
-import { NotFoundError } from "../../errors/implementations/notFoundError.js";
+import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel";
+import { IWaitlist } from "../../models/schemas/waitlistSchema";
+import { BaseGuildServiceValidator } from "./baseGuildServiceValidator";
+import { ValidationError } from "../../errors/implementations/validationError";
+import { WaitlistErrors } from "../../errors/messages/waitlistErrors";
+import { NotFoundError } from "../../errors/implementations/notFoundError";
 
 export class WaitlistService {
     private readonly databases: IGuildDatabases;

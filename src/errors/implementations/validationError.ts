@@ -1,4 +1,4 @@
-﻿import { AppError } from "../base/appError.js";
+﻿import { AppError } from "../base/appError";
 
 /** code 400 */
 export class ValidationError extends AppError {

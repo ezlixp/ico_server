@@ -1,5 +1,5 @@
-import { IWaitlist } from "../../models/schemas/waitlistSchema.js";
-import { BaseRepository } from "../base/baseRepository.js";
+import { IWaitlist } from "../../models/schemas/waitlistSchema";
+import { BaseRepository } from "../base/baseRepository";
 
 import { Model } from "mongoose";
 

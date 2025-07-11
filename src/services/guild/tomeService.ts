@@ -1,11 +1,11 @@
-import { ValidationError } from "../../errors/implementations/validationError.js";
-import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel.js";
-import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
-import { ITome } from "../../models/schemas/tomeSchema.js";
-import { NotFoundError } from "../../errors/implementations/notFoundError.js";
-import { TomeErrors } from "../../errors/messages/tomeErrors.js";
+import { ValidationError } from "../../errors/implementations/validationError";
+import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel";
+import { BaseGuildServiceValidator } from "./baseGuildServiceValidator";
+import { ITome } from "../../models/schemas/tomeSchema";
+import { NotFoundError } from "../../errors/implementations/notFoundError";
+import { TomeErrors } from "../../errors/messages/tomeErrors";
 import { FilterQuery } from "mongoose";
-import { IRepository } from "../../repositories/base/baseRepository.js";
+import { IRepository } from "../../repositories/base/baseRepository";
 
 export class TomeService {
     private readonly databases: IGuildDatabases;

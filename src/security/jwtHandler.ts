@@ -1,14 +1,14 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import "../config.js";
-import { TokenResponse } from "../communication/responses/tokenResponse.js";
-import { TokenError } from "../errors/implementations/tokenError.js";
-import { getUuidGuildAsync, IWynnGuild } from "../communication/httpClients/wynncraftApiClient.js";
-import { ValidationError } from "../errors/implementations/validationError.js";
-import { UserErrors } from "../errors/messages/userErrors.js";
+import "../config";
+import { TokenResponse } from "../communication/responses/tokenResponse";
+import { TokenError } from "../errors/implementations/tokenError";
+import { getUuidGuildAsync, IWynnGuild } from "../communication/httpClients/wynncraftApiClient";
+import { ValidationError } from "../errors/implementations/validationError";
+import { UserErrors } from "../errors/messages/userErrors";
 import { HydratedDocument } from "mongoose";
-import { IUser } from "../models/entities/userModel.js";
-import { TokenErrors } from "../errors/messages/tokenErrors.js";
-import Services from "../services/services.js";
+import { IUser } from "../models/entities/userModel";
+import { TokenErrors } from "../errors/messages/tokenErrors";
+import Services from "../services/services";
 
 export class JwtTokenHandler {
     private readonly secretKey: string;

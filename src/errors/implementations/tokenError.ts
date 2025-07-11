@@ -1,4 +1,4 @@
-﻿import {AppError} from "../base/appError.js";
+﻿import { AppError } from "../base/appError";
 
 export class TokenError extends AppError {
     constructor() {

@@ -1,6 +1,6 @@
 ﻿import { ErrorRequestHandler } from "express";
-import { AppError } from "../errors/base/appError.js";
-import { ErrorResponse, HttpErrorResponse } from "../communication/responses/errorResponse.js";
+import { AppError } from "../errors/base/appError";
+import { ErrorResponse, HttpErrorResponse } from "../communication/responses/errorResponse";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if (res.headersSent) next(err);

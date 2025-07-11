@@ -1,9 +1,9 @@
-﻿import { IUser } from "../models/entities/userModel.js";
-import { NotFoundError } from "../errors/implementations/notFoundError.js";
-import { UserErrors } from "../errors/messages/userErrors.js";
-import { ValidationError } from "../errors/implementations/validationError.js";
+﻿import { IUser } from "../models/entities/userModel";
+import { NotFoundError } from "../errors/implementations/notFoundError";
+import { UserErrors } from "../errors/messages/userErrors";
+import { ValidationError } from "../errors/implementations/validationError";
 import { FilterQuery, HydratedDocument } from "mongoose";
-import { UserRepository } from "../repositories/userRepository.js";
+import { UserRepository } from "../repositories/userRepository";
 
 export class UserInfoService {
     private readonly validator: UserInfoServiceValidator;

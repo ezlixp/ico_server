@@ -1,12 +1,11 @@
-﻿import {Connection, Model, Schema} from "mongoose";
-import guildUserSchema, {IGuildUser} from "../schemas/guildUserSchema.js";
-import raidSchema, {IRaid} from "../schemas/raidSchema.js";
-import tomeSchema, {ITome} from "../schemas/tomeSchema.js";
-import waitlistSchema, {IWaitlist} from "../schemas/waitlistSchema.js";
+﻿import { Connection, Model, Schema } from "mongoose";
+import guildUserSchema, { IGuildUser } from "../schemas/guildUserSchema";
+import raidSchema, { IRaid } from "../schemas/raidSchema";
+import tomeSchema, { ITome } from "../schemas/tomeSchema";
+import waitlistSchema, { IWaitlist } from "../schemas/waitlistSchema";
 
 export class DatabaseModelFactory {
-    private constructor(private readonly db: Connection) {
-    }
+    private constructor(private readonly db: Connection) {}
 
     static create(db: Connection): DatabaseModelFactory {
         return new DatabaseModelFactory(db);

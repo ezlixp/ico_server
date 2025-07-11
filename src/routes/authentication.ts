@@ -1,12 +1,12 @@
 ﻿import { Request, Router } from "express";
-import { JwtTokenHandler } from "../security/jwtHandler.js";
-import { DefaultResponse } from "../communication/responses/defaultResponse.js";
-import { getToken, getUser } from "../communication/httpClients/discordApiClient.js";
-import { ValidationError } from "../errors/implementations/validationError.js";
-import { getPlayersGuildAsync } from "../communication/httpClients/wynncraftApiClient.js";
-import { TokenResponse } from "../communication/responses/tokenResponse.js";
-import { TokenErrors } from "../errors/messages/tokenErrors.js";
-import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js";
+import { JwtTokenHandler } from "../security/jwtHandler";
+import { DefaultResponse } from "../communication/responses/defaultResponse";
+import { getToken, getUser } from "../communication/httpClients/discordApiClient";
+import { ValidationError } from "../errors/implementations/validationError";
+import { getPlayersGuildAsync } from "../communication/httpClients/wynncraftApiClient";
+import { TokenResponse } from "../communication/responses/tokenResponse";
+import { TokenErrors } from "../errors/messages/tokenErrors";
+import { usernameToUuid } from "../communication/httpClients/mojangApiClient";
 
 /**
  * Maps all authentication-related endpoints. endpoint: .../auth/

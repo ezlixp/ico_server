@@ -1,10 +1,10 @@
-﻿import validateJwtToken from "../../middleware/jwtTokenValidator.middleware.js";
+﻿import validateJwtToken from "../../middleware/jwtTokenValidator.middleware";
 import { Router } from "express";
-import verifyInGuild from "../../middleware/verifyInGuild.middleware.js";
-import { ITome } from "../../models/schemas/tomeSchema.js";
-import { TomeService } from "../../services/guild/tomeService.js";
-import { GuildRequest } from "../../communication/requests/guildRequest.js";
-import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
+import verifyInGuild from "../../middleware/verifyInGuild.middleware";
+import { ITome } from "../../models/schemas/tomeSchema";
+import { TomeService } from "../../services/guild/tomeService";
+import { GuildRequest } from "../../communication/requests/guildRequest";
+import { DefaultResponse } from "../../communication/responses/defaultResponse";
 
 /**
  * Maps all tome-related endpoints

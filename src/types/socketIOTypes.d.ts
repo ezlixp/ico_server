@@ -1,4 +1,4 @@
-import { IDiscord2WynnMessage, IWynn2DiscordMessage } from "./messageTypes.js";
+import { IDiscord2WynnMessage, IWynn2DiscordMessage } from "./messageTypes";
 import { IUser } from "../models/entities/userModel.ts";
 
 export interface ServerToClientEvents {

@@ -1,8 +1,8 @@
-import { RaidService } from "./guild/raidService.js";
-import { TomeService } from "./guild/tomeService.js";
-import { WaitlistService } from "./guild/waitlistService.js";
-import { GuildInfoService } from "./GuildInfoService.js";
-import { UserInfoService } from "./userInfoService.js";
+import { RaidService } from "./guild/raidService";
+import { TomeService } from "./guild/tomeService";
+import { WaitlistService } from "./guild/waitlistService";
+import { GuildInfoService } from "./GuildInfoService";
+import { UserInfoService } from "./userInfoService";
 
 export default abstract class Services {
     public static guildInfo = GuildInfoService.create();

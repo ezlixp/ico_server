@@ -1,4 +1,4 @@
-import { io } from "../socket.js";
+import { io } from "../socket";
 
 export interface IOnlineUser {
     Id: number;

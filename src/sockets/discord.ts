@@ -1,14 +1,14 @@
-import "../config.js";
-import { IDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes.js";
-import { decodeItem } from "../utils/wynntilsItemEncoding.js";
-import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardUtils.js";
-import { getOnlineUsers, isOnline } from "../utils/socketUtils.js";
-import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js";
-import { checkVersion } from "../utils/versionUtils.js";
-import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel.js";
-import UserModel from "../models/entities/userModel.js";
-import { getChannelFromWynnGuild } from "../utils/serverUtils.js";
-import { io } from "../socket.js";
+import "../config";
+import { IDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes";
+import { decodeItem } from "../utils/wynntilsItemEncoding";
+import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardUtils";
+import { getOnlineUsers, isOnline } from "../utils/socketUtils";
+import { usernameToUuid } from "../communication/httpClients/mojangApiClient";
+import { checkVersion } from "../utils/versionUtils";
+import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel";
+import UserModel from "../models/entities/userModel";
+import { getChannelFromWynnGuild } from "../utils/serverUtils";
+import { io } from "../socket";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const wynnMessagePatterns: IWynnMessage[] = [

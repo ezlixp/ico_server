@@ -1,8 +1,8 @@
 import { HydratedDocument } from "mongoose";
-import { ValidationError } from "../errors/implementations/validationError.js";
-import { IGuildInfo, IGuildInfoOptionals } from "../models/entities/guildInfoModel.js";
-import { GuildInfoRepository } from "../repositories/guildInfoRepository.js";
-import { GuildDatabaseCreator } from "./guild/guildDatabaseCreator.js";
+import { ValidationError } from "../errors/implementations/validationError";
+import { IGuildInfo, IGuildInfoOptionals } from "../models/entities/guildInfoModel";
+import { GuildInfoRepository } from "../repositories/guildInfoRepository";
+import { GuildDatabaseCreator } from "./guild/guildDatabaseCreator";
 
 export class GuildInfoService {
     private readonly guildDatabaseCreator: GuildDatabaseCreator;

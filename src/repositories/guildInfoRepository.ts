@@ -1,5 +1,5 @@
-import { BaseRepository } from "./base/baseRepository.js";
-import GuildInfoModel, { IGuildInfo } from "../models/entities/guildInfoModel.js";
+import { BaseRepository } from "./base/baseRepository";
+import GuildInfoModel, { IGuildInfo } from "../models/entities/guildInfoModel";
 
 export class GuildInfoRepository extends BaseRepository<IGuildInfo> {
     constructor() {

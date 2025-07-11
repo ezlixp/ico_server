@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import "../config.js";
+import "../config";
 import { Response, NextFunction, Request } from "express";
-import { ValidationError } from "../errors/implementations/validationError.js";
+import { ValidationError } from "../errors/implementations/validationError";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
 const secretKey = process.env.JWT_SECRET_KEY as string;

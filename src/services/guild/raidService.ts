@@ -1,12 +1,12 @@
-import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel.js";
-import { BaseGuildServiceValidator } from "./baseGuildServiceValidator.js";
-import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema.js";
-import { uuidToUsername } from "../../communication/httpClients/mojangApiClient.js";
+import { guildDatabases, IGuildDatabases } from "../../models/entities/guildDatabaseModel";
+import { BaseGuildServiceValidator } from "./baseGuildServiceValidator";
+import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema";
+import { uuidToUsername } from "../../communication/httpClients/mojangApiClient";
 import { FilterQuery, HydratedDocument } from "mongoose";
-import { IGuildUser } from "../../models/schemas/guildUserSchema.js";
-import { NotFoundError } from "../../errors/implementations/notFoundError.js";
-import { RaidErrors } from "../../errors/messages/raidErrors.js";
-import { DatabaseError } from "../../errors/implementations/databaseError.js";
+import { IGuildUser } from "../../models/schemas/guildUserSchema";
+import { NotFoundError } from "../../errors/implementations/notFoundError";
+import { RaidErrors } from "../../errors/messages/raidErrors";
+import { DatabaseError } from "../../errors/implementations/databaseError";
 
 export class RaidService {
     private readonly databases: IGuildDatabases;

@@ -1,5 +1,5 @@
 ﻿import { Schema } from "mongoose";
-import { BaseModel } from "../entities/baseModel.js";
+import { BaseModel } from "../entities/baseModel";
 
 export interface IWaitlist extends BaseModel {
     mcUsername: string;

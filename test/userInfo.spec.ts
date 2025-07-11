@@ -1,5 +1,5 @@
 import test, { describe } from "node:test";
-import { server } from "../src/socket.js";
+import { server } from "../src/socket";
 import supertest from "supertest";
 
 describe("GET /api/v3/blocked/:mcUuid", function () {

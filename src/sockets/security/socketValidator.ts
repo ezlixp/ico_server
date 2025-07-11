@@ -1,13 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { ExtendedError, Socket } from "socket.io";
-import "../../config.js";
-import Services from "../../services/services.js";
-import {
-    ClientToServerEvents,
-    InterServerEvents,
-    ServerToClientEvents,
-    SocketData,
-} from "../../types/socketIOTypes.js";
+import "../../config";
+import Services from "../../services/services";
+import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "../../types/socketIOTypes";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
 const secretKey = process.env.JWT_SECRET_KEY!;

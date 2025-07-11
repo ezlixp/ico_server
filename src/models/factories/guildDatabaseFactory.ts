@@ -1,10 +1,10 @@
-﻿import { DatabaseModelFactory } from "./databaseModelFactory.js";
+﻿import { DatabaseModelFactory } from "./databaseModelFactory";
 import { Connection } from "mongoose";
-import { IGuildDatabase } from "../entities/guildDatabaseModel.js";
-import { GuildUserRepository } from "../../repositories/guild/guildUserRepository.js";
-import { RaidRepository } from "../../repositories/guild/raidRepository.js";
-import { TomeRepository } from "../../repositories/guild/tomeRepository.js";
-import { WaitListRepository } from "../../repositories/guild/waitlistRepository.js";
+import { IGuildDatabase } from "../entities/guildDatabaseModel";
+import { GuildUserRepository } from "../../repositories/guild/guildUserRepository";
+import { RaidRepository } from "../../repositories/guild/raidRepository";
+import { TomeRepository } from "../../repositories/guild/tomeRepository";
+import { WaitListRepository } from "../../repositories/guild/waitlistRepository";
 
 export class GuildDatabaseFactory {
     private constructor(private readonly modelFactory: DatabaseModelFactory) {}

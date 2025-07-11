@@ -1,9 +1,9 @@
 import { Request, Router } from "express";
-import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
-import { DefaultResponse } from "../communication/responses/defaultResponse.js";
-import { AddGuildRequest } from "../communication/requests/addGuildRequest.js";
-import Services from "../services/services.js";
-import { GuildInfoImpl, IGuildInfo } from "../models/entities/guildInfoModel.js";
+import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware";
+import { DefaultResponse } from "../communication/responses/defaultResponse";
+import { AddGuildRequest } from "../communication/requests/addGuildRequest";
+import Services from "../services/services";
+import { GuildInfoImpl, IGuildInfo } from "../models/entities/guildInfoModel";
 
 const adminRouter = Router();
 

@@ -1,5 +1,5 @@
-import { IGuildUser } from "../../models/schemas/guildUserSchema.js";
-import { BaseRepository } from "../base/baseRepository.js";
+import { IGuildUser } from "../../models/schemas/guildUserSchema";
+import { BaseRepository } from "../base/baseRepository";
 
 import { Model } from "mongoose";
 

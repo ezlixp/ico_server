@@ -1,5 +1,5 @@
 import assert from "assert";
-import ByteReader from "../types/byteReader.js";
+import ByteReader from "../types/byteReader";
 
 interface IItem {
     name: string; // id 2

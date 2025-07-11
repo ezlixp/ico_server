@@ -1,14 +1,14 @@
 ﻿import { Express, NextFunction, Request, Response } from "express";
-import statusRouter from "./routes/status.js";
-import healthRouter from "./routes/healthCheck.js";
-import adminRouter from "./routes/admin.js";
-import modVersionRouter from "./routes/modVersion.js";
-import userInfoRouter from "./routes/userInfo.js";
-import infoRouter from "./routes/guildInfo.js";
-import authenticationRouter from "./routes/authentication.js";
-import { NotFoundError } from "./errors/implementations/notFoundError.js";
-import { API_VERSION } from "./config.js";
-import guildRouter from "./routes/guild/base.js";
+import statusRouter from "./routes/status";
+import healthRouter from "./routes/healthCheck";
+import adminRouter from "./routes/admin";
+import modVersionRouter from "./routes/modVersion";
+import userInfoRouter from "./routes/userInfo";
+import infoRouter from "./routes/guildInfo";
+import authenticationRouter from "./routes/authentication";
+import { NotFoundError } from "./errors/implementations/notFoundError";
+import { API_VERSION } from "./config";
+import guildRouter from "./routes/guild/base";
 
 export const mapEndpoints = (app: Express) => {
     app.use("/api/:version/*extra", (request: Request<{ version: string }>, response: Response, next: NextFunction) => {

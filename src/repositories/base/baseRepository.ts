@@ -1,6 +1,6 @@
-﻿import { BaseModel } from "../../models/entities/baseModel.js";
+﻿import { BaseModel } from "../../models/entities/baseModel";
 import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, UpdateQuery } from "mongoose";
-import { DatabaseError } from "../../errors/implementations/databaseError.js";
+import { DatabaseError } from "../../errors/implementations/databaseError";
 
 export interface IRepository<T> {
     findOne(

@@ -1,9 +1,9 @@
 import { connect } from "mongoose";
 import "./config";
-import "./sockets/discord.js";
-import { registerMessageIndexes } from "./sockets/discord.js";
-import { GuildDatabaseCreator } from "./services/guild/guildDatabaseCreator.js";
-import { server } from "./socket.js";
+import "./sockets/discord";
+import { registerMessageIndexes } from "./sockets/discord";
+import { GuildDatabaseCreator } from "./services/guild/guildDatabaseCreator";
+import { server } from "./socket";
 
 // Connect to database
 try {

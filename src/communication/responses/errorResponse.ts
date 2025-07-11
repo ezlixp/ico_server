@@ -1,4 +1,4 @@
-﻿import { AppError } from "../../errors/base/appError.js";
+﻿import { AppError } from "../../errors/base/appError";
 
 export class ErrorResponse {
     public status: number;

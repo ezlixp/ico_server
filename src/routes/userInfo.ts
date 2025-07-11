@@ -1,13 +1,13 @@
 import { Request, Router } from "express";
-import validateJwtToken from "../middleware/jwtTokenValidator.middleware.js";
-import { IUser } from "../models/entities/userModel.js";
-import { DefaultResponse } from "../communication/responses/defaultResponse.js";
-import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware.js";
-import verifyInGuild from "../middleware/verifyInGuild.middleware.js";
-import { usernameToUuid } from "../communication/httpClients/mojangApiClient.js";
-import { GuildRequest } from "../communication/requests/guildRequest.js";
+import validateJwtToken from "../middleware/jwtTokenValidator.middleware";
+import { IUser } from "../models/entities/userModel";
+import { DefaultResponse } from "../communication/responses/defaultResponse";
+import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware";
+import verifyInGuild from "../middleware/verifyInGuild.middleware";
+import { usernameToUuid } from "../communication/httpClients/mojangApiClient";
+import { GuildRequest } from "../communication/requests/guildRequest";
 import { HydratedDocument } from "mongoose";
-import Services from "../services/services.js";
+import Services from "../services/services";
 
 /**Maps all endpoints related to user information. endpoint: .../user/*/
 const userInfoRouter = Router();

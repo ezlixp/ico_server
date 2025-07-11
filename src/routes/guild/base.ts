@@ -1,12 +1,12 @@
 import { Router } from "express";
-import onlineRouter from "./online.js";
-import raidRouter from "./raids.js";
-import tomeRouter from "./tomes.js";
-import waitlistRouter from "./waitlist.js";
-import { GuildRequest } from "../../communication/requests/guildRequest.js";
-import { DefaultResponse } from "../../communication/responses/defaultResponse.js";
-import { guildNames } from "../../models/entities/guildDatabaseModel.js";
-import { NotFoundError } from "../../errors/implementations/notFoundError.js";
+import onlineRouter from "./online";
+import raidRouter from "./raids";
+import tomeRouter from "./tomes";
+import waitlistRouter from "./waitlist";
+import { GuildRequest } from "../../communication/requests/guildRequest";
+import { DefaultResponse } from "../../communication/responses/defaultResponse";
+import { guildNames } from "../../models/entities/guildDatabaseModel";
+import { NotFoundError } from "../../errors/implementations/notFoundError";
 
 const guildRouter = Router({ mergeParams: true });
 

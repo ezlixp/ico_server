@@ -1,10 +1,9 @@
-import {ValidationError} from "../../errors/implementations/validationError.js";
-import {guildDatabases} from "../../models/entities/guildDatabaseModel.js";
-import {GuildErrors} from "../../errors/messages/guildErrors.js";
+import { ValidationError } from "../../errors/implementations/validationError";
+import { guildDatabases } from "../../models/entities/guildDatabaseModel";
+import { GuildErrors } from "../../errors/messages/guildErrors";
 
 export abstract class BaseGuildServiceValidator {
-    protected constructor() {
-    }
+    protected constructor() {}
 
     validateGuild(wynnGuildId: string) {
         if (!(wynnGuildId in guildDatabases) && wynnGuildId !== "*") {

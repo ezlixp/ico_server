@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { BaseModel } from "./baseModel.js";
+import { BaseModel } from "./baseModel";
 
 export interface IGuildInfoOptionals extends BaseModel {
     tomeChannel: string;
