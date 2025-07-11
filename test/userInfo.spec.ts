@@ -1,23 +1,28 @@
-import { describe, it } from "node:test";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
-import app from "../src/app.js";
+import test, { describe } from "node:test";
+import { server } from "../src/socket.js";
 import supertest from "supertest";
 
-let mongoServer: MongoMemoryServer;
-before(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
-    await mongoose.connect(mongoUri);
-});
-
-after(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
-});
-
-describe("GET /api/v3/blocked/:mcUuid", () => {
-    it("should return all blocked users", async () => {
-        const res = await supertest(app).get("/api/v3/blocked/pixlze");
+describe("GET /api/v3/blocked/:mcUuid", function () {
+    //     beforeEach
+    //     console.log("beforing");
+    //     const pix = new UserModel({
+    //         discordUuid: "752610633580675176",
+    //         banned: false,
+    //         blocked: [],
+    //         mcUuid: "39365bd45c7841de8901c7dc5b7c64c4",
+    //         muted: false,
+    //         refreshToken: "no",
+    //         verified: true,
+    //     })
+    //         .save()
+    //         .then(done);
+    // });
+    test("should return all blocked users", function () {
+        const ignore = supertest(server)
+            .get("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+            .set({ authorization: "bearer " + "2" });
+        console.log(ignore);
+        // // console.log(res);
+        // console.log(await UserModel.find());
     });
 });

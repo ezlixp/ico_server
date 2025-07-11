@@ -17,8 +17,8 @@ userInfoRouter.use(validateJwtToken);
 userInfoRouter.get(
     "/blocked/:mcUuid",
     async (request: Request<{ mcUuid: string }>, response: DefaultResponse<string[]>) => {
-        const uuid = request.params.mcUuid.replaceAll("-", "");
-        const blockedList = await Services.user.getBlockedList({ mcUuid: uuid });
+        const mcUuid = request.params.mcUuid.replaceAll("-", "");
+        const blockedList = await Services.user.getBlockedList({ mcUuid: mcUuid });
 
         response.status(200).send(blockedList);
     }

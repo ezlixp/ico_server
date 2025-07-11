@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { mapEndpoints } from "./endpoints.js";
+import { mapEndpoints } from "./endpoints";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
 
 const app = express();

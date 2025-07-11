@@ -10,7 +10,7 @@ import {
 } from "../../types/socketIOTypes.js";
 
 // Needs to match the token in the generator. Store it in a .env or .json for reusability.
-const secretKey = process.env.JWT_SECRET_KEY;
+const secretKey = process.env.JWT_SECRET_KEY!;
 
 /**
  * Checks if the token provided in a socket's initial connection is valid.

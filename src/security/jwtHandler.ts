@@ -16,8 +16,8 @@ export class JwtTokenHandler {
     private readonly options: jwt.SignOptions;
 
     private constructor() {
-        this.secretKey = process.env.JWT_SECRET_KEY;
-        this.refreshKey = process.env.JWT_REFRESH_SECRET_KEY;
+        this.secretKey = process.env.JWT_SECRET_KEY!;
+        this.refreshKey = process.env.JWT_REFRESH_SECRET_KEY!;
         this.options = { expiresIn: "15m" };
     }
 
