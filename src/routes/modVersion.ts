@@ -1,6 +1,7 @@
 import { Request, Router } from "express";
 import { getLatestVersion, IModVersionResponse } from "../utils/versionUtils.js";
 import { DefaultResponse } from "../communication/responses/defaultResponse.js";
+import { DatabaseError } from "../errors/implementations/databaseError.js";
 
 /**
  * Maps all mod version related endpoints.
@@ -14,9 +15,7 @@ modVersionRouter.get("/update", async (request: Request, response: DefaultRespon
     // Gets a token if correct validationKey is provided
     const latestVersion = await getLatestVersion();
     if (!latestVersion) {
-        response.status(500).send({ error: "something went wrong" });
-        console.log("get latest version error");
-        return;
+        throw new DatabaseError();
     }
     response.send(latestVersion);
 });

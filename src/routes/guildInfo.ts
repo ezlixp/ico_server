@@ -7,7 +7,13 @@ import { ValidationError } from "../errors/implementations/validationError.js";
 import { DatabaseError } from "../errors/implementations/databaseError.js";
 import { NotFoundError } from "../errors/implementations/notFoundError.js";
 import Services from "../services/services.js";
+import { HydratedDocument } from "mongoose";
 
+interface InfoRequest<Params = Record<string, any>, ResBody = any, ReqBody = any, ReqQuery = any>
+    extends Request<Params, ResBody, ReqBody, ReqQuery> {
+    discordGuildId?: string;
+    guildInfo?: HydratedDocument<IGuildInfo>;
+}
 /**
  * Maps all server config related endpoints. request.wynnGuildId is NOT defined in these routes, but request.discordGuildId is.
  */
@@ -20,19 +26,19 @@ infoRouter.use("/:discordGuildId", guildInfoRouter);
 
 guildInfoRouter.use(validateJwtToken);
 guildInfoRouter.use(
-    async (request: Request<{ discordGuildId: string }, {}, {}>, response: DefaultResponse, next: NextFunction) => {
+    async (request: InfoRequest<{ discordGuildId: string }, {}, {}>, response: DefaultResponse, next: NextFunction) => {
         const query = GuildInfoModel.findOne({ discordGuildId: request.params.discordGuildId });
         const server = await query.exec();
         if (!server) {
             throw new NotFoundError("Could not find specified server.");
         }
         request.discordGuildId = request.params.discordGuildId;
-        request.serverConfig = server;
+        request.guildInfo = server;
         next();
     }
 );
 
-infoRouter.post("/", async (request: Request<{}, {}, IGuildInfo>, response: DefaultResponse<IGuildInfo>) => {
+infoRouter.post("/", async (request: InfoRequest<{}, {}, IGuildInfo>, response: DefaultResponse<IGuildInfo>) => {
     Services.guildInfo.validateNewGuildCreation(request.body.discordGuildId, request.body.wynnGuildId);
     const body = request.body;
     const newServer = new GuildInfoImpl(body.wynnGuildId, body.wynnGuildName, body.discordGuildId, body);
@@ -41,30 +47,30 @@ infoRouter.post("/", async (request: Request<{}, {}, IGuildInfo>, response: Defa
     response.send(newServerModel);
 });
 
-guildInfoRouter.get("/", async (request: Request, response: DefaultResponse<IGuildInfo>) => {
-    response.send(request.serverConfig);
+guildInfoRouter.get("/", async (request: InfoRequest, response: DefaultResponse<IGuildInfo>) => {
+    response.send(request.guildInfo);
 });
 
-guildInfoRouter.delete("/", async (request: Request, response: DefaultResponse) => {
+guildInfoRouter.delete("/", async (request: InfoRequest, response: DefaultResponse) => {
     await GuildInfoModel.findOneAndDelete({ discordGuildId: request.discordGuildId }).exec();
     response.status(204).send();
 });
 
 guildInfoRouter.patch(
     "/",
-    async (request: Request<{}, {}, IGuildInfoOptionals>, response: DefaultResponse<IGuildInfo>) => {
-        response.send(await Services.guildInfo.upsertGuildInfo(request.serverConfig!, request.body));
+    async (request: InfoRequest<{}, {}, IGuildInfoOptionals>, response: DefaultResponse<IGuildInfo>) => {
+        response.send(await Services.guildInfo.upsertGuildInfo(request.guildInfo!, request.body));
     }
 );
 
 // currently no validation for duplicate roles
 guildInfoRouter.post(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IGuildInfo>) => {
+    async (request: InfoRequest<{}, {}, { roleId: string }>, response: DefaultResponse<IGuildInfo>) => {
         try {
-            request.serverConfig!.privilegedRoles!.push(request.body.roleId);
-            await request.serverConfig!.save();
-            response.send(request.serverConfig);
+            request.guildInfo!.privilegedRoles!.push(request.body.roleId);
+            await request.guildInfo!.save();
+            response.send(request.guildInfo);
         } catch (error) {
             console.error("privileged role post error:", error);
             throw new DatabaseError();
@@ -74,15 +80,15 @@ guildInfoRouter.post(
 
 guildInfoRouter.delete(
     "/privileged-role",
-    async (request: Request<{}, {}, { roleId: string }>, response: DefaultResponse<IGuildInfo>) => {
+    async (request: InfoRequest<{}, {}, { roleId: string }>, response: DefaultResponse<IGuildInfo>) => {
         try {
-            const index = request.serverConfig!.privilegedRoles!.indexOf(request.body.roleId);
+            const index = request.guildInfo!.privilegedRoles!.indexOf(request.body.roleId);
             if (index === -1) {
                 throw new ValidationError("Requested role was not privileged");
             }
-            request.serverConfig!.privilegedRoles!.splice(index, 1);
-            await request.serverConfig?.save();
-            response.send(request.serverConfig);
+            request.guildInfo!.privilegedRoles!.splice(index, 1);
+            await request.guildInfo?.save();
+            response.send(request.guildInfo);
         } catch (error) {
             console.error("privileged role delete error:", error);
             throw new DatabaseError();
