@@ -67,10 +67,32 @@ const guildInfoSchema: Schema<IGuildInfo> = new Schema({
     layoffsChannel: { type: String, required: true, default: "0" },
     raidsChannel: { type: String, required: true, default: "0" },
     warChannel: { type: String, required: true, default: "0" },
-    privilegedRoles: { type: [{ type: String, required: true }], required: true, default: [] },
-    // invites: { type: [{ type: String, required: true }], required: true, default: [] },
-    // outgoingInvites: { type: [{ type: String, required: true }] },
-    mutedUuids: { type: [{ type: String, required: true }], required: true, default: [] },
+    privilegedRoles: {
+        type: [String],
+        required: true,
+        validate: {
+            validator: function (arr) {
+                return (
+                    Array.isArray(arr) &&
+                    arr.every((item) => typeof item === "string" && item !== null && !isNaN(Number(item)))
+                );
+            },
+        },
+        default: [],
+    },
+    mutedUuids: {
+        type: [String],
+        required: true,
+        validate: {
+            validator: function (arr) {
+                return (
+                    Array.isArray(arr) &&
+                    arr.every((item) => typeof item === "string" && item !== null && !isNaN(Number(item)))
+                );
+            },
+        },
+        default: [],
+    },
     listeningChannel: { type: String, required: true, default: "0" },
     broadcastingChannel: { type: String, required: true, default: "0" },
 });
