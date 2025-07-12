@@ -11,11 +11,11 @@ jobs:
     test:
         runs-on: ubuntu-latest
         env:
-            JWT_VALIDATION_KEY: ${{vars.JWT_VALIDATION_KEY}}
-            JWT_SECRET_KEY: ${{vars.JWT_SECRET_KEY}}
-            JWT_REFRESH_SECRET_KEY: ${{vars.JWT_REFRESH_SECRET_KEY}}
-            BOT_CLIENT_ID: ${{vars.BOT_CLIENT_ID}}
-            BOT_CLIENT_SECRET: ${{vars.BOT_CLIENT_SECRET}}
+            JWT_VALIDATION_KEY: ${{secrets.JWT_VALIDATION_KEY}}
+            JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
+            JWT_REFRESH_SECRET_KEY: ${{secrets.JWT_REFRESH_SECRET_KEY}}
+            BOT_CLIENT_ID: ${{secrets.BOT_CLIENT_ID}}
+            BOT_CLIENT_SECRET: ${{secrets.BOT_CLIENT_SECRET}}
 
         steps:
             - name: Checkout code
