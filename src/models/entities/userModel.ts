@@ -23,7 +23,6 @@ const userSchema: Schema<IUser> = new Schema(
                 validator: function (arr) {
                     return Array.isArray(arr) && arr.every((item) => typeof item === "string" && item !== null);
                 },
-                message: "test",
             },
             default: [],
         },
