@@ -4,6 +4,7 @@ import { UserErrors } from "../errors/messages/userErrors";
 import { ValidationError } from "../errors/implementations/validationError";
 import { FilterQuery, HydratedDocument } from "mongoose";
 import { UserRepository } from "../repositories/userRepository";
+import { MissingFieldError } from "../errors/implementations/missingFieldError";
 
 export class UserInfoService {
     private readonly validator: UserInfoServiceValidator;
@@ -32,7 +33,7 @@ export class UserInfoService {
     async linkUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
         this.validator.validateLinkUser(options);
 
-        const user = await this.repository.findOne({ discordUuid: options.discordUuid });
+        const user = await this.repository.findOne({ mcUuid: options.mcUuid });
         this.validator.validateGetEmpty(user);
 
         const get = await this.repository.findOne({ discordUuid: options.discordUuid });
@@ -61,13 +62,13 @@ export class UserInfoService {
         return await this.repository.update({ discordUuid: user.discordUuid }, user);
     }
 
-    async removeFromBlockedList(userId: FilterQuery<IUser>, toRemove: string): Promise<void> {
+    async removeFromBlockedList(userId: FilterQuery<IUser>, toRemove: string): Promise<IUser> {
         const user = await this.getUser(userId);
         this.validator.validateRemoveFromBlockedList(user, toRemove);
 
         user.blocked = user.blocked.filter((blockedUser) => blockedUser !== toRemove);
 
-        await this.repository.update({ discordUuid: user.discordUuid }, user);
+        return await this.repository.update({ discordUuid: user.discordUuid }, user);
     }
 }
 
@@ -91,8 +92,11 @@ class UserInfoServiceValidator {
     }
 
     validateLinkUser(options: FilterQuery<IUser>): asserts options is IUser {
-        if (!options.discordUuid || !options.mcUuid) {
-            throw new ValidationError(UserErrors.MISSING_PARAMS);
+        if (!options.discordUuid) {
+            throw new MissingFieldError("discordUuid", typeof "");
+        }
+        if (!options.mcUuid) {
+            throw new MissingFieldError("mcUsername", typeof "");
         }
     }
 
@@ -103,11 +107,12 @@ class UserInfoServiceValidator {
         if (user.blocked.includes(toBlock)) {
             throw new ValidationError(UserErrors.ALREADY_IN_BLOCKED_LIST);
         }
+        if (!toBlock) throw new MissingFieldError("toBlock", typeof "");
     }
 
     validateRemoveFromBlockedList(user: IUser, toRemove: string) {
         if (!user.blocked.includes(toRemove)) {
-            throw new ValidationError(UserErrors.NOT_IN_BLOCKED_LIST);
+            throw new NotFoundError(UserErrors.NOT_IN_BLOCKED_LIST);
         }
     }
 }

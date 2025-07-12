@@ -1,13 +1,14 @@
-import { describe, it, expect, afterAll, beforeAll } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 import UserModel from "../src/models/entities/userModel";
-import { JwtTokenHandler } from "../src/security/jwtHandler";
 import { UserErrors } from "../src/errors/messages/userErrors";
 import { API_VERSION } from "../src/config";
 import { authHeader, request } from "./globalSetup";
+import mongoose from "mongoose";
+import { getMissingFieldMessage } from "../src/errors/implementations/missingFieldError";
 
 describe("User info routes", () => {
-    let token: string;
-    beforeAll(async () => {
+    beforeEach(async () => {
+        mongoose.connection.dropDatabase();
         await UserModel.insertMany([
             {
                 discordUuid: "752610633580675176",
@@ -15,37 +16,28 @@ describe("User info routes", () => {
                 blocked: ["pixlze", "pixlze2"],
                 mcUuid: "39365bd45c7841de8901c7dc5b7c64c4",
                 muted: false,
-                refreshToken: "no",
+                refreshToken: "none",
                 verified: true,
             },
             {
-                discordUuid: "752610633580675176",
+                discordUuid: "752610633580675175",
                 banned: false,
                 blocked: ["pixlze3", "pixlze4"],
-                mcUuid: "21",
+                mcUuid: "",
                 muted: false,
-                refreshToken: "no",
+                refreshToken: "none",
                 verified: true,
             },
         ]);
-        token = (await JwtTokenHandler.create().generateAdminToken()).token!;
-    });
-    afterAll(async () => {
-        console.log("\x1b[42mfinal usermodel: \x1b[0m", await UserModel.find());
-        await UserModel.deleteMany();
     });
 
     describe(`GET /api/${API_VERSION}/user/blocked/:mcUuid`, () => {
         it("should return all blocked users", async () => {
             const res = await request
                 .get("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
-                .set({ authorization: "bearer " + token });
+                .set(await authHeader);
             expect(res.status).toBe(200);
             expect(res.body).toStrictEqual(["pixlze", "pixlze2"]);
-
-            const res2 = await request.get("/api/v3/user/blocked/21").set(await authHeader);
-            expect(res2.status).toBe(200);
-            expect(res2.body).toStrictEqual(["pixlze3", "pixlze4"]);
         });
 
         it("should handle missing users", async () => {
@@ -55,6 +47,14 @@ describe("User info routes", () => {
                 status: 404,
                 title: "Error",
                 errorMessage: UserErrors.NOT_FOUND,
+            });
+
+            const res2 = await request.get("/api/v3/user/blocked/").set(await authHeader);
+            expect(res2.status).toBe(404);
+            expect(res2.body).toStrictEqual({
+                status: 404,
+                title: "Error",
+                errorMessage: "not found",
             });
         });
     });
@@ -73,7 +73,104 @@ describe("User info routes", () => {
             const res = await request
                 .post("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
                 .set(await authHeader);
-            expect(res.status).toBe(500);
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({
+                status: 400,
+                title: "Error",
+                errorMessage: getMissingFieldMessage("toBlock", typeof "_"),
+            });
+        });
+
+        it("should handle empty toBlock field", async () => {
+            const res = await request
+                .post("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+                .send({ toBlock: "" })
+                .set(await authHeader);
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({
+                status: 400,
+                title: "Error",
+                errorMessage: getMissingFieldMessage("toBlock", typeof "_"),
+            });
+        });
+    });
+
+    describe(`DELETE api/${API_VERSION}/user/blocked`, () => {
+        it("should remove a username from the blocked list", async () => {
+            const res = await request
+                .delete("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4?toRemove=pixlze")
+                .set(await authHeader);
+            expect(res.status).toBe(200);
+            expect(res.body.blocked).not.toContain("pixlze");
+            expect(res.body.blocked).toContain("pixlze2");
+        });
+
+        it("should handle attempting to remove a non blocked username", async () => {
+            const res = await request
+                .delete("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4?toRemove=missing")
+                .set(await authHeader);
+            expect(res.status).toBe(404);
+            expect(res.body).toStrictEqual({
+                status: 404,
+                title: "Error",
+                errorMessage: UserErrors.NOT_IN_BLOCKED_LIST,
+            });
+        });
+
+        it("should handle missing query param", async () => {
+            const res = await request
+                .delete("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+                .set(await authHeader);
+            expect(res.status).toBe(404);
+            expect(res.body).toStrictEqual({
+                status: 404,
+                title: "Error",
+                errorMessage: UserErrors.NOT_IN_BLOCKED_LIST,
+            });
+        });
+    });
+
+    describe(`POST api/${API_VERSION}/user/link/:wynnGuildId`, () => {
+        it("should link a minecraft account with a discord account", async () => {
+            const res = await request
+                .post("/api/v3/user/link/correct")
+                .send({ mcUsername: "0xzy", discordUuid: "752610633580675175" })
+                .set(await authHeader);
+            expect(res.status).toBe(200);
+            expect(res.body.mcUuid).toBe("963269fe6c50435a9ff57dc928c8e521");
+        });
+
+        it("should handle missing discordUuid and mcUsername", async () => {
+            const res = await request
+                .post("/api/v3/user/link/correct")
+                .send({ discordUuid: "e" })
+                .set(await authHeader);
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({
+                status: 400,
+                title: "Error",
+                errorMessage: getMissingFieldMessage("mcUsername", typeof ""),
+            });
+
+            const res2 = await request
+                .post("/api/v3/user/link/correct")
+                .send({ mcUsername: "wow" })
+                .set(await authHeader);
+            expect(res2.status).toBe(400);
+            expect(res2.body).toStrictEqual({
+                status: 400,
+                title: "Error",
+                errorMessage: getMissingFieldMessage("discordUuid", typeof ""),
+            });
+        });
+
+        it("should handle user not in guild", async () => {
+            const res = await request
+                .post("/api/v3/user/link/incorrect")
+                .send({ mcUsername: "_", discordUuid: "_" })
+                .set(await authHeader);
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ status: 400, title: "Error", errorMessage: "User not in the guild." });
         });
     });
 });

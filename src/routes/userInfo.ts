@@ -36,14 +36,14 @@ userInfoRouter.post(
 );
 
 userInfoRouter.delete(
-    "/blocked/:mcUuid/:toRemove",
-    async (request: Request<{ mcUuid: string; toRemove: string }>, response: DefaultResponse) => {
+    "/blocked/:mcUuid",
+    async (request: Request<{ mcUuid: string }, {}, {}, { toRemove: string }>, response: DefaultResponse<IUser>) => {
         const uuid = request.params.mcUuid.replaceAll("-", "");
-        const toRemove = request.params.toRemove;
+        const toRemove = request.query.toRemove;
 
-        await Services.user.removeFromBlockedList({ mcUuid: uuid }, toRemove);
+        const updatedUser = await Services.user.removeFromBlockedList({ mcUuid: uuid }, toRemove);
 
-        response.status(204).send();
+        response.status(200).send(updatedUser);
     }
 );
 
@@ -58,7 +58,7 @@ userInfoRouter.post(
         response.status(200).send(
             await Services.user.linkUser({
                 discordUuid: request.body.discordUuid,
-                mcUuid: request.body.mcUsername ? "" : await usernameToUuid(request.body.mcUsername),
+                mcUuid: request.body.mcUsername ? await usernameToUuid(request.body.mcUsername) : "",
             })
         );
     }

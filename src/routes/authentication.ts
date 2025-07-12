@@ -86,7 +86,7 @@ const refreshToken = async (request: Request<{}, {}, IRefreshRequest>, response:
 };
 
 authenticationRouter.post(
-    "/get-token",
+    "/token",
     async (
         request: Request<{}, {}, { grantType: string } & (IAuthCodeRequest | IRefreshRequest)>,
         response: DefaultResponse
