@@ -1,7 +1,7 @@
 import { RaidService } from "./guild/raidService";
 import { TomeService } from "./guild/tomeService";
 import { WaitlistService } from "./guild/waitlistService";
-import { GuildInfoService } from "./GuildInfoService";
+import { GuildInfoService } from "./guildInfoService";
 import { UserInfoService } from "./userInfoService";
 
 export default abstract class Services {
