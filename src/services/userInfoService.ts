@@ -32,7 +32,7 @@ export class UserInfoService {
     async linkUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
         this.validator.validateLinkUser(options);
 
-        const user = await this.repository.findOne({ mcUuid: options.mcUuid });
+        const user = await this.repository.findOne({ discordUuid: options.discordUuid });
         this.validator.validateGetEmpty(user);
 
         const get = await this.repository.findOne({ discordUuid: options.discordUuid });
@@ -58,7 +58,7 @@ export class UserInfoService {
 
         user.blocked.push(toBlock);
 
-        return await this.repository.update({ mcUuid: user.mcUuid }, user);
+        return await this.repository.update({ discordUuid: user.discordUuid }, user);
     }
 
     async removeFromBlockedList(userId: FilterQuery<IUser>, toRemove: string): Promise<void> {
@@ -67,7 +67,7 @@ export class UserInfoService {
 
         user.blocked = user.blocked.filter((blockedUser) => blockedUser !== toRemove);
 
-        await this.repository.update({ mcUuid: user.mcUuid }, user);
+        await this.repository.update({ discordUuid: user.discordUuid }, user);
     }
 }
 
