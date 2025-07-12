@@ -14,6 +14,6 @@
         "noEmitOnError": true,
         "isolatedModules": true
     },
-    "include": ["test_mocha/**/*.ts", "src/**/*"],
+    "include": ["test/**/*.ts", "src/**/*"],
     "exclude": ["node_modules"]
 }

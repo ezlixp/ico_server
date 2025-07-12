@@ -47,7 +47,6 @@ export class UserInfoService {
     }
 
     async getBlockedList(userId: FilterQuery<IUser>): Promise<string[]> {
-        console.log("him", await this.repository.find({}));
         const user = await this.getUser(userId);
 
         return user.blocked;
