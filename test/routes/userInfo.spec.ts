@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
-import UserModel from "../src/models/entities/userModel";
-import { UserErrors } from "../src/errors/messages/userErrors";
-import { API_VERSION } from "../src/config";
-import { authHeader, request } from "./globalSetup";
+import UserModel from "../../src/models/entities/userModel";
+import { UserErrors } from "../../src/errors/messages/userErrors";
+import { API_VERSION } from "../../src/config";
+import { authHeader, request } from "../globalSetup";
 import mongoose from "mongoose";
-import { getMissingFieldMessage } from "../src/errors/implementations/missingFieldError";
+import { getMissingFieldMessage } from "../../src/errors/implementations/missingFieldError";
 
 describe("User info routes", () => {
     beforeEach(async () => {
