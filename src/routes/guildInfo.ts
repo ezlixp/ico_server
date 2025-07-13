@@ -96,4 +96,9 @@ guildInfoRouter.delete(
     }
 );
 
+guildInfoRouter.post(
+    "/mute",
+    async (request: InfoRequest<{}, {}, { discordUuid: string }>, response: DefaultResponse<IGuildInfo>) => {}
+);
+
 export default infoRouter;

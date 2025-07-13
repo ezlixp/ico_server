@@ -32,7 +32,7 @@ export class GuildInfoService {
         guild: HydratedDocument<IGuildInfo>,
         update: Partial<IGuildInfoOptionals>
     ): Promise<IGuildInfo> {
-        const { privilegedRoles, mutedUuids, ...rest } = guild;
+        const { privilegedRoles, mutedUuids, ...rest } = update;
 
         guild.updateOne(rest);
         guild.updateOne({ $push: { privilegedRoles: { $each: privilegedRoles }, mutedUuids: { $each: mutedUuids } } });

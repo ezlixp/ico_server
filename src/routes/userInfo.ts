@@ -74,14 +74,4 @@ userInfoRouter.post(
     }
 );
 
-// userInfoRouter.post(
-//     "/mute/:discordUuid",
-//     validateAdminJwtToken,
-//     async (request: Request<{ discordUuid: string }, {}, { muted: boolean }>, response: DefaultResponse) => {
-//         response.send(
-//             await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { muted: request.body.muted })
-//         );
-//     }
-// );
-
 export default userInfoRouter;

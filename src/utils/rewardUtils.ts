@@ -6,7 +6,7 @@ import { usernameToUuid } from "../communication/httpClients/mojangApiClient";
  * @param guildId The guild id of the user
  */
 export async function decrementAspects(mcUsername: string, guildId: string): Promise<void> {
-    guildDatabases[guildId].GuildUserRepository.update(
+    guildDatabases[guildId].GuildUserRepository.updateWithUpsert(
         { uuid: await usernameToUuid(mcUsername) },
         { $inc: { aspects: -1 } }
     ).then(() => {
@@ -19,7 +19,7 @@ export async function decrementAspects(mcUsername: string, guildId: string): Pro
  */
 export async function incrementAspects(mcUsername: string, guildId: string): Promise<void> {
     try {
-        guildDatabases[guildId].GuildUserRepository.update(
+        guildDatabases[guildId].GuildUserRepository.updateWithUpsert(
             { uuid: await usernameToUuid(mcUsername) },
             { $inc: { aspects: 0.5, raids: 1, emeralds: 512 } }
         ).then(() => {

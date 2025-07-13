@@ -1,5 +1,5 @@
 ﻿import { BaseModel } from "../../models/entities/baseModel";
-import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, UpdateQuery } from "mongoose";
+import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, Types, UpdateQuery } from "mongoose";
 import { DatabaseError } from "../../errors/implementations/databaseError";
 
 export interface IRepository<T> {
@@ -17,7 +17,7 @@ export interface IRepository<T> {
 
     create(data: Partial<T>): Promise<HydratedDocument<T>>;
 
-    update(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>>;
+    updateWithUpsert(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>>;
 
     deleteOne(options: FilterQuery<T>): Promise<HydratedDocument<T> | null>;
 }
@@ -59,7 +59,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
     }
 
     // upsert is necessary for rewardUtils.ts
-    async update(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>> {
+    async updateWithUpsert(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>> {
         try {
             const out = await this.model
                 .findOneAndUpdate(options, data, {
@@ -70,6 +70,38 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
                     context: "query",
                 })
                 .exec();
+            return out;
+        } catch (err) {
+            throw new DatabaseError();
+        }
+    }
+
+    async updateById(id: string | Types.ObjectId, update: UpdateQuery<T>): Promise<HydratedDocument<T>> {
+        try {
+            const document = await this.model
+                .findByIdAndUpdate(id, update, {
+                    new: true,
+                    collation: { locale: "en", strength: 2 },
+                })
+                .exec();
+            if (!document) throw new DatabaseError();
+            return document;
+        } catch (err) {
+            throw new DatabaseError();
+        }
+    }
+
+    async update(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>> {
+        try {
+            const out = await this.model
+                .findOneAndUpdate(options, data, {
+                    new: true,
+                    collation: { locale: "en", strength: 2 },
+                    runValidators: true,
+                    context: "query",
+                })
+                .exec();
+            if (!out) throw new DatabaseError();
             return out;
         } catch (err) {
             throw new DatabaseError();
