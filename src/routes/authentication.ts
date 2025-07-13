@@ -59,7 +59,6 @@ const authorizationCode = async (
     request: Request<{}, {}, IAuthCodeRequest>,
     response: DefaultResponse<TokenResponse>
 ) => {
-    console.log(request.body);
     const code = request.body.code;
     if (code === process.env.JWT_VALIDATION_KEY) return response.send(await tokenHandler.generateAdminToken());
 
