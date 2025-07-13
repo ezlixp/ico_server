@@ -34,14 +34,14 @@ describe("User info routes", () => {
     describe(`GET /api/${API_VERSION}/user/blocked/:mcUuid`, () => {
         it("should return all blocked users", async () => {
             const res = await request
-                .get("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+                .get(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4`)
                 .set(await authHeader);
             expect(res.status).toBe(200);
             expect(res.body).toStrictEqual(["pixlze", "pixlze2"]);
         });
 
         it("should handle missing users", async () => {
-            const res = await request.get("/api/v3/user/blocked/missing").set(await authHeader);
+            const res = await request.get(`/api/${API_VERSION}/user/blocked/missing`).set(await authHeader);
             expect(res.status).toBe(404);
             expect(res.body).toStrictEqual({
                 status: 404,
@@ -49,7 +49,7 @@ describe("User info routes", () => {
                 errorMessage: UserErrors.NOT_FOUND,
             });
 
-            const res2 = await request.get("/api/v3/user/blocked/").set(await authHeader);
+            const res2 = await request.get(`/api/${API_VERSION}/user/blocked/`).set(await authHeader);
             expect(res2.status).toBe(404);
             expect(res2.body).toStrictEqual({
                 status: 404,
@@ -62,7 +62,7 @@ describe("User info routes", () => {
     describe(`POST api/${API_VERSION}/user/blocked/:mcUuid`, () => {
         it("should add a blocked user", async () => {
             const res = await request
-                .post("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+                .post(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4`)
                 .send({ toBlock: "newblocked" })
                 .set(await authHeader);
             expect(res.status).toBe(200);
@@ -71,7 +71,7 @@ describe("User info routes", () => {
 
         it("should handle missing toBlock field", async () => {
             const res = await request
-                .post("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+                .post(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4`)
                 .set(await authHeader);
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({
@@ -83,7 +83,7 @@ describe("User info routes", () => {
 
         it("should handle empty toBlock field", async () => {
             const res = await request
-                .post("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+                .post(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4`)
                 .send({ toBlock: "" })
                 .set(await authHeader);
             expect(res.status).toBe(400);
@@ -98,7 +98,7 @@ describe("User info routes", () => {
     describe(`DELETE api/${API_VERSION}/user/blocked`, () => {
         it("should remove a username from the blocked list", async () => {
             const res = await request
-                .delete("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4?toRemove=pixlze")
+                .delete(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4?toRemove=pixlze`)
                 .set(await authHeader);
             expect(res.status).toBe(200);
             expect(res.body.blocked).not.toContain("pixlze");
@@ -107,7 +107,7 @@ describe("User info routes", () => {
 
         it("should handle attempting to remove a non blocked username", async () => {
             const res = await request
-                .delete("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4?toRemove=missing")
+                .delete(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4?toRemove=missing`)
                 .set(await authHeader);
             expect(res.status).toBe(404);
             expect(res.body).toStrictEqual({
@@ -119,7 +119,7 @@ describe("User info routes", () => {
 
         it("should handle missing query param", async () => {
             const res = await request
-                .delete("/api/v3/user/blocked/39365bd45c7841de8901c7dc5b7c64c4")
+                .delete(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4`)
                 .set(await authHeader);
             expect(res.status).toBe(404);
             expect(res.body).toStrictEqual({
@@ -133,7 +133,7 @@ describe("User info routes", () => {
     describe(`POST api/${API_VERSION}/user/link/:wynnGuildId`, () => {
         it("should link a minecraft account with a discord account", async () => {
             const res = await request
-                .post("/api/v3/user/link/correct")
+                .post(`/api/${API_VERSION}/user/link/correct`)
                 .send({ mcUsername: "0xzy", discordUuid: "752610633580675175" })
                 .set(await authHeader);
             expect(res.status).toBe(200);
@@ -142,7 +142,7 @@ describe("User info routes", () => {
 
         it("should handle missing discordUuid and mcUsername", async () => {
             const res = await request
-                .post("/api/v3/user/link/correct")
+                .post(`/api/${API_VERSION}/user/link/correct`)
                 .send({ discordUuid: "e" })
                 .set(await authHeader);
             expect(res.status).toBe(400);
@@ -153,7 +153,7 @@ describe("User info routes", () => {
             });
 
             const res2 = await request
-                .post("/api/v3/user/link/correct")
+                .post(`/api/${API_VERSION}/user/link/correct`)
                 .send({ mcUsername: "wow" })
                 .set(await authHeader);
             expect(res2.status).toBe(400);
@@ -166,11 +166,43 @@ describe("User info routes", () => {
 
         it("should handle user not in guild", async () => {
             const res = await request
-                .post("/api/v3/user/link/incorrect")
+                .post(`/api/${API_VERSION}/user/link/incorrect`)
                 .send({ mcUsername: "_", discordUuid: "_" })
                 .set(await authHeader);
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ status: 400, title: "Error", errorMessage: "User not in the guild." });
+        });
+    });
+
+    describe(`POST /api/${API_VERSION}/user/ban/:discordUuid`, () => {
+        it("should set ban state of user", async () => {
+            const res = await request
+                .post(`/api/${API_VERSION}/user/ban/752610633580675176`)
+                .send({ banned: true })
+                .set(await authHeader);
+            expect(res.status).toBe(200);
+            expect(res.body.banned).toBe(true);
+
+            const res2 = await request
+                .post(`/api/${API_VERSION}/user/ban/752610633580675176`)
+                .send({ banned: false })
+                .set(await authHeader);
+            expect(res2.status).toBe(200);
+            expect(res2.body.banned).toBe(false);
+        });
+
+        it("should handle unknown user", async () => {
+            const res = await request
+                .post(`/api/${API_VERSION}/user/ban/unknown`)
+                .send({ banned: true })
+                .set(await authHeader);
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({
+                status: 404,
+                title: "Error",
+                errorMonitor: UserErrors.NOT_FOUND,
+            });
+            console.log(res.status, res.body);
         });
     });
 });

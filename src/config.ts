@@ -4,6 +4,6 @@ import dotenv from "dotenv";
 const envFile: string = ".env." + process.env.NODE_ENV;
 export const API_VERSION = "v3";
 
-if (process.env.NODE_ENV !== "test") dotenv.config({ path: path.resolve(process.cwd(), envFile) });
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
 export default dotenv;
