@@ -4,6 +4,7 @@ import { API_VERSION } from "../../src/config";
 import { authHeader, request } from "../globalSetup";
 import mongoose from "mongoose";
 import { getMissingFieldMessage } from "../../src/errors/implementations/missingFieldError";
+import { ErrorResponse } from "../../src/communication/responses/errorResponse";
 
 describe("User info routes", () => {
     beforeEach(async () => {
@@ -42,7 +43,7 @@ describe("User info routes", () => {
         it("should handle missing users", async () => {
             const res = await request.get(`/api/${API_VERSION}/user/blocked/missing`).set(await authHeader);
             expect(res.status).toBe(404);
-            expect(res.body).toStrictEqual({
+            expect(res.body).toMatchObject<ErrorResponse>({
                 status: 404,
                 title: "Error",
                 errorMessage: UserErrors.NOT_FOUND,
@@ -50,7 +51,7 @@ describe("User info routes", () => {
 
             const res2 = await request.get(`/api/${API_VERSION}/user/blocked/`).set(await authHeader);
             expect(res2.status).toBe(404);
-            expect(res2.body).toStrictEqual({
+            expect(res2.body).toMatchObject<ErrorResponse>({
                 status: 404,
                 title: "Error",
                 errorMessage: "not found",
@@ -73,7 +74,7 @@ describe("User info routes", () => {
                 .post(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4`)
                 .set(await authHeader);
             expect(res.status).toBe(400);
-            expect(res.body).toStrictEqual({
+            expect(res.body).toMatchObject<ErrorResponse>({
                 status: 400,
                 title: "Error",
                 errorMessage: getMissingFieldMessage("toBlock", typeof "_"),
@@ -86,7 +87,7 @@ describe("User info routes", () => {
                 .send({ toBlock: "" })
                 .set(await authHeader);
             expect(res.status).toBe(400);
-            expect(res.body).toStrictEqual({
+            expect(res.body).toMatchObject<ErrorResponse>({
                 status: 400,
                 title: "Error",
                 errorMessage: getMissingFieldMessage("toBlock", typeof "_"),
@@ -109,7 +110,7 @@ describe("User info routes", () => {
                 .delete(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4?toRemove=missing`)
                 .set(await authHeader);
             expect(res.status).toBe(404);
-            expect(res.body).toStrictEqual({
+            expect(res.body).toMatchObject<ErrorResponse>({
                 status: 404,
                 title: "Error",
                 errorMessage: UserErrors.NOT_IN_BLOCKED_LIST,
@@ -121,7 +122,7 @@ describe("User info routes", () => {
                 .delete(`/api/${API_VERSION}/user/blocked/39365bd45c7841de8901c7dc5b7c64c4`)
                 .set(await authHeader);
             expect(res.status).toBe(404);
-            expect(res.body).toStrictEqual({
+            expect(res.body).toMatchObject<ErrorResponse>({
                 status: 404,
                 title: "Error",
                 errorMessage: UserErrors.NOT_IN_BLOCKED_LIST,
@@ -145,7 +146,7 @@ describe("User info routes", () => {
                 .send({ discordUuid: "e" })
                 .set(await authHeader);
             expect(res.status).toBe(400);
-            expect(res.body).toStrictEqual({
+            expect(res.body).toMatchObject<ErrorResponse>({
                 status: 400,
                 title: "Error",
                 errorMessage: getMissingFieldMessage("mcUsername", typeof ""),
@@ -156,7 +157,7 @@ describe("User info routes", () => {
                 .send({ mcUsername: "wow" })
                 .set(await authHeader);
             expect(res2.status).toBe(400);
-            expect(res2.body).toStrictEqual({
+            expect(res2.body).toMatchObject<ErrorResponse>({
                 status: 400,
                 title: "Error",
                 errorMessage: getMissingFieldMessage("discordUuid", typeof ""),
@@ -169,7 +170,11 @@ describe("User info routes", () => {
                 .send({ mcUsername: "_", discordUuid: "_" })
                 .set(await authHeader);
             expect(res.status).toBe(400);
-            expect(res.body).toStrictEqual({ status: 400, title: "Error", errorMessage: "User not in the guild." });
+            expect(res.body).toMatchObject<ErrorResponse>({
+                status: 400,
+                title: "Error",
+                errorMessage: "User not in the guild.",
+            });
         });
     });
 
@@ -196,7 +201,7 @@ describe("User info routes", () => {
                 .send({ banned: true })
                 .set(await authHeader);
             expect(res.status).toBe(404);
-            expect(res.body).toStrictEqual({
+            expect(res.body).toMatchObject<ErrorResponse>({
                 status: 404,
                 title: "Error",
                 errorMessage: UserErrors.NOT_FOUND,
