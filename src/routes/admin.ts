@@ -5,8 +5,10 @@ import { AddGuildRequest } from "../communication/requests/addGuildRequest";
 import Services from "../services/services";
 import { GuildInfoImpl, IGuildInfo } from "../models/entities/guildInfoModel";
 
+/** Maps all admin related routes. endpoint: .../admin/ */
 const adminRouter = Router();
 
+// TODO move to guildinfo.ts
 adminRouter.post(
     "/new-guild",
     validateAdminJwtToken,
