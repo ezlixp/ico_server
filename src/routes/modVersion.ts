@@ -4,7 +4,7 @@ import { DefaultResponse } from "../communication/responses/defaultResponse";
 import { DatabaseError } from "../errors/implementations/databaseError";
 
 /**
- * Maps all mod version related endpoints.
+ * Maps all mod version related endpoints. endpoint: .../mod
  */
 const modVersionRouter = Router();
 

@@ -1,4 +1,3 @@
-import { afterAll, beforeAll } from "@jest/globals";
 import mongoose from "mongoose";
 
 beforeAll(async () => {

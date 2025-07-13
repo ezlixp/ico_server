@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach } from "@jest/globals";
 import UserModel from "../../src/models/entities/userModel";
 import { UserErrors } from "../../src/errors/messages/userErrors";
 import { API_VERSION } from "../../src/config";
@@ -196,11 +195,11 @@ describe("User info routes", () => {
                 .post(`/api/${API_VERSION}/user/ban/unknown`)
                 .send({ banned: true })
                 .set(await authHeader);
-            expect(res.status).toBe(200);
+            expect(res.status).toBe(404);
             expect(res.body).toStrictEqual({
                 status: 404,
                 title: "Error",
-                errorMonitor: UserErrors.NOT_FOUND,
+                errorMessage: UserErrors.NOT_FOUND,
             });
             console.log(res.status, res.body);
         });
