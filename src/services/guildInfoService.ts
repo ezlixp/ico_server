@@ -1,8 +1,10 @@
-import { HydratedDocument } from "mongoose";
+import { FilterQuery, HydratedDocument, UpdateQuery } from "mongoose";
 import { ValidationError } from "../errors/implementations/validationError";
 import { IGuildInfo, IGuildInfoOptionals } from "../models/entities/guildInfoModel";
 import { GuildInfoRepository } from "../repositories/guildInfoRepository";
 import { GuildDatabaseCreator } from "./guild/guildDatabaseCreator";
+import { NotFoundError } from "../errors/implementations/notFoundError";
+import { GuildErrors } from "../errors/messages/guildErrors";
 
 export class GuildInfoService {
     private readonly guildDatabaseCreator: GuildDatabaseCreator;
@@ -19,8 +21,8 @@ export class GuildInfoService {
         return new GuildInfoService();
     }
 
-    public async createNewGuild(guildRequest: IGuildInfo): Promise<IGuildInfo> {
-        await this.validateNewGuildCreation(guildRequest.discordGuildId, guildRequest.wynnGuildId);
+    public async createNewGuild(guildRequest: IGuildInfo): Promise<HydratedDocument<IGuildInfo>> {
+        await this.checkDuplicateGuild(guildRequest.discordGuildId, guildRequest.wynnGuildId);
 
         const newGuild = await this.repository.create(guildRequest);
         this.guildDatabaseCreator.createNewDatabase(newGuild.wynnGuildName, newGuild.wynnGuildId);
@@ -28,19 +30,35 @@ export class GuildInfoService {
         return newGuild;
     }
 
-    public async upsertGuildInfo(
-        guild: HydratedDocument<IGuildInfo>,
-        update: Partial<IGuildInfoOptionals>
-    ): Promise<IGuildInfo> {
-        const { privilegedRoles, mutedUuids, ...rest } = update;
+    public async getGuildByDiscord(discordGuildId: string): Promise<HydratedDocument<IGuildInfo>> {
+        const guild = await this.repository.findOne({ discordGuildId: discordGuildId });
+        this.validator.validateGetGuild(guild);
 
-        guild.updateOne(rest);
-        guild.updateOne({ $push: { privilegedRoles: { $each: privilegedRoles }, mutedUuids: { $each: mutedUuids } } });
-        guild.save();
         return guild;
     }
 
-    public async validateNewGuildCreation(discordGuildId: string, wynnGuildId: string) {
+    public async deleteGuild(filter: FilterQuery<IGuildInfo>) {
+        const guild = await this.repository.deleteOne(filter);
+        this.validator.validateDeleteGuild(guild);
+    }
+
+    public async updateGuildInfo(
+        discordGuildId: string,
+        update: UpdateQuery<IGuildInfoOptionals>
+    ): Promise<HydratedDocument<IGuildInfo>> {
+        const { privilegedRoles, mutedUuids, ...rest } = update;
+
+        return await this.repository.update(
+            { discordGuildId: discordGuildId },
+            {
+                ...rest,
+                ...{ $addToSet: { privilegedRoles: { $each: privilegedRoles }, mutedUuids: { $each: mutedUuids } } },
+            },
+            GuildErrors.NOT_CONFIGURED
+        );
+    }
+
+    public async checkDuplicateGuild(discordGuildId: string, wynnGuildId: string) {
         if (await this.repository.guildExists(discordGuildId, wynnGuildId)) {
             throw new ValidationError("A guild with the same Id is already registered.");
         }
@@ -51,4 +69,12 @@ export class GuildInfoService {
     }
 }
 
-class GuildInfoServiceValidator {}
+class GuildInfoServiceValidator {
+    validateGetGuild(guild: HydratedDocument<IGuildInfo> | null): asserts guild is HydratedDocument<IGuildInfo> {
+        if (!guild) throw new NotFoundError(GuildErrors.NOT_CONFIGURED);
+    }
+
+    validateDeleteGuild(guild: HydratedDocument<IGuildInfo> | null): asserts guild is HydratedDocument<IGuildInfo> {
+        if (!guild) throw new NotFoundError(GuildErrors.NOT_DELETED);
+    }
+}

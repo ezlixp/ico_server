@@ -1,6 +1,7 @@
 ﻿import { BaseModel } from "../../models/entities/baseModel";
 import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, Types, UpdateQuery } from "mongoose";
 import { DatabaseError } from "../../errors/implementations/databaseError";
+import { NotFoundError } from "../../errors/implementations/notFoundError";
 
 export interface IRepository<T> {
     findOne(
@@ -91,7 +92,11 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
         }
     }
 
-    async update(options: FilterQuery<T>, data: UpdateQuery<T>): Promise<HydratedDocument<T>> {
+    async update(
+        options: FilterQuery<T>,
+        data: UpdateQuery<T>,
+        notFoundMessage?: string
+    ): Promise<HydratedDocument<T>> {
         try {
             const out = await this.model
                 .findOneAndUpdate(options, data, {
@@ -101,9 +106,10 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
                     context: "query",
                 })
                 .exec();
-            if (!out) throw new DatabaseError();
+            if (!out) throw new NotFoundError(notFoundMessage || "Could not find selected resource.");
             return out;
         } catch (err) {
+            if (err instanceof NotFoundError) throw err;
             throw new DatabaseError();
         }
     }
