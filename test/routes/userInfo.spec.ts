@@ -206,7 +206,6 @@ describe("User info routes", () => {
                 title: "Error",
                 errorMessage: UserErrors.NOT_FOUND,
             });
-            console.log(res.status, res.body);
         });
     });
 });
