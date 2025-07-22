@@ -173,10 +173,16 @@ io.of("/discord").on("connection", (socket) => {
     }
 
     socket.use((packet, next) => {
+        console.log(socket.data.muted);
         if (socket.data.muted) {
-            next(new Error("You are muted."));
+            return next(new Error("You are muted."));
         }
         next();
+    });
+
+    socket.on("error", (err) => {
+        console.log(err);
+        socket.emit("error", err.message);
     });
 
     /**

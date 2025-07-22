@@ -4,6 +4,7 @@ export interface ServerToClientEvents {
     wynnMessage: (message: IWynn2DiscordMessage) => void;
     wynnMirror: (message: string) => void;
     discordMessage: (message: IDiscord2WynnMessage) => void;
+    error: (error: string) => void;
 }
 
 export interface ClientToServerEvents {
