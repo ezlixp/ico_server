@@ -8,6 +8,7 @@ import { usernameToUuid } from "../communication/httpClients/mojangApiClient";
 import { GuildRequest } from "../communication/requests/guildRequest";
 import { HydratedDocument } from "mongoose";
 import Services from "../services/services";
+import { kickUser } from "../utils/socketUtils";
 
 /**Maps all endpoints related to user information. endpoint: .../user/*/
 const userInfoRouter = Router();
@@ -68,6 +69,7 @@ userInfoRouter.post(
     "/ban/:discordUuid",
     validateAdminJwtToken,
     async (request: Request<{ discordUuid: string }, {}, { banned: boolean }>, response: DefaultResponse) => {
+        if (request.body.banned) kickUser(request.params.discordUuid);
         response.send(
             await Services.user.updateUser({ discordUuid: request.params.discordUuid }, { banned: request.body.banned })
         );

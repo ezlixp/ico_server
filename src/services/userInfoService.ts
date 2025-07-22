@@ -20,8 +20,7 @@ export class UserInfoService {
     }
 
     async getUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
-        const user = await this.repository.findOne(options);
-        this.validator.validateGet(user);
+        const user = await this.repository.findOne(options, undefined, undefined, UserErrors.NOT_FOUND);
 
         return user;
     }
@@ -73,12 +72,6 @@ export class UserInfoService {
 }
 
 class UserInfoServiceValidator {
-    validateGet(user: IUser | null): asserts user is IUser {
-        if (!user) {
-            throw new NotFoundError(UserErrors.NOT_FOUND);
-        }
-    }
-
     validateGetEmpty(user: IUser | null): asserts user is null {
         if (user) {
             throw new ValidationError(UserErrors.MC_ALREADY_LINKED);

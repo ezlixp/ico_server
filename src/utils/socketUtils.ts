@@ -17,3 +17,17 @@ export async function isOnline(username: string, guildId: string): Promise<boole
     const users = await getOnlineUsers(guildId);
     return users.some((user) => user.Username === username);
 }
+
+export async function kickUser(discordUuid: string) {
+    const sockets = await io.of("/discord").fetchSockets();
+    sockets.forEach((socket) => {
+        if (socket.data.discordUuid === discordUuid) socket.disconnect();
+    });
+}
+
+export async function muteUser(discordUuid: string, muted: boolean) {
+    const sockets = await io.of("/discord").fetchSockets();
+    sockets.forEach((socket) => {
+        if (socket.data.discordUuid === discordUuid) socket.data.muted = muted;
+    });
+}

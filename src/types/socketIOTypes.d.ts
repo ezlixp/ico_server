@@ -1,5 +1,4 @@
 import { IDiscord2WynnMessage, IWynn2DiscordMessage } from "./messageTypes";
-import { IUser } from "../models/entities/userModel.ts";
 
 export interface ServerToClientEvents {
     wynnMessage: (message: IWynn2DiscordMessage) => void;
@@ -27,5 +26,5 @@ export interface SocketData {
     username: string;
     modVersion: string;
     discordUuid: string;
-    user: IUser;
+    muted: boolean;
 }

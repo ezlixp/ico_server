@@ -4,6 +4,7 @@ import GuildInfoModel, { GuildInfoImpl, IGuildInfo, IGuildInfoOptionals } from "
 import { DefaultResponse } from "../communication/responses/defaultResponse";
 import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware";
 import Services from "../services/services";
+import { muteUser } from "../utils/socketUtils";
 
 interface InfoRequest<Params = Record<string, any>, ResBody = any, ReqBody = any, ReqQuery = any>
     extends Request<Params & { discordGuildId: string }, ResBody, ReqBody, ReqQuery> {}
@@ -71,12 +72,24 @@ guildInfoRouter.delete(
 
 guildInfoRouter.post(
     "/mute",
-    async (request: InfoRequest<{}, {}, { discordUuid: string }>, response: DefaultResponse<IGuildInfo>) => {
-        response.send(
-            await Services.guildInfo.updateGuildInfo(request.params.discordGuildId, {
-                $push: { privilegedRoles: request.body.discordUuid },
-            })
-        );
+    async (
+        request: InfoRequest<{}, {}, { discordUuid: string; muted: boolean }>,
+        response: DefaultResponse<IGuildInfo>
+    ) => {
+        muteUser(request.body.discordUuid, request.body.muted);
+        if (request.body.muted) {
+            response.send(
+                await Services.guildInfo.updateGuildInfo(request.params.discordGuildId, {
+                    $push: { mutedUuids: request.body.discordUuid },
+                })
+            );
+        } else {
+            response.send(
+                await Services.guildInfo.updateGuildInfo(request.params.discordGuildId, {
+                    $pull: { mutedUuids: request.body.discordUuid },
+                })
+            );
+        }
     }
 );
 

@@ -31,8 +31,12 @@ export class GuildInfoService {
     }
 
     public async getGuildByDiscord(discordGuildId: string): Promise<HydratedDocument<IGuildInfo>> {
-        const guild = await this.repository.findOne({ discordGuildId: discordGuildId });
-        this.validator.validateGetGuild(guild);
+        const guild = await this.repository.findOne(
+            { discordGuildId: discordGuildId },
+            undefined,
+            undefined,
+            GuildErrors.NOT_CONFIGURED
+        );
 
         return guild;
     }
@@ -58,6 +62,17 @@ export class GuildInfoService {
         );
     }
 
+    public async isUserMuted(wynnGuildId: string, mcUuid: string) {
+        const guild = await this.repository.findOne(
+            { wynnGuildId: wynnGuildId },
+            undefined,
+            undefined,
+            GuildErrors.NOT_CONFIGURED
+        );
+
+        return guild.mutedUuids.includes(mcUuid);
+    }
+
     public async checkDuplicateGuild(discordGuildId: string, wynnGuildId: string) {
         if (await this.repository.guildExists(discordGuildId, wynnGuildId)) {
             throw new ValidationError("A guild with the same Id is already registered.");
@@ -70,10 +85,6 @@ export class GuildInfoService {
 }
 
 class GuildInfoServiceValidator {
-    validateGetGuild(guild: HydratedDocument<IGuildInfo> | null): asserts guild is HydratedDocument<IGuildInfo> {
-        if (!guild) throw new NotFoundError(GuildErrors.NOT_CONFIGURED);
-    }
-
     validateDeleteGuild(guild: HydratedDocument<IGuildInfo> | null): asserts guild is HydratedDocument<IGuildInfo> {
         if (!guild) throw new NotFoundError(GuildErrors.NOT_DELETED);
     }

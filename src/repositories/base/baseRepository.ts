@@ -29,10 +29,13 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
     async findOne(
         filter: FilterQuery<T>,
         projection?: ProjectionType<T>,
-        options?: QueryOptions<T>
-    ): Promise<HydratedDocument<T> | null> {
+        options?: QueryOptions<T>,
+        notFoundMessage?: string
+    ): Promise<HydratedDocument<T>> {
         try {
-            return await this.model.findOne(filter, projection, options).exec();
+            const out = await this.model.findOne(filter, projection, options).exec();
+            if (!out) throw new NotFoundError(notFoundMessage || "Selected resource could not be found.");
+            return out;
         } catch (err) {
             throw new DatabaseError();
         }

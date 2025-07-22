@@ -38,12 +38,15 @@ function validateSocket(
         const p = payload as JwtPayload;
         socket.data.wynnGuildId = p.guildId;
         socket.data.discordUuid = p.discordUuid;
+        socket.data.muted = false;
         if (p.discordUuid !== "!bot") {
             try {
-                socket.data.user = await Services.user.getUserByDiscord(p.discordUuid);
-                if (socket.data.user.banned) {
+                const user = await Services.user.getUserByDiscord(p.discordUuid);
+                if (user.banned) {
                     return next(new Error("You are banned."));
                 }
+                const isMuted = await Services.guildInfo.isUserMuted(socket.data.wynnGuildId, socket.data.discordUuid);
+                socket.data.muted = isMuted;
             } catch (err) {
                 return next(new Error("Something went wrong."));
             }
