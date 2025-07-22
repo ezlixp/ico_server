@@ -172,6 +172,13 @@ io.of("/discord").on("connection", (socket) => {
         console.log(socket.data.username, "joined", socket.data.wynnGuildId);
     }
 
+    socket.use((packet, next) => {
+        if (socket.data.muted) {
+            next(new Error("You are muted."));
+        }
+        next();
+    });
+
     /**
      * Event that gets fired upon a guild message captured by a mod client
      */
