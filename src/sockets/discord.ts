@@ -3,10 +3,8 @@ import { IDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes";
 import { decodeItem } from "../utils/wynntilsItemEncoding";
 import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardUtils";
 import { getOnlineUsers, isOnline } from "../utils/socketUtils";
-import { usernameToUuid } from "../communication/httpClients/mojangApiClient";
 import { checkVersion } from "../utils/versionUtils";
 import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel";
-import UserModel from "../models/entities/userModel";
 import { getChannelFromWynnGuild } from "../utils/serverUtils";
 import { io } from "../socket";
 
@@ -173,7 +171,6 @@ io.of("/discord").on("connection", (socket) => {
     }
 
     socket.use((packet, next) => {
-        console.log(socket.data.muted);
         if (socket.data.muted) {
             return next(new Error("You are muted."));
         }
@@ -181,7 +178,6 @@ io.of("/discord").on("connection", (socket) => {
     });
 
     socket.on("error", (err) => {
-        console.log(err);
         socket.emit("error", err.message);
     });
 
@@ -322,11 +318,6 @@ io.of("/discord").on("connection", (socket) => {
                     ENCODED_DATA_PATTERN,
                     (match, _) => `<${decodeItem(match).name}>`
                 );
-                const user = await UserModel.findOne(
-                    { uuid: await usernameToUuid(header) },
-                    {},
-                    { collation: { locale: "en", strength: 2 } }
-                ).exec();
                 console.log(message);
                 io.of("/discord").to(botId).emit("wynnMessage", {
                     MessageType: 2,
@@ -334,6 +325,14 @@ io.of("/discord").on("connection", (socket) => {
                     TextContent: message,
                     ListeningChannel: channel,
                 });
+                // sanitization here is necessary since the only other sanitization is user side which can be bypassed
+                io.of("/discord")
+                    .to(socket.data.wynnGuildId)
+                    .emit("discordMessage", {
+                        Author: header as string,
+                        Content: message.replace(/[‌⁤ÁÀ֎]/g, "") as string,
+                        WynnGuildId: socket.data.wynnGuildId,
+                    });
             }
         })
     );
@@ -344,14 +343,6 @@ io.of("/discord").on("connection", (socket) => {
     socket.on(
         "discordMessage",
         errorHandler(async (message: IDiscord2WynnMessage) => {
-            // TODO fix muted
-            // const user = await UserModel.findOne(
-            //     { uuid: await usernameToUuid(message.Author) },
-            //     {},
-            //     { collation: { locale: "en", strength: 2 } }
-            // ).exec();
-
-            // if (!user || !user.muted) {
             console.log(message);
             io.of("/discord")
                 .to(message.WynnGuildId)
@@ -359,12 +350,6 @@ io.of("/discord").on("connection", (socket) => {
                     ...message,
                     Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
                 });
-            // } else {
-            // console.log("muted message:", message);
-            // io.of("/discord")
-            //     .to(socket.id)
-            //     .emit("discordMessage", { Author: "SYSTEM", Content: "You are muted.", WynnGuildId: "" });
-            // }
         })
     );
 
