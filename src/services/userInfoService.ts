@@ -32,7 +32,7 @@ export class UserInfoService {
     async linkUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
         this.validator.validateLinkUser(options);
 
-        const user = await this.repository.findOne({ mcUuid: options.mcUuid });
+        const user = await this.repository.find({ mcUuid: options.mcUuid });
         this.validator.validateGetEmpty(user);
 
         const get = await this.repository.findOne({ discordUuid: options.discordUuid });
@@ -72,8 +72,8 @@ export class UserInfoService {
 }
 
 class UserInfoServiceValidator {
-    validateGetEmpty(user: IUser | null): asserts user is null {
-        if (user) {
+    validateGetEmpty(user: IUser[]) {
+        if (user.length !== 0) {
             throw new ValidationError(UserErrors.MC_ALREADY_LINKED);
         }
     }

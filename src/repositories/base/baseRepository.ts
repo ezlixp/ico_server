@@ -2,6 +2,7 @@
 import { FilterQuery, HydratedDocument, Model, ProjectionType, QueryOptions, Types, UpdateQuery } from "mongoose";
 import { DatabaseError } from "../../errors/implementations/databaseError";
 import { NotFoundError } from "../../errors/implementations/notFoundError";
+import { AppError } from "../../errors/base/appError";
 
 export interface IRepository<T> {
     findOne(
@@ -37,6 +38,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
             if (!out) throw new NotFoundError(notFoundMessage || "Selected resource could not be found.");
             return out;
         } catch (err) {
+            if (err instanceof AppError) throw err;
             throw new DatabaseError();
         }
     }
@@ -112,7 +114,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
             if (!out) throw new NotFoundError(notFoundMessage || "Could not find selected resource.");
             return out;
         } catch (err) {
-            if (err instanceof NotFoundError) throw err;
+            if (err instanceof AppError) throw err;
             throw new DatabaseError();
         }
     }
