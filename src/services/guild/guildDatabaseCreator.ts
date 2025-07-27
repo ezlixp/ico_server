@@ -6,7 +6,8 @@ import Services from "../services";
 export class GuildDatabaseCreator {
     createNewDatabase(wynnGuildName: string, wynnGuildId: string) {
         if (Object.keys(guildIds).indexOf(wynnGuildName) != -1) {
-            console.warn("trying to register already existing database:", wynnGuildName);
+            if (process.env.NODE_ENV !== "test")
+                console.warn("trying to register already existing database:", wynnGuildName);
             return;
         }
         guildIds[wynnGuildName] = wynnGuildId;
@@ -15,7 +16,7 @@ export class GuildDatabaseCreator {
     }
 
     registerDatabase(value: [string, string]) {
-        console.log(value);
+        if (process.env.NODE_ENV !== "test") console.log(value);
 
         const dbName = value[0];
         const db = mongoose.connection.useDb(dbName);
@@ -40,3 +41,4 @@ export class GuildDatabaseCreator {
         });
     }
 }
+

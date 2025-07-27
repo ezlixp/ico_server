@@ -50,7 +50,7 @@ export class GuildInfoService {
         discordGuildId: string,
         update: UpdateQuery<IGuildInfoOptionals>
     ): Promise<HydratedDocument<IGuildInfo>> {
-        const { privilegedRoles, mutedUuids, ...rest } = update;
+        const { privilegedRoles = [], mutedUuids = [], ...rest } = update;
 
         return await this.repository.update(
             { discordGuildId: discordGuildId },
@@ -58,6 +58,22 @@ export class GuildInfoService {
                 ...rest,
                 ...{ $addToSet: { privilegedRoles: { $each: privilegedRoles }, mutedUuids: { $each: mutedUuids } } },
             },
+            GuildErrors.NOT_CONFIGURED
+        );
+    }
+
+    public async mute(discordGuildId: string, mutedUuid: string) {
+        return await this.repository.update(
+            { discordGuildId: discordGuildId },
+            { $addToSet: { mutedUuids: mutedUuid } },
+            GuildErrors.NOT_CONFIGURED
+        );
+    }
+
+    public async unMute(discordGuildId: string, mutedUuid: string) {
+        return await this.repository.update(
+            { discordGuildId: discordGuildId },
+            { $pull: { mutedUuids: mutedUuid } },
             GuildErrors.NOT_CONFIGURED
         );
     }
@@ -89,3 +105,4 @@ class GuildInfoServiceValidator {
         if (!guild) throw new NotFoundError(GuildErrors.NOT_DELETED);
     }
 }
+

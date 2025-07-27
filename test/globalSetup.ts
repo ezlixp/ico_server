@@ -5,12 +5,16 @@ import supertest from "supertest";
 import { server } from "../src/socket";
 import { JwtTokenHandler } from "../src/security/jwtHandler";
 
+// TODO use weak auth header and no auth header to test authenticated routes
+// TODO test schema validation for each model in its own suite
 export const request = supertest(server);
-export const authHeader = JwtTokenHandler.create()
-    .generateAdminToken()
-    .then((res) => ({
-        Authorization: "Bearer " + res.token!,
-    }));
+const jwtHandler = JwtTokenHandler.create();
+export const authHeader = jwtHandler.generateAdminToken().then((res) => ({
+    Authorization: "Bearer " + res.token!,
+}));
+export const weakAuthHeader = jwtHandler.generateTestToken().then((res) => ({
+    Authorization: "Bearer " + res.token!,
+}));
 
 export default async function globalSetup() {
     console.log("\n\x1b[42mSetting up memory server.\x1b[0m");
@@ -25,3 +29,4 @@ export default async function globalSetup() {
     await conn.connection.db?.dropDatabase();
     await mongoose.disconnect();
 }
+

@@ -29,6 +29,12 @@ export class JwtTokenHandler {
         return this.signJwtToken("!bot", "*");
     }
 
+    async generateTestToken() {
+        if (process.env.NODE_ENV !== "test")
+            throw new Error("Do not use this function outside of a testing environment.");
+        return this.signJwtToken("1234", "testguilduuid");
+    }
+
     async refreshToken(refreshToken: string): Promise<TokenResponse> {
         let payload;
         try {
@@ -68,6 +74,7 @@ export class JwtTokenHandler {
     private validateGuild(wynnGuildId: IWynnGuild | null): asserts wynnGuildId is IWynnGuild {
         if (!wynnGuildId) throw new TokenError();
     }
+
     private validateAccount(
         user: HydratedDocument<IUser> | null,
         mcUuid?: string
@@ -89,3 +96,4 @@ export class JwtTokenHandler {
         return response;
     }
 }
+

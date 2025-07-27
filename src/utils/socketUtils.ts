@@ -25,9 +25,10 @@ export async function kickUser(discordUuid: string) {
     });
 }
 
-export async function muteUser(discordUuid: string, muted: boolean) {
+export async function setMuteUser(discordUuid: string, muted: boolean) {
     const sockets = await io.of("/discord").fetchSockets();
     sockets.forEach((socket) => {
         if (socket.data.discordUuid === discordUuid) socket.data.muted = muted;
     });
 }
+

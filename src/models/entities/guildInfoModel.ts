@@ -113,3 +113,4 @@ const guildInfoSchema: Schema<IGuildInfo> = new Schema({
 const GuildInfoModel = mongoose.model("Gulid Info", guildInfoSchema);
 
 export default GuildInfoModel;
+
