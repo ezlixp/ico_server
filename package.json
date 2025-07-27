@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.ts",
     "scripts": {
-        "test": "set NODE_ENV=test&&jest --detectOpenHandles --noStackTrace",
-        "dev": "set NODE_ENV=development&&tsx --watch src/index.ts"
+        "test": "cross-env NODE_ENV=test jest --detectOpenHandles --noStackTrace",
+        "dev": "cross-env NODE_ENV=development tsx --watch src/index.ts"
     },
     "author": "",
     "license": "LGPL-3.0-only",
@@ -19,6 +19,7 @@
         "@types/node": "^22.5.4",
         "@types/socket.io": "^3.0.1",
         "@types/supertest": "^6.0.3",
+        "cross-env": "^10.0.0",
         "jest": "^30.0.4",
         "mongodb-memory-server": "^10.1.4",
         "nodemon": "^3.1.4",
@@ -43,3 +44,4 @@
         "tsx": "^4.19.0"
     }
 }
+
