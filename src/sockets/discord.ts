@@ -231,9 +231,9 @@ io.of("/discord").on("connection", (socket) => {
                                         .then((user) => {
                                             discordUuid = user?.discordUuid;
                                         })
-                                        .catch();
+                                        .catch(() => {});
                                 })
-                                .catch()
+                                .catch(() => {})
                                 .finally(() => {
                                     const message = rawMessage
                                         .replace(new RegExp("§.", "g"), "")
