@@ -1,9 +1,9 @@
-import { IDiscord2WynnMessage, IWynn2DiscordMessage } from "./messageTypes";
+import { IB2SDiscord2WynnMessage, IS2CDiscord2WynnMessage, IWynn2DiscordMessage } from "./messageTypes";
 
 export interface ServerToClientEvents {
     wynnMessage: (message: IWynn2DiscordMessage) => void;
     wynnMirror: (message: string) => void;
-    discordMessage: (message: IDiscord2WynnMessage) => void;
+    discordMessage: (message: IS2CDiscord2WynnMessage) => void;
     error: (error: string) => void;
 }
 
@@ -11,7 +11,7 @@ export interface ClientToServerEvents {
     wynnMessage: (message: string) => void;
     hrMessage: (MessageChannel: string) => void;
     discordOnlyWynnMessage: (message: string) => void;
-    discordMessage: (message: IDiscord2WynnMessage) => void;
+    discordMessage: (message: IB2SDiscord2WynnMessage) => void;
     listOnline: (callback: (users: string[]) => void) => void;
     sync: (ack: () => void) => void;
 }
@@ -29,3 +29,4 @@ export interface SocketData {
     discordUuid: string;
     muted: boolean;
 }
+

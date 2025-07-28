@@ -5,6 +5,7 @@ import { ValidationError } from "../errors/implementations/validationError";
 import { FilterQuery, HydratedDocument } from "mongoose";
 import { UserRepository } from "../repositories/userRepository";
 import { MissingFieldError } from "../errors/implementations/missingFieldError";
+import { AppError } from "../errors/base/appError";
 
 export class UserInfoService {
     private readonly validator: UserInfoServiceValidator;
@@ -25,8 +26,24 @@ export class UserInfoService {
         return user;
     }
 
-    async getUserByDiscord(discordUuid: string): Promise<HydratedDocument<IUser>> {
-        return await this.getUser({ discordUuid: discordUuid });
+    async getUserByDiscord(discordUuid: string): Promise<HydratedDocument<IUser> | null> {
+        try {
+            const user = await this.getUser({ discordUuid: discordUuid });
+            return user;
+        } catch (err) {
+            if (err instanceof AppError && err.message === UserErrors.NOT_FOUND) return null;
+            throw err;
+        }
+    }
+
+    async getUserByMcUuid(mcUuid: string): Promise<HydratedDocument<IUser> | null> {
+        try {
+            const user = await this.getUser({ mcUuid: mcUuid });
+            return user;
+        } catch (err) {
+            if (err instanceof AppError && err.message === UserErrors.NOT_FOUND) return null;
+            throw err;
+        }
     }
 
     async linkUser(options: FilterQuery<IUser>): Promise<HydratedDocument<IUser>> {
@@ -109,3 +126,4 @@ class UserInfoServiceValidator {
         }
     }
 }
+

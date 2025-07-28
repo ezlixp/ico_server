@@ -1,5 +1,5 @@
 import "../config";
-import { IDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes";
+import { IB2SDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes";
 import { decodeItem } from "../utils/wynntilsItemEncoding";
 import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardUtils";
 import { getOnlineUsers, isOnline } from "../utils/socketUtils";
@@ -7,6 +7,8 @@ import { checkVersion } from "../utils/versionUtils";
 import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel";
 import { getChannelFromWynnGuild } from "../utils/serverUtils";
 import { io } from "../socket";
+import Services from "../services/services";
+import { usernameToUuid, uuidToUsername } from "../communication/httpClients/mojangApiClient";
 
 const ENCODED_DATA_PATTERN = /([\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFF}])+/gu;
 const wynnMessagePatterns: IWynnMessage[] = [
@@ -221,19 +223,35 @@ io.of("/discord").on("connection", (socket) => {
                                 socket.data.wynnGuildId
                             );
 
-                            const message = rawMessage
-                                .replace(new RegExp("§.", "g"), "")
-                                .replace(ENCODED_DATA_PATTERN, (match, _) => `**__${decodeItem(match).name}__**`);
-                            isOnline(header, socket.data.wynnGuildId).then((online) => {
-                                io.of("/discord")
-                                    .to(botId)
-                                    .emit("wynnMessage", {
-                                        MessageType: pattern.messageType,
-                                        HeaderContent: header + (online ? "*" : ""),
-                                        TextContent: message,
-                                        ListeningChannel: channel,
+                            let discordUuid: string | undefined;
+                            usernameToUuid(header)
+                                .then((uuid) => {
+                                    Services.user
+                                        .getUserByMcUuid(uuid)
+                                        .then((user) => {
+                                            discordUuid = user?.discordUuid;
+                                        })
+                                        .catch();
+                                })
+                                .catch()
+                                .finally(() => {
+                                    const message = rawMessage
+                                        .replace(new RegExp("§.", "g"), "")
+                                        .replace(
+                                            ENCODED_DATA_PATTERN,
+                                            (match, _) => `**__${decodeItem(match).name}__**`
+                                        );
+                                    isOnline(header, socket.data.wynnGuildId).then((online) => {
+                                        io.of("/discord")
+                                            .to(botId)
+                                            .emit("wynnMessage", {
+                                                MessageType: pattern.messageType,
+                                                HeaderContent: [header + (online ? "*" : ""), discordUuid],
+                                                TextContent: message,
+                                                ListeningChannel: channel,
+                                            });
                                     });
-                            });
+                                });
                             break;
                         }
                     }
@@ -284,12 +302,14 @@ io.of("/discord").on("connection", (socket) => {
                                 socket.data.wynnGuildId
                             );
                             const message = rawMessage.replace(new RegExp("§.", "g"), "");
-                            io.of("/discord").to(botId).emit("wynnMessage", {
-                                MessageType: pattern.messageType,
-                                HeaderContent: header,
-                                TextContent: message,
-                                ListeningChannel: channel,
-                            });
+                            io.of("/discord")
+                                .to(botId)
+                                .emit("wynnMessage", {
+                                    MessageType: pattern.messageType,
+                                    HeaderContent: [header],
+                                    TextContent: message,
+                                    ListeningChannel: channel,
+                                });
                             break;
                         }
                     }
@@ -319,17 +339,19 @@ io.of("/discord").on("connection", (socket) => {
                     (match, _) => `<${decodeItem(match).name}>`
                 );
                 console.log(message);
-                io.of("/discord").to(botId).emit("wynnMessage", {
-                    MessageType: 2,
-                    HeaderContent: header,
-                    TextContent: message,
-                    ListeningChannel: channel,
-                });
-                // sanitization here is necessary since the only other sanitization is user side which can be bypassed
+                io.of("/discord")
+                    .to(botId)
+                    .emit("wynnMessage", {
+                        MessageType: 2,
+                        HeaderContent: [header, socket.data.discordUuid],
+                        TextContent: message,
+                        ListeningChannel: channel,
+                    });
                 io.of("/discord")
                     .to(socket.data.wynnGuildId)
                     .emit("discordMessage", {
-                        Author: header as string,
+                        DiscordUsername: "@none",
+                        McUsername: header as string,
                         Content: message.replace(/[‌⁤ÁÀ֎]/g, "") as string,
                         WynnGuildId: socket.data.wynnGuildId,
                     });
@@ -342,12 +364,15 @@ io.of("/discord").on("connection", (socket) => {
      */
     socket.on(
         "discordMessage",
-        errorHandler(async (message: IDiscord2WynnMessage) => {
+        errorHandler(async (message: IB2SDiscord2WynnMessage) => {
             console.log(message);
+            const mcUuid = (await Services.user.getUserByDiscord(message.DiscordUuid))?.mcUuid;
+            const mcUsername = mcUuid ? await uuidToUsername(mcUuid) : undefined;
             io.of("/discord")
                 .to(message.WynnGuildId)
                 .emit("discordMessage", {
                     ...message,
+                    McUsername: mcUsername,
                     Content: message.Content.replace(/[‌⁤ÁÀ֎]/g, ""),
                 });
         })
@@ -380,3 +405,4 @@ io.of("/discord").on("connection", (socket) => {
         })
     );
 });
+

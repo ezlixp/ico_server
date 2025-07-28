@@ -42,6 +42,7 @@ function validateSocket(
         if (p.discordUuid !== "!bot") {
             try {
                 const user = await Services.user.getUserByDiscord(p.discordUuid);
+                if (!user) throw new Error();
                 if (user.banned) {
                     return next(new Error("You are banned."));
                 }
@@ -58,3 +59,4 @@ function validateSocket(
 }
 
 export default validateSocket;
+

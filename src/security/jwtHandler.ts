@@ -36,28 +36,24 @@ export class JwtTokenHandler {
     }
 
     async refreshToken(refreshToken: string): Promise<TokenResponse> {
-        let payload;
         try {
-            payload = jwt.verify(refreshToken, this.refreshKey);
+            const payload = jwt.verify(refreshToken, this.refreshKey);
+            const p = payload! as JwtPayload;
+            if (!p.discordUuid) throw new ValidationError(TokenErrors.INVALID_REFRESH);
+
+            if (p.discordUuid === "!bot" && p.guildUuid === "*") {
+                return await this.generateAdminToken();
+            }
+
+            const user = await Services.user.getUser({ discordUuid: p.discordUuid });
+
+            if (user.refreshToken !== refreshToken) {
+                throw new ValidationError(TokenErrors.INVALID_REFRESH);
+            }
+            return await this.generateToken(user.discordUuid, await getUuidGuildAsync(user.mcUuid));
         } catch (err) {
             throw new ValidationError(TokenErrors.INVALID_REFRESH);
         }
-
-        const p = payload! as JwtPayload;
-        if (!p.discordUuid) throw new ValidationError(TokenErrors.INVALID_REFRESH);
-
-        if (p.discordUuid === "!bot" && p.guildUuid === "*") {
-            return await this.generateAdminToken();
-        }
-
-        const user = await Services.user.getUser({ discordUuid: p.discordUuid });
-        if (!user) throw new ValidationError(TokenErrors.INVALID_REFRESH);
-
-        if (user.refreshToken !== refreshToken) {
-            throw new ValidationError(TokenErrors.INVALID_REFRESH);
-        }
-
-        return await this.generateToken(user.discordUuid, await getUuidGuildAsync(user.mcUuid));
     }
 
     async generateToken(discordUuid: string, wynnGuildId: IWynnGuild | null, mcUuid?: string): Promise<TokenResponse> {

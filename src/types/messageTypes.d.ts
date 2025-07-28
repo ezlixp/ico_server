@@ -25,15 +25,27 @@ export interface IWynnMessage {
     customHeader?: string;
 }
 
-export interface IDiscord2WynnMessage {
-    Author: string;
+/** Bot to server */
+export interface IB2SDiscord2WynnMessage {
+    DiscordUsername: string;
+    DiscordUuid: string;
+    Content: string;
+    WynnGuildId: string;
+}
+
+/** Server to mod clients */
+export interface IS2CDiscord2WynnMessage {
+    DiscordUsername: string;
+    McUsername?: string;
     Content: string;
     WynnGuildId: string;
 }
 
 export interface IWynn2DiscordMessage {
     MessageType: number;
-    HeaderContent?: string;
+    // [0] = content, [1] = optional discord uuid
+    HeaderContent?: [string, string?];
     TextContent: string;
     ListeningChannel: string;
 }
+
