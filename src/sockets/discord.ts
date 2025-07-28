@@ -225,13 +225,11 @@ io.of("/discord").on("connection", (socket) => {
 
                             let discordUuid: string | undefined;
                             usernameToUuid(header)
-                                .then((uuid) => {
-                                    Services.user
-                                        .getUserByMcUuid(uuid)
-                                        .then((user) => {
-                                            discordUuid = user?.discordUuid;
-                                        })
-                                        .catch(() => {});
+                                .then(async (uuid) => {
+                                    try {
+                                        const user = await Services.user.getUserByMcUuid(uuid);
+                                        discordUuid = user?.discordUuid;
+                                    } catch {}
                                 })
                                 .catch(() => {})
                                 .finally(() => {
