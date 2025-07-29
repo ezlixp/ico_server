@@ -240,7 +240,6 @@ describe("Guild info routes", () => {
                 .post(`/api/${API_VERSION}/config/notfound/mute`)
                 .send({
                     discordUuid: "2",
-                    muted: true,
                 })
                 .set(await authHeader);
             expect(res.status).toBe(404);
