@@ -1,7 +1,6 @@
 import "../config";
 import { IB2SDiscord2WynnMessage, IWynnMessage } from "../types/messageTypes";
 import { decodeItem } from "../utils/wynntilsItemEncoding";
-import { decrementAspects, deleteTome, incrementAspects } from "../utils/rewardUtils";
 import { getOnlineUsers, isOnline } from "../utils/socketUtils";
 import { checkVersion } from "../utils/versionUtils";
 import { guildDatabases, guildNames } from "../models/entities/guildDatabaseModel";
@@ -35,8 +34,8 @@ const wynnMessagePatterns: IWynnMessage[] = [
                 }).then((newRaid) => {
                     // Add users to db and increase aspect counter by 0.5
                     Promise.all(
-                        newRaid.users.map((username) => {
-                            incrementAspects(username.toString(), guildId);
+                        newRaid.users.map(async (username) => {
+                            await Services.raid.updateRewards(await usernameToUuid(username), guildId, 0.5);
                         })
                     );
                 });
@@ -61,7 +60,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.an Aspect§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher, guildId) => {
-            decrementAspects(matcher.groups!.receiver, guildId);
+            Services.raid.updateRewards(matcher.groups!.receiver, guildId, -1);
             return matcher.groups!.giver + " has given an aspect to " + matcher.groups!.receiver;
         },
         customHeader: "⚠️ Aspect",
@@ -70,7 +69,7 @@ const wynnMessagePatterns: IWynnMessage[] = [
         pattern: /^§.(?<giver>.*?)(§.)? rewarded §.a Guild Tome§. to §.(?<receiver>.*?)(§.)?$/,
         messageType: 1,
         customMessage: (matcher, guildId) => {
-            deleteTome(matcher.groups!.receiver, guildId);
+            Services.tome.deleteFromTomeList(matcher.groups!.receiver, guildId);
             return matcher.groups!.giver + " has given a tome to " + matcher.groups!.receiver;
         },
         customHeader: "⚠️ Tome",

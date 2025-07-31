@@ -43,9 +43,10 @@ tomeRouter.delete(
     "/:wynnGuildId/:username",
     validateJwtToken,
     async (request: GuildRequest<{ username: string }>, response: DefaultResponse) => {
-        await tomeService.deleteFromTomeList({ mcUsername: request.params.username }, request.params.wynnGuildId);
+        await tomeService.deleteFromTomeList(request.params.username, request.params.wynnGuildId);
         response.status(204).send();
     }
 );
 
 export default tomeRouter;
+

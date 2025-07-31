@@ -4,9 +4,7 @@ import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/sche
 import { uuidToUsername } from "../../communication/httpClients/mojangApiClient";
 import { FilterQuery, HydratedDocument } from "mongoose";
 import { IGuildUser } from "../../models/schemas/guildUserSchema";
-import { NotFoundError } from "../../errors/implementations/notFoundError";
 import { RaidErrors } from "../../errors/messages/raidErrors";
-import { DatabaseError } from "../../errors/implementations/databaseError";
 
 export class RaidService {
     private readonly databases: IGuildDatabases;
@@ -33,7 +31,7 @@ export class RaidService {
         const res: IRaidRewardsResponse[] = [];
         for (var i = 0; i < users.length; ++i) {
             res.push({
-                mcUsername: await uuidToUsername(users[i].uuid),
+                mcUsername: await uuidToUsername(users[i].mcUuid),
                 raids: users[i].raids,
                 aspects: users[i].aspects,
                 liquidEmeralds: users[i].emeralds / 4096,
@@ -42,33 +40,39 @@ export class RaidService {
         return res;
     }
 
+    /**
+     *
+     * @param update query of which document to update
+     * @param aspects number of aspects to increment by
+     * @param emeralds number of emeralds to increment by
+     * @param wynnGuildId
+     * @returns
+     */
     async updateRewards(
-        update: FilterQuery<IRaid>,
-        aspects: number | null,
-        emeralds: number | null,
-        wynnGuildId: string
+        mcUuid: string,
+        wynnGuildId: string,
+        aspects?: number,
+        emeralds?: number
     ): Promise<HydratedDocument<IGuildUser>> {
         this.validator.validateGuild(wynnGuildId);
-        const toUpdate = await this.databases[wynnGuildId].GuildUserRepository.findOne(update);
-        this.validator.validateUpdateRewards(toUpdate);
 
-        if (aspects) toUpdate.aspects -= aspects;
-        if (emeralds) toUpdate.emeralds -= emeralds;
-
-        try {
-            await toUpdate.save();
-        } catch (e) {
-            throw new DatabaseError();
-        }
-        return toUpdate;
+        return await this.databases[wynnGuildId].GuildUserRepository.updateWithUpsert(
+            { mcUuid: mcUuid },
+            { $inc: { aspects: aspects, emeralds: emeralds } }
+        );
     }
 
     async getUserRewards(filter: FilterQuery<IGuildUser>, wynnGuildId: string): Promise<IRaidRewardsResponse> {
         this.validator.validateGuild(wynnGuildId);
-        const user = await this.databases[wynnGuildId].GuildUserRepository.findOne(filter);
-        this.validator.validateGetUserRewards(user);
+        const user = await this.databases[wynnGuildId].GuildUserRepository.findOne(
+            filter,
+            undefined,
+            undefined,
+            RaidErrors.NOT_IN_RAID_LIST
+        );
+
         const res: IRaidRewardsResponse = {
-            mcUsername: await uuidToUsername(user.uuid),
+            mcUsername: await uuidToUsername(user.mcUuid),
             raids: user.raids,
             aspects: user.aspects,
             liquidEmeralds: user.emeralds / 4096,
@@ -88,7 +92,7 @@ export class RaidService {
         // TODO implement mojang api bulk uuid to username call
         for (let i = 0; i < users.length; i++) {
             formattedTopUsers.push({
-                mcUsername: await uuidToUsername(users[i].uuid),
+                mcUsername: await uuidToUsername(users[i].mcUuid),
                 raids: users[i].raids,
             });
         }
@@ -100,18 +104,5 @@ class RaidServiceValidator extends BaseGuildServiceValidator {
     public constructor() {
         super();
     }
-
-    validateUpdateRewards(
-        toUpdate: HydratedDocument<IGuildUser> | null
-    ): asserts toUpdate is HydratedDocument<IGuildUser> {
-        if (!toUpdate) {
-            throw new NotFoundError(RaidErrors.NOT_IN_RAID_LIST);
-        }
-    }
-
-    validateGetUserRewards(user: HydratedDocument<IGuildUser> | null): asserts user is HydratedDocument<IGuildUser> {
-        if (!user) {
-            throw new NotFoundError(RaidErrors.NOT_IN_RAID_LIST);
-        }
-    }
 }
+

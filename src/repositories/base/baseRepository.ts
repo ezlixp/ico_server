@@ -8,8 +8,9 @@ export interface IRepository<T> {
     findOne(
         filter: FilterQuery<T>,
         projection?: ProjectionType<T>,
-        options?: QueryOptions<T>
-    ): Promise<HydratedDocument<T> | null>;
+        options?: QueryOptions<T>,
+        notFoundMessage?: string
+    ): Promise<HydratedDocument<T>>;
 
     find(
         filter: FilterQuery<T>,
@@ -27,6 +28,14 @@ export interface IRepository<T> {
 export abstract class BaseRepository<T extends BaseModel> implements IRepository<T> {
     protected constructor(private model: Model<T>) {}
 
+    /**
+     * @param filter search filter
+     * @param projection projection of result
+     * @param options search options
+     * @param notFoundMessage error message if search filter returns no matches
+     * @returns found object
+     * @throws {NotFoundError, DatabaseError}
+     */
     async findOne(
         filter: FilterQuery<T>,
         projection?: ProjectionType<T>,

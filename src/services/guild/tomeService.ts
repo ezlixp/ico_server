@@ -47,10 +47,10 @@ export class TomeService {
         return { mcUsername: tome.mcUsername, position: position };
     }
 
-    async deleteFromTomeList(mcUsername: FilterQuery<ITome>, wynnGuildId: string) {
+    async deleteFromTomeList(mcUsername: string, wynnGuildId: string) {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.getRepository(wynnGuildId);
-        const tome = await repository.deleteOne(mcUsername);
+        const tome = await repository.deleteOne({ mcUsername: mcUsername });
         this.validator.validateGet(tome);
     }
 
@@ -82,3 +82,4 @@ class TomeServiceValidator extends BaseGuildServiceValidator {
         }
     }
 }
+

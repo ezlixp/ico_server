@@ -33,10 +33,10 @@ raidRouter.post(
     ) => {
         response.send(
             await raidService.updateRewards(
-                { uuid: await usernameToUuid(request.body.mcUsername) },
-                request.body.aspects || null,
-                request.body.emeralds || null,
-                request.params.wynnGuildId
+                await usernameToUuid(request.body.mcUsername),
+                request.params.wynnGuildId,
+                request.body.aspects,
+                request.body.emeralds
             )
         );
     }
@@ -47,7 +47,7 @@ raidRouter.get(
     async (request: GuildRequest<{ mcUsername: string }>, response: DefaultResponse<IRaidRewardsResponse>) => {
         response.send(
             await raidService.getUserRewards(
-                { uuid: await usernameToUuid(request.params.mcUsername) },
+                { mcUuid: await usernameToUuid(request.params.mcUsername) },
                 request.params.wynnGuildId
             )
         );
@@ -62,3 +62,4 @@ raidRouter.get(
 );
 
 export default raidRouter;
+
