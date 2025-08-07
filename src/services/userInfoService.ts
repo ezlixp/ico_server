@@ -52,7 +52,7 @@ export class UserInfoService {
         const user = await this.repository.find({ mcUuid: options.mcUuid });
         this.validator.validateGetEmpty(user);
 
-        const get = await this.repository.findOne({ discordUuid: options.discordUuid });
+        const get = await this.repository.findOne({ discordUuid: options.discordUuid }).catch(() => null);
         this.validator.validateNewLink(get);
 
         return this.repository.updateWithUpsert({ discordUuid: options.discordUuid }, options);

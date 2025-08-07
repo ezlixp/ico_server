@@ -140,6 +140,16 @@ describe("User info routes", () => {
             expect(res.body.mcUuid).toBe("963269fe6c50435a9ff57dc928c8e521");
         });
 
+        it("should link a minecraft account with a discord account with upsert", async () => {
+            const res = await request
+                .post(`/api/${API_VERSION}/user/link/correct`)
+                .send({ mcUsername: "0xzy", discordUuid: "1234" })
+                .set(await authHeader);
+            expect(res.status).toBe(200);
+            expect(res.body.mcUuid).toBe("963269fe6c50435a9ff57dc928c8e521");
+            expect(res.body.discordUuid).toBe("1234");
+        });
+
         it("should handle missing discordUuid and mcUsername", async () => {
             const res = await request
                 .post(`/api/${API_VERSION}/user/link/correct`)
@@ -209,3 +219,4 @@ describe("User info routes", () => {
         });
     });
 });
+
