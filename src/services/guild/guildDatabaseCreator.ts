@@ -32,6 +32,9 @@ export class GuildDatabaseCreator {
     }
 
     private dropDatabase(guild: string) {
+        if (process.env.NODE_ENV !== "test")
+            throw new Error("This function should not be called outside of a testing environment.");
+
         const dbName = guild;
         const db = mongoose.connection.useDb(dbName);
         db.dropDatabase();
