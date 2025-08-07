@@ -10,7 +10,10 @@ import { HydratedDocument } from "mongoose";
 import Services from "../services/services";
 import { kickUser } from "../utils/socketUtils";
 
-/**Maps all endpoints related to user information. endpoint: .../user/*/
+/**
+ * Maps all endpoints related to user information. endpoint: .../user/
+ */
+
 const userInfoRouter = Router();
 userInfoRouter.use(validateJwtToken);
 
@@ -77,3 +80,4 @@ userInfoRouter.post(
 );
 
 export default userInfoRouter;
+
