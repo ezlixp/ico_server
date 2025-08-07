@@ -31,6 +31,10 @@ describe("User info routes", () => {
         ]);
     });
 
+    afterAll(async () => {
+        mongoose.connection.dropDatabase();
+    });
+
     describe(`GET /api/${API_VERSION}/user/blocked/:mcUuid`, () => {
         it("should return all blocked users", async () => {
             const res = await request
