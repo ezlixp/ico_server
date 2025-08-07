@@ -24,7 +24,7 @@ describe("Guild info routes", () => {
     });
 
     afterAll(async () => {
-        mongoose.connection.dropDatabase();
+        await mongoose.connection.dropDatabase();
     });
     describe(`POST /api/${API_VERSION}/config`, () => {
         it("should add a new guild", async () => {

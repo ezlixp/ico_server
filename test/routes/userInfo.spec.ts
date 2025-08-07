@@ -32,7 +32,7 @@ describe("User info routes", () => {
     });
 
     afterAll(async () => {
-        mongoose.connection.dropDatabase();
+        await mongoose.connection.dropDatabase();
     });
 
     describe(`GET /api/${API_VERSION}/user/blocked/:mcUuid`, () => {
