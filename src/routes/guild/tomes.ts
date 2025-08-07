@@ -7,7 +7,7 @@ import { GuildRequest } from "../../communication/requests/guildRequest";
 import { DefaultResponse } from "../../communication/responses/defaultResponse";
 
 /**
- * Maps all tome-related endpoints
+ * Maps all tome-related endpoints. endpoint: .../guilds/tomes/
  */
 const tomeRouter = Router();
 const tomeService = TomeService.create();
