@@ -12,7 +12,7 @@ export class GuildInfoService {
     private readonly repository: GuildInfoRepository;
 
     private constructor() {
-        this.guildDatabaseCreator = new GuildDatabaseCreator();
+        this.guildDatabaseCreator = GuildDatabaseCreator.create();
         this.validator = new GuildInfoServiceValidator();
         this.repository = new GuildInfoRepository();
     }
@@ -21,7 +21,9 @@ export class GuildInfoService {
         return new GuildInfoService();
     }
 
-    public async createNewGuild(guildRequest: IGuildInfo): Promise<HydratedDocument<IGuildInfo>> {
+    public async createNewGuild(
+        guildRequest: { discordGuildId: string; wynnGuildId: string } & Partial<IGuildInfo>
+    ): Promise<HydratedDocument<IGuildInfo>> {
         await this.checkDuplicateGuild(guildRequest.discordGuildId, guildRequest.wynnGuildId);
 
         const newGuild = await this.repository.create(guildRequest);
