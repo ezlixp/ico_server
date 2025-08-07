@@ -4,6 +4,12 @@ import mongoose from "mongoose";
 import Services from "../services";
 
 export class GuildDatabaseCreator {
+    private constructor() {}
+
+    static create(): GuildDatabaseCreator {
+        return new GuildDatabaseCreator();
+    }
+
     createNewDatabase(wynnGuildName: string, wynnGuildId: string) {
         if (Object.keys(guildIds).indexOf(wynnGuildName) != -1) {
             if (process.env.NODE_ENV !== "test")
@@ -23,6 +29,22 @@ export class GuildDatabaseCreator {
         const databaseFactory = GuildDatabaseFactory.create(db);
 
         guildDatabases[value[1]] = databaseFactory.createDatabase();
+    }
+
+    private dropDatabase(guild: string) {
+        const dbName = guild;
+        const db = mongoose.connection.useDb(dbName);
+        db.dropDatabase();
+    }
+
+    public async dropDatabases() {
+        if (process.env.NODE_ENV !== "test")
+            throw new Error("This function should not be called outside of a testing environment.");
+
+        for (const prop of Object.getOwnPropertyNames(guildDatabases)) delete guildDatabases[prop];
+        for (const [guildId, name] of Object.entries(guildNames)) {
+            this.dropDatabase(name);
+        }
     }
 
     async registerDatabases() {

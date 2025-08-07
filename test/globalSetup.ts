@@ -4,10 +4,12 @@ import console from "console";
 import supertest from "supertest";
 import { server } from "../src/socket";
 import { JwtTokenHandler } from "../src/security/jwtHandler";
+import { GuildDatabaseCreator } from "../src/services/guild/guildDatabaseCreator";
 
 // TODO use weak auth header and no auth header to test authenticated routes
 // TODO test schema validation for each model in its own suite
 export const request = supertest(server);
+export const guildDatabaseCreator = GuildDatabaseCreator.create();
 const jwtHandler = JwtTokenHandler.create();
 export const authHeader = jwtHandler.generateAdminToken().then((res) => ({
     Authorization: "Bearer " + res.token!,

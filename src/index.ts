@@ -9,7 +9,7 @@ import { server } from "./socket";
 try {
     const dbUrl = process.env.DB_URL;
     connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {
-        const databaseCreator = new GuildDatabaseCreator();
+        const databaseCreator = GuildDatabaseCreator.create();
         databaseCreator.registerDatabases().then(() => {
             registerMessageIndexes();
             const PORT = process.env.PORT || 3000;
@@ -22,3 +22,4 @@ try {
 } catch (error) {
     console.error("Failed to connect to database:", error);
 }
+
