@@ -169,8 +169,8 @@ describe("User info routes", () => {
             const res2 = await request
                 .post(`/api/${API_VERSION}/user/link/correct`)
                 .send({ mcUsername: "wow" })
-                .set(await authHeader);
-            expect(res2.status).toBe(400);
+                .set(await authHeader)
+                .expect(400);
             expect(res2.body).toMatchObject<ErrorResponse>({
                 status: 400,
                 title: "Error",
@@ -180,10 +180,10 @@ describe("User info routes", () => {
 
         it("should handle user not in guild", async () => {
             const res = await request
-                .post(`/api/${API_VERSION}/user/link/incorrect`)
-                .send({ mcUsername: "_", discordUuid: "_" })
-                .set(await authHeader);
-            expect(res.status).toBe(400);
+                .post(`/api/${API_VERSION}/user/link/configured`)
+                .send({ mcUsername: "notin", discordUuid: "_" })
+                .set(await authHeader)
+                .expect(400);
             expect(res.body).toMatchObject<ErrorResponse>({
                 status: 400,
                 title: "Error",

@@ -31,13 +31,13 @@ export class GuildDatabaseCreator {
         guildDatabases[value[1]] = databaseFactory.createDatabase();
     }
 
-    private dropDatabase(guild: string) {
+    private async dropDatabase(guild: string) {
         if (process.env.NODE_ENV !== "test")
             throw new Error("This function should not be called outside of a testing environment.");
 
         const dbName = guild;
         const db = mongoose.connection.useDb(dbName);
-        db.dropDatabase();
+        await db.dropDatabase();
     }
 
     public async dropDatabases() {
@@ -46,7 +46,7 @@ export class GuildDatabaseCreator {
 
         for (const prop of Object.getOwnPropertyNames(guildDatabases)) delete guildDatabases[prop];
         for (const [guildId, name] of Object.entries(guildNames)) {
-            this.dropDatabase(name);
+            await this.dropDatabase(name);
         }
     }
 
@@ -60,7 +60,7 @@ export class GuildDatabaseCreator {
             guildNames[guildId] = name;
         }
 
-        console.log("registered guilds:", JSON.stringify(guildIds, null, 2));
+        if (process.env.NODE_ENV !== "test") console.log("registered guilds:", JSON.stringify(guildIds, null, 2));
         Object.entries(guildIds).forEach((value) => {
             this.registerDatabase(value);
         });

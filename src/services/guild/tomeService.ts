@@ -6,6 +6,7 @@ import { NotFoundError } from "../../errors/implementations/notFoundError";
 import { TomeErrors } from "../../errors/messages/tomeErrors";
 import { FilterQuery } from "mongoose";
 import { IRepository } from "../../repositories/base/baseRepository";
+import { MissingFieldError } from "../../errors/implementations/missingFieldError";
 
 export class TomeService {
     private readonly databases: IGuildDatabases;
@@ -25,13 +26,13 @@ export class TomeService {
         return this.getRepository(wynnGuildId).find({});
     }
 
-    async addToTomeList(mcUsername: FilterQuery<ITome>, wynnGuildId: string): Promise<ITome> {
+    async addToTomeList(mcUsername: string, wynnGuildId: string): Promise<ITome> {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.getRepository(wynnGuildId);
-        const tome = await repository.findOne(mcUsername);
+        const tome = await repository.findOneEmpty({ mcUsername: mcUsername });
         this.validator.validateAddToTomeList(tome, mcUsername);
 
-        return repository.create(mcUsername);
+        return repository.create({ mcUsername: mcUsername });
     }
 
     async getTomeListPosition(
@@ -64,15 +65,12 @@ class TomeServiceValidator extends BaseGuildServiceValidator {
         super();
     }
 
-    validateAddToTomeList(
-        tome: ITome | null,
-        mcUsername: FilterQuery<ITome>
-    ): asserts mcUsername is { mcUsername: string } {
+    validateAddToTomeList(tome: ITome | null, mcUsername: string | null): asserts mcUsername is string {
         if (tome) {
             throw new ValidationError(TomeErrors.TOME_DUPLICATE);
         }
-        if (!mcUsername.mcUsername) {
-            throw new ValidationError(TomeErrors.USERNAME_MISSING);
+        if (!mcUsername) {
+            throw new MissingFieldError("mcUsername", "string");
         }
     }
 

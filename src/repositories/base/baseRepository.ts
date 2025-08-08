@@ -12,6 +12,12 @@ export interface IRepository<T> {
         notFoundMessage?: string
     ): Promise<HydratedDocument<T>>;
 
+    findOneEmpty(
+        filter: FilterQuery<T>,
+        projection?: ProjectionType<T>,
+        options?: QueryOptions<T>
+    ): Promise<HydratedDocument<T> | null>;
+
     find(
         filter: FilterQuery<T>,
         projection?: ProjectionType<T>,
@@ -37,7 +43,7 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
      * @throws {NotFoundError, DatabaseError}
      */
     async findOne(
-        filter: FilterQuery<T>,
+        filter: FilterQuery<T> = {},
         projection?: ProjectionType<T>,
         options?: QueryOptions<T>,
         notFoundMessage?: string
@@ -46,6 +52,25 @@ export abstract class BaseRepository<T extends BaseModel> implements IRepository
             const out = await this.model.findOne(filter, projection, options).exec();
             if (!out) throw new NotFoundError(notFoundMessage || "Selected resource could not be found.");
             return out;
+        } catch (err) {
+            if (err instanceof AppError) throw err;
+            throw new DatabaseError();
+        }
+    }
+
+    /**
+     * @param filter search filter
+     * @param projection projection of result
+     * @param options search options
+     * @returns found object or null if not found
+     */
+    async findOneEmpty(
+        filter: FilterQuery<T> = {},
+        projection?: ProjectionType<T>,
+        options?: QueryOptions<T>
+    ): Promise<HydratedDocument<T> | null> {
+        try {
+            return await this.model.findOne(filter, projection, options).exec();
         } catch (err) {
             if (err instanceof AppError) throw err;
             throw new DatabaseError();

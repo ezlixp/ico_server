@@ -26,11 +26,8 @@ export async function getPlayersGuildAsync(username: string): Promise<IWynnGuild
 }
 
 export default async function checkIfPlayerIsInGuildAsync(username: string, wynnGuildId: string): Promise<boolean> {
-    if (process.env.NODE_ENV === "test") {
-        if (wynnGuildId === "correct") return true;
-        return false;
-    }
     const guild = await getPlayersGuildAsync(username);
 
     return guild != null && guild.uuid == wynnGuildId;
 }
+
