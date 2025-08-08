@@ -25,12 +25,10 @@ const wynnMessagePatterns: IWynnMessage[] = [
                     matcher.groups!.player4,
                 ];
                 const raid = matcher.groups!.raid;
-                const timestamp = Date.now();
 
                 guildDatabases[guildId].RaidRepository.create({
                     users: users,
                     raid,
-                    timestamp,
                 }).then((newRaid) => {
                     // Add users to db and increase aspect counter by 0.5
                     Promise.all(

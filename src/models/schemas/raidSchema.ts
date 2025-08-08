@@ -22,7 +22,8 @@ export interface ILeaderboardUser {
 const raidSchema: Schema<IRaid> = new Schema({
     users: { type: [String], required: true },
     raid: { type: String, required: true },
-    timestamp: { type: Number, required: true },
+    timestamp: { type: Number, required: true, default: Date.now },
 });
 
 export default raidSchema;
+
