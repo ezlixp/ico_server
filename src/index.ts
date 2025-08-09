@@ -5,8 +5,9 @@ import { registerMessageIndexes } from "./sockets/discord";
 import { GuildDatabaseCreator } from "./services/guild/guildDatabaseCreator";
 import { server } from "./socket";
 
-// Connect to database
 mongoose.Schema.Types.String.checkRequired((v) => typeof v === "string");
+
+// Connect to database
 try {
     const dbUrl = process.env.DB_URL;
     connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {
