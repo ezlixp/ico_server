@@ -12,6 +12,7 @@ import { RaidErrors } from "../../../src/errors/messages/raidErrors";
 
 describe("Raids routes", () => {
     let spy;
+
     beforeAll(async () => {
         await Services.guildInfo.createNewGuild({
             wynnGuildId: "b250f587-ab5e-48cd-bf90-71e65d6dc9e7",
