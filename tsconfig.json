@@ -1,36 +1,19 @@
 ﻿{
     "compilerOptions": {
+        "module": "nodenext",
         "target": "ESNext",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
         "rootDir": "./",
         "outDir": "./dist",
+        "types": ["jest", "node"],
         "sourceMap": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
-        "typeRoots": ["./node_modules/@types"],
-        "noEmitOnError": true
+        "noEmitOnError": true,
+        "isolatedModules": true
     },
-    "include": [
-        "communication/**/*",
-        "errors/**/*",
-        "services/**/*",
-        "middleware/**/*",
-        "models/**/*",
-        "routes/**/*",
-        "security/**/*",
-        "repositories/**/*",
-        "sockets/**/*",
-        "utils/**/*",
-        "types/**/*",
-        "index.ts",
-        "config.ts",
-        "app.ts",
-        "communication/httpClients/**/*"
-    ],
-    "exclude": ["node_modules", "**/*.spec.ts", "test/**/*"]
+    "include": ["test/**/*.ts", "src/**/*"],
+    "exclude": ["node_modules"]
 }
