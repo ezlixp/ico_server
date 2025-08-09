@@ -26,3 +26,4 @@ guildRouter.use("/tomes", tomeRouter);
 guildRouter.use("/waitlist", waitlistRouter);
 
 export default guildRouter;
+
