@@ -1,4 +1,4 @@
-import { Request, Router } from "express";
+import { NextFunction, Request, Router } from "express";
 import { IGuildInfo, IGuildInfoOptionals } from "../models/entities/guildInfoModel";
 import { DefaultResponse } from "../communication/responses/defaultResponse";
 import validateAdminJwtToken from "../middleware/jwtAdminTokenValidator.middleware";
@@ -7,6 +7,14 @@ import { setMuteUser } from "../utils/socketUtils";
 
 interface InfoRequest<Params = Record<string, any>, ResBody = any, ReqBody = any, ReqQuery = any>
     extends Request<Params & { discordGuildId: string }, ResBody, ReqBody, ReqQuery> {}
+
+function clearUnsafe(request: InfoRequest<{}, {}, Partial<IGuildInfo>>, response: any, next: NextFunction) {
+    request.body.discordGuildId = undefined;
+    request.body.wynnGuildName = undefined;
+    request.body.wynnGuildId = undefined;
+    next();
+}
+
 /**
  * Maps all server config related endpoints. endpoing: .../config
  */
@@ -32,7 +40,8 @@ guildInfoRouter.delete("/", async (request: InfoRequest, response: DefaultRespon
 
 guildInfoRouter.patch(
     "/",
-    async (request: InfoRequest<{}, {}, IGuildInfoOptionals>, response: DefaultResponse<IGuildInfo>) => {
+    clearUnsafe,
+    async (request: InfoRequest<{}, {}, Partial<IGuildInfoOptionals>>, response: DefaultResponse<IGuildInfo>) => {
         response.send(await Services.guildInfo.updateGuildInfo(request.params.discordGuildId, request.body));
     }
 );
