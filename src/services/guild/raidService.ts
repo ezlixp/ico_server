@@ -5,6 +5,7 @@ import { uuidToUsername } from "../../communication/httpClients/mojangApiClient"
 import { FilterQuery, HydratedDocument } from "mongoose";
 import { IGuildUser } from "../../models/schemas/guildUserSchema";
 import { RaidErrors } from "../../errors/messages/raidErrors";
+import { MissingFieldError } from "../../errors/implementations/missingFieldError";
 
 export class RaidService {
     private readonly databases: IGuildDatabases;
@@ -55,10 +56,11 @@ export class RaidService {
         emeralds?: number
     ): Promise<HydratedDocument<IGuildUser>> {
         this.validator.validateGuild(wynnGuildId);
+        this.validator.validateUpdateRewards(mcUuid);
 
         return await this.databases[wynnGuildId].GuildUserRepository.updateWithUpsert(
             { mcUuid: mcUuid },
-            { $inc: { aspects: aspects, emeralds: emeralds } }
+            { $inc: { aspects: aspects || 0, emeralds: emeralds || 0 } }
         );
     }
 
@@ -77,7 +79,6 @@ export class RaidService {
             aspects: user.aspects,
             liquidEmeralds: user.emeralds / 4096,
         };
-        console.log(user);
         return res;
     }
 
@@ -103,6 +104,10 @@ export class RaidService {
 class RaidServiceValidator extends BaseGuildServiceValidator {
     public constructor() {
         super();
+    }
+
+    validateUpdateRewards(mcUuid: string): asserts mcUuid is string {
+        if (typeof mcUuid !== "string") throw new MissingFieldError("mcUuid", "string");
     }
 }
 

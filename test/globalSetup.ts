@@ -8,6 +8,7 @@ import { GuildDatabaseCreator } from "../src/services/guild/guildDatabaseCreator
 
 // TODO use weak auth header and no auth header to test authenticated routes
 // TODO test schema validation for each model in its own suite
+mongoose.Schema.Types.String.checkRequired((v) => typeof v === "string");
 export const request = supertest(server);
 export const guildDatabaseCreator = GuildDatabaseCreator.create();
 const jwtHandler = JwtTokenHandler.create();

@@ -171,9 +171,9 @@ describe("Guild info routes", () => {
             const res = await request
                 .patch(`/api/${API_VERSION}/config/810258030201143328`)
                 .send({
-                    wynnGuildId: "0",
-                    wynnGuildName: "newname",
-                    discordGuildId: "1",
+                    wynnGuildId: "shouldn't change",
+                    wynnGuildName: "shouldn't change",
+                    discordGuildId: "shouldn't change",
                     tomeChannel: "2",
                     // layoffsChannel: "3",
                     // raidsChannel: "4",
@@ -186,9 +186,7 @@ describe("Guild info routes", () => {
                 .set(await authHeader);
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject({
-                wynnGuildId: "0",
-                wynnGuildName: "newname",
-                discordGuildId: "1",
+                discordGuildId: "810258030201143328",
                 tomeChannel: "2",
                 layoffsChannel: "1135296640803147806",
                 raidsChannel: "1272044811771449365",

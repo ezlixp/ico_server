@@ -1,4 +1,4 @@
-import { connect } from "mongoose";
+import mongoose, { connect } from "mongoose";
 import "./config";
 import "./sockets/discord";
 import { registerMessageIndexes } from "./sockets/discord";
@@ -6,6 +6,7 @@ import { GuildDatabaseCreator } from "./services/guild/guildDatabaseCreator";
 import { server } from "./socket";
 
 // Connect to database
+mongoose.Schema.Types.String.checkRequired((v) => typeof v === "string");
 try {
     const dbUrl = process.env.DB_URL;
     connect(dbUrl, { retryWrites: true, writeConcern: { w: "majority" } }).then(() => {

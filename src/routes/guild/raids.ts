@@ -5,22 +5,21 @@ import validateAdminJwtToken from "../../middleware/jwtAdminTokenValidator.middl
 import { DefaultResponse } from "../../communication/responses/defaultResponse";
 import { ILeaderboardUser, IRaid, IRaidRewardsResponse } from "../../models/schemas/raidSchema";
 import { IGuildUser } from "../../models/schemas/guildUserSchema";
-import { RaidService } from "../../services/guild/raidService";
+import Services from "../../services/services";
 
 /**
- * Maps all raid-related endpoints base route: /raids.
+ * Maps all raid-related endpoints. endpoint: .../guilds/raids.
  */
 const raidRouter = Router();
-const raidService = RaidService.create();
 
 raidRouter.get("/:wynnGuildId", async (request: GuildRequest, response: DefaultResponse<IRaid[]>) => {
-    response.send(await raidService.getRaids(request.params.wynnGuildId));
+    response.send(await Services.raid.getRaids(request.params.wynnGuildId));
 });
 
 raidRouter.get(
     "/rewards/:wynnGuildId",
     async (request: GuildRequest, response: DefaultResponse<IRaidRewardsResponse[]>) => {
-        response.send(await raidService.getRewards(request.params.wynnGuildId));
+        response.send(await Services.raid.getRewards(request.params.wynnGuildId));
     }
 );
 
@@ -32,7 +31,7 @@ raidRouter.post(
         response: DefaultResponse<IGuildUser>
     ) => {
         response.send(
-            await raidService.updateRewards(
+            await Services.raid.updateRewards(
                 await usernameToUuid(request.body.mcUsername),
                 request.params.wynnGuildId,
                 request.body.aspects,
@@ -46,7 +45,7 @@ raidRouter.get(
     "/rewards/:wynnGuildId/:mcUsername",
     async (request: GuildRequest<{ mcUsername: string }>, response: DefaultResponse<IRaidRewardsResponse>) => {
         response.send(
-            await raidService.getUserRewards(
+            await Services.raid.getUserRewards(
                 { mcUuid: await usernameToUuid(request.params.mcUsername) },
                 request.params.wynnGuildId
             )
@@ -57,7 +56,7 @@ raidRouter.get(
 raidRouter.get(
     "/leaderboard/:wynnGuildId",
     async (request: GuildRequest, response: DefaultResponse<ILeaderboardUser[]>) => {
-        response.send(await raidService.getRaidsLeaderboard(request.params.wynnGuildId));
+        response.send(await Services.raid.getRaidsLeaderboard(request.params.wynnGuildId));
     }
 );
 
