@@ -1,13 +1,28 @@
 {
     "add test for route": {
-        "scope": "javascript,typescript",
-        "prefix": "suite",
+        "prefix": "$suite",
         "body": [
             "describe(`${1:REST} /api/\\${API_VERSION}/${2:route}`, () => {",
             "\tit(\"should ${3:description}\", async () => {",
-            "\t\tconst res = await request.${1/(.*)/${1:/downcase}/}(`/api/\\${API_VERSION}/$2`)$0",
+            "\t\tconst res = await request.${1/(.*)/${1:/downcase}/}(`/api/\\${API_VERSION}/$2`).expect(200)$0",
             "\t})",
             "})"
+        ]
+    },
+
+    "ico server id": {
+        "prefix": "ico",
+        "body": "\"b250f587-ab5e-48cd-bf90-71e65d6dc9e7\""
+    },
+
+    "guild not configured object": {
+        "prefix": "nfguild",
+        "body": [
+            "expect(res.body).toMatchObject<ErrorResponse>({",
+            "\tstatus: 404,",
+            "\ttitle: \"Error\",",
+            "\terrorMessage: GuildErrors.NOT_CONFIGURED,",
+            "});"
         ]
     }
 
