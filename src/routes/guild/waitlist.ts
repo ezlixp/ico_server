@@ -18,7 +18,6 @@ waitlistRouter.post(
     "/:wynnGuildId",
     validateJwtToken,
     async (request: GuildRequest<{}, {}, { mcUsername: string }>, response: DefaultResponse<IWaitlist>) => {
-        console.log("hi");
         response.send(await Services.waitlist.addToWaitlist(request.body.mcUsername, request.params.wynnGuildId));
     }
 );
