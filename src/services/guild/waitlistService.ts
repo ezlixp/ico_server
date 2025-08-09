@@ -27,7 +27,7 @@ export class WaitlistService {
     async addToWaitlist(mcUsername: string, wynnGuildId: string): Promise<IWaitlist> {
         this.validator.validateGuild(wynnGuildId);
         const repository = this.databases[wynnGuildId].WaitlistRepository;
-        const user = await repository.findOne({ mcUsername: mcUsername });
+        const user = await repository.findOneEmpty({ mcUsername: mcUsername });
         this.validator.validateAddToWaitlist(user);
 
         return await repository.create({ mcUsername: mcUsername });
@@ -56,3 +56,4 @@ class WaitlistServiceValidator extends BaseGuildServiceValidator {
         }
     }
 }
+
