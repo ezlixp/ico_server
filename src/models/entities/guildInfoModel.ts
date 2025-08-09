@@ -110,7 +110,7 @@ const guildInfoSchema: Schema<IGuildInfo> = new Schema({
  * @property {string} listeningChannel    - The channel ids that are listening for messages.
  * @property {string} broadcastingChannel - The channel ids to broadcast bridge messages to, not necessarily in the same server.
  */
-const GuildInfoModel = mongoose.model("Gulid Info", guildInfoSchema);
+const GuildInfoModel = mongoose.model("Guild Info", guildInfoSchema);
 
 export default GuildInfoModel;
 
