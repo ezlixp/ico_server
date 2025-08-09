@@ -2,18 +2,19 @@
 import { Router } from "express";
 import verifyInGuild from "../../middleware/verifyInGuild.middleware";
 import { ITome } from "../../models/schemas/tomeSchema";
-import { TomeService } from "../../services/guild/tomeService";
 import { GuildRequest } from "../../communication/requests/guildRequest";
 import { DefaultResponse } from "../../communication/responses/defaultResponse";
+import Services from "../../services/services";
 
 /**
  * Maps all tome-related endpoints. endpoint: .../guilds/tomes/
  */
 const tomeRouter = Router();
-const tomeService = TomeService.create();
 
 tomeRouter.get("/:wynnGuildId", async (request: GuildRequest, response: DefaultResponse<ITome[]>) => {
-    response.send(await tomeService.getTomeList(request.params.wynnGuildId));
+    console.log(request.params.wynnGuildId);
+    console.log(await Services.tome.getTomeList(request.params.wynnGuildId));
+    response.send(await Services.tome.getTomeList(request.params.wynnGuildId));
 });
 
 tomeRouter.post(
@@ -21,7 +22,7 @@ tomeRouter.post(
     validateJwtToken,
     verifyInGuild,
     async (request: GuildRequest<{}, {}, { mcUsername: string }>, response: DefaultResponse<ITome>) => {
-        response.send(await tomeService.addToTomeList(request.body.mcUsername, request.params.wynnGuildId));
+        response.send(await Services.tome.addToTomeList(request.body.mcUsername, request.params.wynnGuildId));
     }
 );
 
@@ -32,7 +33,10 @@ tomeRouter.get(
         response: DefaultResponse<{ mcUsername: string; position: number }>
     ) => {
         response.send(
-            await tomeService.getTomeListPosition({ mcUsername: request.params.mcUsername }, request.params.wynnGuildId)
+            await Services.tome.getTomeListPosition(
+                { mcUsername: request.params.mcUsername },
+                request.params.wynnGuildId
+            )
         );
     }
 );
@@ -41,7 +45,7 @@ tomeRouter.delete(
     "/:wynnGuildId/:mcUsername",
     validateJwtToken,
     async (request: GuildRequest<{ mcUsername: string }>, response: DefaultResponse) => {
-        await tomeService.deleteFromTomeList(request.params.mcUsername, request.params.wynnGuildId);
+        await Services.tome.deleteFromTomeList(request.params.mcUsername, request.params.wynnGuildId);
         response.status(204).send();
     }
 );
