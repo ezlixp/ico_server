@@ -72,7 +72,7 @@ export class GuildInfoService {
         );
     }
 
-    public async unMute(discordGuildId: string, mutedUuid: string) {
+    public async unmute(discordGuildId: string, mutedUuid: string) {
         return await this.repository.update(
             { discordGuildId: discordGuildId },
             { $pull: { mutedUuids: mutedUuid } },

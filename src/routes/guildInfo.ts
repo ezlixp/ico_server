@@ -58,7 +58,7 @@ guildInfoRouter.delete(
     "/mute",
     async (request: InfoRequest<{}, {}, { discordUuid: string }>, response: DefaultResponse<IGuildInfo>) => {
         setMuteUser(request.body.discordUuid, false);
-        response.send(await Services.guildInfo.unMute(request.params.discordGuildId, request.body.discordUuid));
+        response.send(await Services.guildInfo.unmute(request.params.discordGuildId, request.body.discordUuid));
     }
 );
 
