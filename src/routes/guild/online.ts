@@ -4,7 +4,7 @@ import { getOnlineUsers, IOnlineUser } from "../../utils/socketUtils";
 import { DefaultResponse } from "../../communication/responses/defaultResponse";
 
 /**
- * Maps all wynn related endpoints.
+ * Maps all wynn related endpoints. endpoint: .../online/
  */
 const onlineRouter = Router();
 
@@ -13,3 +13,4 @@ onlineRouter.get("/:wynnGuildId", async (request: GuildRequest, response: Defaul
 });
 
 export default onlineRouter;
+

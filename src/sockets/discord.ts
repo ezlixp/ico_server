@@ -376,7 +376,7 @@ io.of("/discord").on("connection", (socket) => {
     socket.on(
         "listOnline",
         errorHandler(async (callback: Function) => {
-            callback((await getOnlineUsers(socket.data.wynnGuildId)).map((onlineUser) => onlineUser.Username));
+            callback((await getOnlineUsers(socket.data.wynnGuildId)).map((onlineUser) => onlineUser.McUsername));
         })
     );
 

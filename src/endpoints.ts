@@ -41,3 +41,4 @@ export const mapEndpoints = (app: Express) => {
         throw new NotFoundError("not found");
     });
 };
+
