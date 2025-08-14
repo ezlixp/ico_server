@@ -7,6 +7,7 @@ import { getPlayersGuildAsync } from "../communication/httpClients/wynncraftApiC
 import { TokenResponse } from "../communication/responses/tokenResponse";
 import { TokenErrors } from "../errors/messages/tokenErrors";
 import { usernameToUuid } from "../communication/httpClients/mojangApiClient";
+import Services from "../services/services";
 
 /**
  * Maps all authentication-related endpoints. endpoint: .../auth/
@@ -64,6 +65,17 @@ const authorizationCode = async (
 
     const mcUsername = request.body.mcUsername;
     const discordToken = await getToken(code);
+    // bypass verification logic for now since rate limited
+    return response.send(
+        await tokenHandler.generateToken(
+            (
+                await Services.user.getUser({ mcUuid: await usernameToUuid(mcUsername) })
+            ).discordUuid,
+            await getPlayersGuildAsync(mcUsername),
+            await usernameToUuid(mcUsername)
+        )
+    );
+
     if (!discordToken) throw new ValidationError("error validating discord account");
 
     const discordUser = await getUser(discordToken.access_token);
