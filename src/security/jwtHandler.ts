@@ -39,6 +39,8 @@ export class JwtTokenHandler {
         try {
             const payload = jwt.verify(refreshToken, this.refreshKey);
             const p = payload! as JwtPayload;
+            console.warn(refreshToken);
+            console.warn(p);
             if (!p.discordUuid) throw new ValidationError(TokenErrors.INVALID_REFRESH);
 
             if (p.discordUuid === "!bot" && p.guildUuid === "*") {
@@ -46,6 +48,7 @@ export class JwtTokenHandler {
             }
 
             const user = await Services.user.getUser({ discordUuid: p.discordUuid });
+            console.warn(user);
 
             if (user.refreshToken !== refreshToken) {
                 throw new ValidationError(TokenErrors.INVALID_REFRESH);
