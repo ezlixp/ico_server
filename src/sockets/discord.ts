@@ -129,6 +129,8 @@ const discordOnlyPattern = new RegExp("^(?<header>.+?): (?<content>.*)$");
 const messageIndexes: { [key: string]: number } = {};
 const hrMessageIndexes: { [key: string]: number } = {};
 
+const disconnectTimers: { [key: string]: NodeJS.Timeout | null } = {};
+
 export function registerMessageIndexes() {
     Object.entries(guildNames).forEach((value) => {
         messageIndexes[value[0]] = 0;
@@ -165,6 +167,21 @@ io.of("/discord").on("connection", (socket) => {
         }
         socket.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
         socket.data.hrMessageIndex = hrMessageIndexes[socket.data.wynnGuildId];
+        if (disconnectTimers[socket.data.discordUuid] != null) {
+            clearTimeout(disconnectTimers[socket.data.discordUuid]!);
+            disconnectTimers[socket.data.discordUuid] = null;
+        } else {
+            getChannelFromWynnGuild(socket.data.wynnGuildId).then((channel) => {
+                io.of("/discord")
+                    .to(botId)
+                    .emit("wynnMessage", {
+                        MessageType: 1,
+                        HeaderContent: ["⚠️ Info"],
+                        TextContent: socket.data.username + "joined!",
+                        ListeningChannel: channel,
+                    });
+            });
+        }
         socket.join(socket.data.wynnGuildId);
         console.log(socket.data.username, "joined", socket.data.wynnGuildId);
     }
@@ -397,6 +414,23 @@ io.of("/discord").on("connection", (socket) => {
                             s.data.messageIndex = messageIndexes[socket.data.wynnGuildId];
                     });
                 });
+            if (socket.data.discordUuid !== "!bot") {
+                disconnectTimers[socket.data.discordUuid] = setTimeout(() => {
+                    getChannelFromWynnGuild(socket.data.wynnGuildId).then((channel) => {
+                        getChannelFromWynnGuild(socket.data.wynnGuildId).then((channel) => {
+                            io.of("/discord")
+                                .to(botId)
+                                .emit("wynnMessage", {
+                                    MessageType: 1,
+                                    HeaderContent: ["⚠️ Info"],
+                                    TextContent: socket.data.username + "joined!",
+                                    ListeningChannel: channel,
+                                });
+                        });
+                    });
+                    disconnectTimers[socket.data.discordUuid] = null;
+                }, 10000);
+            }
         })
     );
 });
