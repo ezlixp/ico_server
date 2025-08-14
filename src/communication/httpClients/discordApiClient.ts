@@ -42,8 +42,6 @@ export async function getToken(code: string): Promise<IDiscordTokenResponse | nu
         },
         body: new URLSearchParams(data).toString(),
     });
-    console.warn(CLIENT_ID, CLIENT_SECRET);
-    console.warn(res);
     if (res.ok) return await res.json();
     else return null;
 }
