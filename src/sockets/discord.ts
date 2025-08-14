@@ -177,7 +177,7 @@ io.of("/discord").on("connection", (socket) => {
                     .emit("wynnMessage", {
                         MessageType: 1,
                         HeaderContent: ["⚠️ Info"],
-                        TextContent: socket.data.username + "joined!",
+                        TextContent: socket.data.username + " logged in!",
                         ListeningChannel: channel,
                     });
             });
@@ -423,7 +423,7 @@ io.of("/discord").on("connection", (socket) => {
                                 .emit("wynnMessage", {
                                     MessageType: 1,
                                     HeaderContent: ["⚠️ Info"],
-                                    TextContent: socket.data.username + "joined!",
+                                    TextContent: socket.data.username + " logged out.",
                                     ListeningChannel: channel,
                                 });
                         });
