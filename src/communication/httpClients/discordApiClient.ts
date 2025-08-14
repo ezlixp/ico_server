@@ -26,6 +26,7 @@ interface IDiscordUser {
 }
 
 export async function getToken(code: string): Promise<IDiscordTokenResponse | null> {
+    console.log("fetching discord token");
     const data = {
         grant_type: "authorization_code",
         code: code,
