@@ -7,6 +7,11 @@ import { server } from "./socket";
 
 mongoose.Schema.Types.String.checkRequired((v) => typeof v === "string");
 
+process.on("SIGTERM", () => {
+    console.log("shutting down...");
+    server.close();
+    mongoose.disconnect();
+});
 // Connect to database
 try {
     const dbUrl = process.env.DB_URL;
